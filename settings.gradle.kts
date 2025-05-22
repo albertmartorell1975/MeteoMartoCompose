@@ -21,3 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "MeteoMartoCompose"
 include(":app")
+include(":domain")
+include(":usecases")
+include(":data")
