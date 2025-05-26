@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.3"
+javaxInjectVersion = "1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -8,12 +9,17 @@ lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2025.05.01"
 jetbrainsKotlinJvm = "2.0.21"
-#navigation
 navigationVer = "2.9.0"
-kotlinSerializationVer = "2.1.20"
+kotlinSerializationPluginVer ="2.1.20"
+kotlinSerializationVer = "1.7.3"
+materialIconsVer = "1.7.8"
+hiltVer ="2.56.2"
+hiltNavigationComposeVer = "1.2.0"
+kspVer="2.1.20-2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+javax-inject-v1 = { module = "javax.inject:javax.inject", version.ref = "javaxInjectVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -29,7 +35,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 #navigation
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVer" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerializationVer" }
-
+#icons
+material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsVer" }
+#Hilt
+hilt-android = { group = "com.google.dagger", name = "hilt-android" , version.ref = "hiltVer"}
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose" , version.ref = "hiltNavigationComposeVer"}
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler" , version.ref = "hiltVer"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -37,5 +48,8 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 # navigation
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationVer" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationPluginVer" }
+#Hilt
+kotlinAndroidKsp = { id = "com.google.devtools.ksp", version.ref ="kspVer" }
+hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref ="hiltVer" }
 

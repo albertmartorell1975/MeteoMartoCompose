@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class MeteoMartoApp : Application() {
-}
+@HiltAndroidApp
+class MeteoMartoApp : Application()
