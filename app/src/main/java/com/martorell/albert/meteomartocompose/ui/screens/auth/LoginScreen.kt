@@ -22,10 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +44,14 @@ import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
 
+
+/**
+ * To keep the LoginContent as stateless composable (so a composable that does not hold any state),
+ * we apply the programming pattern well known as state hoisting, where we move the state to the caller of a composable.
+ * The simple way to do it is by replacing the state with a parameter and use functions to represent events.
+ * The parameter is the current value to be displayed, and the event is a lambda function that gets triggered
+ * whenever the state needs to be updated. Lambadas are a common approach to describe events on a composable
+ */
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -52,13 +60,45 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
 ) {
 
+    var userState by rememberSaveable { mutableStateOf("") }
+    var passwordState by rememberSaveable { mutableStateOf("") }
+    var passwordIsVisible by rememberSaveable { mutableStateOf(false) }
     val state = viewModel.state.collectAsState()
-    val userTextState = remember { mutableStateOf(TextFieldValue()) }
-    val passwordTextState = remember { mutableStateOf(TextFieldValue()) }
-    var passwordVisible by remember { mutableStateOf(false) }
-    val loginEnabled =
-        passwordTextState.value.text.isNotEmpty() &&
-                userTextState.value.text.isNotEmpty()
+
+    LoginContent(
+        modifier = modifier,
+        goToTerms = { goToTerms() },
+        goToDashboard = { goToDashboard() },
+        user = userState,
+        onUserChange = { userState = it },
+        password = passwordState,
+        onPasswordChange = { passwordState = it },
+        passwordVisibility = passwordIsVisible,
+        onPasswordVisibilityChange = { passwordIsVisible = it },
+        state = state,
+        viewModel::loginUnchecked,
+        checkLogin = viewModel::checkLogin,
+        loginEnabled = { user, password -> user.isNotEmpty() && password.isNotEmpty() }
+    )
+
+}
+
+@Composable
+fun LoginContent(
+    modifier: Modifier = Modifier,
+    goToTerms: () -> Unit,
+    goToDashboard: () -> Unit,
+    user: String,
+    onUserChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    passwordVisibility: Boolean,
+    onPasswordVisibilityChange: (Boolean) -> Unit,
+    state: State<LoginViewModel.UiState>,
+    loginUnchecked: () -> Unit,
+    checkLogin: (String, String) -> Unit,
+    loginEnabled: (String, String) -> Boolean
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     MeteoMartoComposeLayout {
@@ -87,10 +127,10 @@ fun LoginScreen(
                     )
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
                     TextField(
-                        value = userTextState.value,
+                        value = user,
                         onValueChange = {
-                            userTextState.value = it
-                            viewModel.loginUnchecked()
+                            onUserChange(it)
+                            loginUnchecked()
                         },
                         label = { Text(text = stringResource(R.string.label_user_text_field)) },
                         placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
@@ -102,10 +142,10 @@ fun LoginScreen(
                     )
 
                     TextField(
-                        value = passwordTextState.value,
+                        value = password,
                         onValueChange = {
-                            passwordTextState.value = it
-                            viewModel.loginUnchecked()
+                            onPasswordChange(it)
+                            loginUnchecked()
                         },
                         label = { Text(text = stringResource(R.string.label_password_text_field)) },
                         placeholder = { Text(text = stringResource(R.string.placeholder_password_text_field)) },
@@ -113,17 +153,22 @@ fun LoginScreen(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Password
                         ),
-                        visualTransformation = if (passwordVisible) VisualTransformation.None
-                        else PasswordVisualTransformation(),
+                        visualTransformation =
+                            if (passwordVisibility)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
                         trailingIcon = {
                             IconToggleButton(
-                                checked = passwordVisible,
-                                onCheckedChange = { passwordVisible = it }
+                                checked = passwordVisibility,
+                                onCheckedChange = { onPasswordVisibilityChange(it) }
                             ) {
                                 Icon(
-                                    imageVector = if (passwordVisible)
-                                        Icons.Default.VisibilityOff
-                                    else Icons.Default.Visibility,
+                                    imageVector =
+                                        if (passwordVisibility)
+                                            Icons.Default.VisibilityOff
+                                        else
+                                            Icons.Default.Visibility,
                                     contentDescription = stringResource(R.string.visibility_password)
                                 )
                             }
@@ -144,11 +189,8 @@ fun LoginScreen(
                             .widthIn(min = 200.dp)
                             .height(dimensionResource(R.dimen.standard_height_button)), onClick = {
                             keyboardController?.hide()
-                            viewModel.checkLogin(
-                                user = userTextState.value.text,
-                                password = passwordTextState.value.text
-                            )
-                        }, enabled = loginEnabled
+                            checkLogin(user, password)
+                        }, enabled = loginEnabled(user, password)
                     ) {
                         Text(text = stringResource(R.string.login))
                     }
