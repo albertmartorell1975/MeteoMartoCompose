@@ -25,7 +25,10 @@ import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoComposeTheme
 
 
 @Composable
-fun TermsScreen(modifier: Modifier = Modifier, goToLogin: () -> Unit) {
+fun TermsScreen(
+    modifier: Modifier = Modifier,
+    goToLogin: () -> Unit
+) {
 
     MeteoMartoComposeTheme {
 

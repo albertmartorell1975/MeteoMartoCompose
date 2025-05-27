@@ -24,10 +24,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -44,12 +40,11 @@ import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
 
-
 /**
  * To keep the LoginContent as stateless composable (so a composable that does not hold any state),
  * we apply the programming pattern well known as state hoisting, where we move the state to the caller of a composable.
  * The simple way to do it is by replacing the state with a parameter and use functions to represent events.
- * The parameter is the current value to be displayed, and the event is a lambda function that gets triggered
+ * The parameter "state" is the current value to be displayed, and the event is a lambda function that gets triggered
  * whenever the state needs to be updated. Lambadas are a common approach to describe events on a composable
  */
 @Composable
@@ -57,28 +52,24 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     goToTerms: () -> Unit,
     goToDashboard: () -> Unit,
+    goToSignUp: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
 ) {
 
-    var userState by rememberSaveable { mutableStateOf("") }
-    var passwordState by rememberSaveable { mutableStateOf("") }
-    var passwordIsVisible by rememberSaveable { mutableStateOf(false) }
     val state = viewModel.state.collectAsState()
 
     LoginContent(
         modifier = modifier,
         goToTerms = { goToTerms() },
         goToDashboard = { goToDashboard() },
-        user = userState,
-        onUserChange = { userState = it },
-        password = passwordState,
-        onPasswordChange = { passwordState = it },
-        passwordVisibility = passwordIsVisible,
-        onPasswordVisibilityChange = { passwordIsVisible = it },
+        goToSignUp = { goToSignUp() },
         state = state,
-        viewModel::loginUnchecked,
+        onUserChange = viewModel::setUser,
+        onPasswordChange = viewModel::setPassword,
+        onPasswordVisibilityChange = viewModel::setPasswordVisible,
+        loginUnchecked = viewModel::loginUnchecked,
         checkLogin = viewModel::checkLogin,
-        loginEnabled = { user, password -> user.isNotEmpty() && password.isNotEmpty() }
+        loginEnabled = viewModel::buttonEnabled
     )
 
 }
@@ -88,16 +79,14 @@ fun LoginContent(
     modifier: Modifier = Modifier,
     goToTerms: () -> Unit,
     goToDashboard: () -> Unit,
-    user: String,
-    onUserChange: (String) -> Unit,
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    passwordVisibility: Boolean,
-    onPasswordVisibilityChange: (Boolean) -> Unit,
+    goToSignUp: () -> Unit,
     state: State<LoginViewModel.UiState>,
+    onUserChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: (Boolean) -> Unit,
     loginUnchecked: () -> Unit,
-    checkLogin: (String, String) -> Unit,
-    loginEnabled: (String, String) -> Boolean
+    checkLogin: () -> Unit,
+    loginEnabled: () -> Boolean
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -127,7 +116,7 @@ fun LoginContent(
                     )
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
                     TextField(
-                        value = user,
+                        value = state.value.user,
                         onValueChange = {
                             onUserChange(it)
                             loginUnchecked()
@@ -138,11 +127,11 @@ fun LoginContent(
                             imeAction = ImeAction.Next,
                             keyboardType = KeyboardType.Text
                         ),
-                        isError = !state.value.loginStatus && state.value.loginChecked
+                        isError = state.value.showError
                     )
 
                     TextField(
-                        value = password,
+                        value = state.value.password,
                         onValueChange = {
                             onPasswordChange(it)
                             loginUnchecked()
@@ -154,18 +143,18 @@ fun LoginContent(
                             keyboardType = KeyboardType.Password
                         ),
                         visualTransformation =
-                            if (passwordVisibility)
+                            if (state.value.passwordVisible)
                                 VisualTransformation.None
                             else
                                 PasswordVisualTransformation(),
                         trailingIcon = {
                             IconToggleButton(
-                                checked = passwordVisibility,
+                                checked = state.value.passwordVisible,
                                 onCheckedChange = { onPasswordVisibilityChange(it) }
                             ) {
                                 Icon(
                                     imageVector =
-                                        if (passwordVisibility)
+                                        if (state.value.passwordVisible)
                                             Icons.Default.VisibilityOff
                                         else
                                             Icons.Default.Visibility,
@@ -189,8 +178,8 @@ fun LoginContent(
                             .widthIn(min = 200.dp)
                             .height(dimensionResource(R.dimen.standard_height_button)), onClick = {
                             keyboardController?.hide()
-                            checkLogin(user, password)
-                        }, enabled = loginEnabled(user, password)
+                            checkLogin()
+                        }, enabled = loginEnabled()
                     ) {
                         Text(text = stringResource(R.string.login))
                     }
@@ -205,6 +194,16 @@ fun LoginContent(
 
                     ) {
                         Text(text = stringResource(R.string.terms_and_conditions))
+                    }
+
+                    TextButton(
+                        modifier = Modifier
+                            .widthIn(min = 200.dp)
+                            .height(dimensionResource(R.dimen.standard_height_button)),
+                        onClick = { goToSignUp() }
+
+                    ) {
+                        Text(text = stringResource(R.string.sign_up_call_to_action))
                     }
                 }
 
@@ -223,7 +222,11 @@ fun LoginContent(
 @Composable
 fun LoginPreview() {
 
-    LoginScreen(goToTerms = {}, goToDashboard = {})
+    LoginScreen(
+        goToTerms = {},
+        goToDashboard = {},
+        goToSignUp = {}
+    )
 
 }
 

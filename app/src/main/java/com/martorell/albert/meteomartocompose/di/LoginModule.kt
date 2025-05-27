@@ -1,7 +1,9 @@
 package com.martorell.albert.meteomartocompose.di
 
+import com.martorell.albert.meteomartocompose.usecases.login.CredentialsReadyUseCase
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors
 import com.martorell.albert.meteomartocompose.usecases.login.ValidateLoginUseCase
+import com.martorell.albert.meteomartocompose.usecases.utils.InputValidationHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +21,16 @@ class LoginModule {
 
     @Provides
     fun loginInteractorsProvider(
-        validateLoginUseCase: ValidateLoginUseCase
-    ) = LoginInteractors(validateLoginUseCase)
+        validateLoginUseCase: ValidateLoginUseCase,
+        credentialsReadyUseCase: CredentialsReadyUseCase
+    ) = LoginInteractors(
+        validateLoginUseCase = validateLoginUseCase,
+        credentialsReadyUseCase = credentialsReadyUseCase
+    )
+
+    @Provides
+    fun getInputValidationHelperProvider() =
+        InputValidationHelper()
 
     /* @Provides
      fun forgotPasswordServerSourceProvider(

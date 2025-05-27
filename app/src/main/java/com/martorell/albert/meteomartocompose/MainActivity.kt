@@ -4,29 +4,51 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.martorell.albert.meteomartocompose.ui.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
         enableEdgeToEdge()
         setContent {
             Navigation()
             //MeteoMartoComposeTheme {
             //    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    /*Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            /*Greeting(
+                name = "Android",
+                modifier = Modifier.padding(innerPadding)
+            )
 
-                     */
-                }
-           // }
+             */
+        }
+        // }
         //}
     }
+
+    override fun onStart() {
+
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // anar a la home
+        } else {
+            // anar al login
+        }
+
+    }
 }
+
 
 /*@Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

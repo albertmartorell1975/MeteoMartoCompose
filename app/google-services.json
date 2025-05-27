@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80789960058",
+    "project_id": "meteomartocompose",
+    "storage_bucket": "meteomartocompose.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80789960058:android:3ffba72a1b30cc23f3d2c3",
+        "android_client_info": {
+          "package_name": "com.martorell.albert.meteomartocompose"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-X4l7ggBuOHXw6Ruk5W8BqroIo_sQ8zs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

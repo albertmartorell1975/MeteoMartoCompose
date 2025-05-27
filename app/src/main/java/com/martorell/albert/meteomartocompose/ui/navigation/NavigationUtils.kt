@@ -15,13 +15,17 @@ sealed class SubGraphs {
 sealed class AuthScreens {
 
     @Serializable
-    data object Login: AuthScreens()
+    data object Login : AuthScreens()
+
     @Serializable
-    data object Terms: AuthScreens()
+    data object Terms : AuthScreens()
+
+    @Serializable
+    data object SignUp : AuthScreens()
 }
 
-sealed class DashboardScreens{
+sealed class DashboardScreens {
 
     @Serializable
-    data object CityWeather: DashboardScreens()
+    data object CityWeather : DashboardScreens()
 }
