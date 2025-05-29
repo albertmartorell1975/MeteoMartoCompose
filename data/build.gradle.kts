@@ -12,6 +12,9 @@ kotlin {
     }
 }
 
-dependencies{
-    implementation((project (":domain")))
+dependencies {
+    implementation((project(":domain")))
+    implementation(libs.javax.inject.v1)
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
 }

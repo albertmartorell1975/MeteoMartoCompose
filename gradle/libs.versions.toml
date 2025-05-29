@@ -18,6 +18,7 @@ hiltNavigationComposeVer = "1.2.0"
 kspVer = "2.1.20-2.0.1"
 firebaseBom = "33.14.0"
 firebaseAuth = "23.2.1"
+arrowVer = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,9 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 #Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuth" }
+#Either
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowVer" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowVer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -49,7 +49,6 @@ import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircul
  */
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
     goToTerms: () -> Unit,
     goToDashboard: () -> Unit,
     goToSignUp: () -> Unit,
@@ -59,7 +58,6 @@ fun LoginScreen(
     val state = viewModel.state.collectAsState()
 
     LoginContent(
-        modifier = modifier,
         goToTerms = { goToTerms() },
         goToDashboard = { goToDashboard() },
         goToSignUp = { goToSignUp() },
@@ -104,7 +102,8 @@ fun LoginContent(
                         .fillMaxSize()
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.padding_small), Alignment.CenterVertically
+                        dimensionResource(R.dimen.padding_small),
+                        Alignment.CenterVertically
                     ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

@@ -1,0 +1,35 @@
+package com.martorell.albert.meteomartocompose.di.auth
+
+import com.martorell.albert.meteomartocompose.data.AccountServiceImpl
+import com.martorell.albert.meteomartocompose.data.auth.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
+import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepositoryImpl
+import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
+import com.martorell.albert.meteomartocompose.usecases.signup.SignUpUseCase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+
+@Module
+@InstallIn(ViewModelComponent::class)
+class RegisterModule {
+
+    @Provides
+    fun signUpInteractorsProvider(
+        signUpUseCase: SignUpUseCase
+    ) = SignUpInteractors(
+        signUpUseCase = signUpUseCase
+    )
+
+    @Provides
+    fun providesAccountService(): AccountService {
+        return AccountServiceImpl()
+    }
+
+    @Provides
+    fun providesAuthRepository(accountService: AccountService): AuthRepository {
+        return AuthRepositoryImpl(accountService)
+    }
+
+}

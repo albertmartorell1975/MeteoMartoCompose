@@ -73,4 +73,8 @@ dependencies {
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    //Either
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
+
 }

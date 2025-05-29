@@ -1,4 +1,4 @@
-package com.martorell.albert.meteomartocompose.di
+package com.martorell.albert.meteomartocompose.di.auth
 
 import com.martorell.albert.meteomartocompose.usecases.login.CredentialsReadyUseCase
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors

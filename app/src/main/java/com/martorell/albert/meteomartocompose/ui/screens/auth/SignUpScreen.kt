@@ -10,29 +10,74 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
+import kotlinx.coroutines.launch
+import kotlin.reflect.KSuspendFunction2
 
 @Composable
 fun SignUpScreen(
-    modifier: Modifier = Modifier,
-    goToLogin: () -> Unit
+    goToDashboard: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
 
+    val state = viewModel.state.collectAsState()
+
+    SignUpContent(
+        signUpClick = viewModel::signUpClicked,
+        goToDashboard = { goToDashboard() },
+        state = state,
+        onEmailChange = viewModel::setUser,
+        onPasswordChange = viewModel::setPassword,
+        onPasswordVisibilityChange = viewModel::setPasswordVisible,
+        signUpUnchecked = viewModel::signUpUnchecked,
+        signUpEnabled = viewModel::buttonEnabled
+    )
+
+}
+
+@Composable
+fun SignUpContent(
+    modifier: Modifier = Modifier,
+    goToDashboard: () -> Unit,
+    signUpClick: KSuspendFunction2<String, String, Unit>,
+    state: State<SignUpViewModel.UiState>,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: (Boolean) -> Unit,
+    signUpUnchecked: () -> Unit,
+    signUpEnabled: () -> Boolean
+) {
+
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
     MeteoMartoComposeLayout {
 
         Scaffold { innerPadding ->
@@ -47,7 +92,8 @@ fun SignUpScreen(
                         .fillMaxSize()
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.padding_small), Alignment.CenterVertically
+                        dimensionResource(R.dimen.padding_small),
+                        Alignment.CenterVertically
                     ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -59,46 +105,85 @@ fun SignUpScreen(
                     )
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
                     TextField(
-                        value = "",
+                        value = state.value.email,
                         onValueChange = {
-
+                            onEmailChange(it)
+                            signUpUnchecked()
                         },
                         label = { Text(text = stringResource(R.string.label_user_text_field)) },
                         placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Text
+                            keyboardType = KeyboardType.Email
                         ),
-
-                        )
+                        isError = !state.value.signUpStatus && state.value.signUpChecked
+                    )
 
                     TextField(
-                        value = "",
+                        value = state.value.password,
                         onValueChange = {
-
+                            onPasswordChange(it)
+                            signUpUnchecked()
                         },
                         label = { Text(text = stringResource(R.string.label_password_text_field)) },
                         placeholder = { Text(text = stringResource(R.string.placeholder_password_text_field)) },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Password
-                        )
+                        ),
+                        visualTransformation =
+                            if (state.value.passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconToggleButton(
+                                checked = state.value.passwordVisible,
+                                onCheckedChange = { onPasswordVisibilityChange(it) }
+                            ) {
+                                Icon(
+                                    imageVector =
+                                        if (state.value.passwordVisible)
+                                            Icons.Default.VisibilityOff
+                                        else
+                                            Icons.Default.Visibility,
+                                    contentDescription = stringResource(R.string.visibility_password)
+                                )
+                            }
+                        },
+                        isError = !state.value.signUpStatus && state.value.signUpChecked
                     )
 
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
+
+                    if (state.value.validUser)
+                        goToDashboard()
+                    else
+                        if (state.value.signUpChecked)
+                            Text(text = stringResource(R.string.login_failure))
+
 
                     Button(
                         modifier = Modifier
                             .widthIn(min = 200.dp)
                             .height(dimensionResource(R.dimen.standard_height_button)),
-                        onClick = {}
+                        onClick = {
+                            keyboardController?.hide()
+                            coroutineScope.launch {
+                                signUpClick(
+                                    state.value.email,
+                                    state.value.password
+                                )
+                            }
+                        }, enabled = signUpEnabled()
                     ) {
                         Text(text = stringResource(R.string.sign_up))
                     }
 
-                    Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
-
                 }
+
+                if (state.value.loading)
+                    MeteoMartoCircularProgressIndicator()
 
             }
 
@@ -112,6 +197,6 @@ fun SignUpScreen(
 @Composable
 fun SignUpPreview() {
 
-    SignUpScreen(goToLogin = {})
+    SignUpScreen(goToDashboard = {})
 
 }

@@ -24,7 +24,10 @@ fun NavGraphBuilder.authSubGraph(navController: NavHostController) {
 
         }
         composable<AuthScreens.SignUp> {
-            SignUpScreen(goToLogin = { navController.popBackStack() })
+            SignUpScreen(goToDashboard = {
+                navController.navigate(SubGraphs.Dashboard)
+                { popUpTo(SubGraphs.Auth) }
+            })
         }
         composable<AuthScreens.Terms> {
             TermsScreen(goToLogin = { navController.popBackStack() })
