@@ -1,12 +1,11 @@
 package com.martorell.albert.meteomartocompose.data.auth
 
-import arrow.core.Either
-import com.martorell.albert.meteomartocompose.data.CustomError
+import com.martorell.albert.meteomartocompose.data.ResultResponse
 
 interface AccountService {
 
     suspend fun singUp(
         email: String,
         password: String
-    ): Either<CustomError, String?>
+    ): ResultResponse<String?>
 }

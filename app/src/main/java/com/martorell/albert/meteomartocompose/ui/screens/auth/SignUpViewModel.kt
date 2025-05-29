@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
+import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -23,7 +24,10 @@ class SignUpViewModel @Inject constructor(private val signUpInteractors: SignUpI
         val password: String = "",
         val passwordVisible: Boolean = false,
         val showError: Boolean = false,
-        val validUser: Boolean = false
+        val validUser: Boolean = false,
+        val error: CustomError? = null,
+        //val newUser: ResultResponse<String> = Either.Right("")
+        //val newUser: ResultResponse<List<String>> = Either.Right(emptyList())
     )
 
     fun buttonEnabled(): Boolean =
@@ -84,9 +88,11 @@ class SignUpViewModel @Inject constructor(private val signUpInteractors: SignUpI
             updatedState = tmpState.copy(
                 validUser = false,
                 loading = false,
-                signUpChecked = true
+                signUpChecked = true,
+                error = it
             )
             _state.value = updatedState
+
         }) {
             tmpState = _state.value
             updatedState = tmpState.copy(

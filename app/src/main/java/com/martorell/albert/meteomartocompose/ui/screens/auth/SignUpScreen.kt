@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import com.martorell.albert.meteomartocompose.ui.screens.shared.ErrorScreen
 import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction2
@@ -98,88 +99,91 @@ fun SignUpContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Text(
-                        text = stringResource(R.string.sign_up_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
-                    TextField(
-                        value = state.value.email,
-                        onValueChange = {
-                            onEmailChange(it)
-                            signUpUnchecked()
-                        },
-                        label = { Text(text = stringResource(R.string.label_user_text_field)) },
-                        placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Email
-                        ),
-                        isError = !state.value.signUpStatus && state.value.signUpChecked
-                    )
+                    if (!state.value.validUser && state.value.signUpChecked)
+                        state.value.error?.let { ErrorScreen(it) }
+                    else {
+                        Text(
+                            text = stringResource(R.string.sign_up_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
+                        TextField(
+                            value = state.value.email,
+                            onValueChange = {
+                                onEmailChange(it)
+                                signUpUnchecked()
+                            },
+                            label = { Text(text = stringResource(R.string.label_user_text_field)) },
+                            placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next,
+                                keyboardType = KeyboardType.Email
+                            ),
+                            isError = !state.value.signUpStatus && state.value.signUpChecked
+                        )
 
-                    TextField(
-                        value = state.value.password,
-                        onValueChange = {
-                            onPasswordChange(it)
-                            signUpUnchecked()
-                        },
-                        label = { Text(text = stringResource(R.string.label_password_text_field)) },
-                        placeholder = { Text(text = stringResource(R.string.placeholder_password_text_field)) },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Password
-                        ),
-                        visualTransformation =
-                            if (state.value.passwordVisible)
-                                VisualTransformation.None
-                            else
-                                PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconToggleButton(
-                                checked = state.value.passwordVisible,
-                                onCheckedChange = { onPasswordVisibilityChange(it) }
-                            ) {
-                                Icon(
-                                    imageVector =
-                                        if (state.value.passwordVisible)
-                                            Icons.Default.VisibilityOff
-                                        else
-                                            Icons.Default.Visibility,
-                                    contentDescription = stringResource(R.string.visibility_password)
-                                )
-                            }
-                        },
-                        isError = !state.value.signUpStatus && state.value.signUpChecked
-                    )
+                        TextField(
+                            value = state.value.password,
+                            onValueChange = {
+                                onPasswordChange(it)
+                                signUpUnchecked()
+                            },
+                            label = { Text(text = stringResource(R.string.label_password_text_field)) },
+                            placeholder = { Text(text = stringResource(R.string.placeholder_password_text_field)) },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Password
+                            ),
+                            visualTransformation =
+                                if (state.value.passwordVisible)
+                                    VisualTransformation.None
+                                else
+                                    PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconToggleButton(
+                                    checked = state.value.passwordVisible,
+                                    onCheckedChange = { onPasswordVisibilityChange(it) }
+                                ) {
+                                    Icon(
+                                        imageVector =
+                                            if (state.value.passwordVisible)
+                                                Icons.Default.VisibilityOff
+                                            else
+                                                Icons.Default.Visibility,
+                                        contentDescription = stringResource(R.string.visibility_password)
+                                    )
+                                }
+                            },
+                            isError = !state.value.signUpStatus && state.value.signUpChecked
+                        )
 
-                    Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
+                        Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
 
-                    if (state.value.validUser)
-                        goToDashboard()
-                    else
-                        if (state.value.signUpChecked)
-                            Text(text = stringResource(R.string.login_failure))
+                        if (state.value.validUser)
+                            goToDashboard()
+                        else
+                            if (state.value.signUpChecked)
+                                state.value.error?.let { ErrorScreen(it) }
 
+                        Button(
+                            modifier = Modifier
+                                .widthIn(min = 200.dp)
+                                .height(dimensionResource(R.dimen.standard_height_button)),
+                            onClick = {
+                                keyboardController?.hide()
+                                coroutineScope.launch {
+                                    signUpClick(
+                                        state.value.email,
+                                        state.value.password
+                                    )
+                                }
+                            }, enabled = signUpEnabled()
+                        ) {
+                            Text(text = stringResource(R.string.sign_up))
+                        }
 
-                    Button(
-                        modifier = Modifier
-                            .widthIn(min = 200.dp)
-                            .height(dimensionResource(R.dimen.standard_height_button)),
-                        onClick = {
-                            keyboardController?.hide()
-                            coroutineScope.launch {
-                                signUpClick(
-                                    state.value.email,
-                                    state.value.password
-                                )
-                            }
-                        }, enabled = signUpEnabled()
-                    ) {
-                        Text(text = stringResource(R.string.sign_up))
                     }
-
                 }
 
                 if (state.value.loading)

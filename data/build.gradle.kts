@@ -17,4 +17,7 @@ dependencies {
     implementation(libs.javax.inject.v1)
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
+    implementation(libs.retofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
 }

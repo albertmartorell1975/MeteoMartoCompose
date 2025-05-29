@@ -19,6 +19,8 @@ kspVer = "2.1.20-2.0.1"
 firebaseBom = "33.14.0"
 firebaseAuth = "23.2.1"
 arrowVer = "2.1.0"
+retrofitVer = "3.0.0"
+okhttpVer ="4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,10 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", ver
 #Either
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowVer" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowVer" }
+#Retrofit
+retofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVer" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVer" }
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpVer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

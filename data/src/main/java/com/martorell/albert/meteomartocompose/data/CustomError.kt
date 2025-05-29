@@ -3,9 +3,10 @@ package com.martorell.albert.meteomartocompose.data
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import retrofit2.HttpException
 import java.io.IOException
 
-typealias Result<T> = Either<CustomError, T>
+typealias ResultResponse<T> = Either<CustomError, T>
 
 sealed class CustomError {
 
@@ -18,12 +19,12 @@ fun Exception.toCustomError(): CustomError =
 
     when (this) {
         is IOException -> CustomError.Connectivity
-        //is HttpException -> CustomError.FirebaseError(code())
+        is HttpException -> CustomError.FirebaseError(code())
         else -> CustomError.Unknown(message ?: "")
     }
 
 
-inline fun <T> customTryCatch(action: () -> T): Result<T> = try {
+inline fun <T> customTryCatch(action: () -> T): ResultResponse<T> = try {
     action().right()
 } catch (ex: Exception) {
     ex.toCustomError().left()
