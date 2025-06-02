@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -100,7 +103,9 @@ fun LoginContent(
                 Column(
                     modifier = modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .imePadding()
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(
                         dimensionResource(R.dimen.padding_small),
                         Alignment.CenterVertically
@@ -204,6 +209,9 @@ fun LoginContent(
                     ) {
                         Text(text = stringResource(R.string.sign_up_call_to_action))
                     }
+
+                    Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
+
                 }
 
                 if (state.value.loading)
