@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(user: User?)
+    suspend fun insertUser(user: User)
 
     @Query(value = "SELECT * FROM User WHERE email = :email")
     fun getUserByEmail(email: String): Flow<User>
@@ -21,6 +21,6 @@ interface UserDao {
     fun getAll(): Flow<List<User>>
 
     @Update
-    fun updateUser(user: User)
+    suspend fun updateUser(user: User)
 
 }

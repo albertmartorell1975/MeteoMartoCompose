@@ -104,4 +104,14 @@ class SignUpViewModel @Inject constructor(private val signUpInteractors: SignUpI
 
     }
 
+    fun tryAgainClicked() {
+
+        val tmpState = _state.value
+        val updatedState = tmpState.copy(
+            signUpChecked = false
+        )
+        _state.value = updatedState
+
+    }
+
 }

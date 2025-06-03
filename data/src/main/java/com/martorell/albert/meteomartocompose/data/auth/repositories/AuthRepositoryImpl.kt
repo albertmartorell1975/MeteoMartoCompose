@@ -23,19 +23,16 @@ class AuthRepositoryImpl @Inject constructor(
         )
 
         // Only if the result is correct, will be saved on the local database
-        if (result.isRight())
-            authLocalSource.newUser(result.getOrNull())
-
-        return result
-
-        /*result.fold(
+        result.fold(
             {},
             {
-                authLocalSource.newUser(it)
+                if (it != null) {
+                    authLocalSource.newUser(it)
+                }
             }
         )
 
-         */
+        return result
 
     }
 

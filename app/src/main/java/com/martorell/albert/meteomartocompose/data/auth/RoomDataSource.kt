@@ -7,13 +7,15 @@ import com.martorell.albert.meteomartocompose.utils.toRoom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RoomDataSource(private val db: MeteoMartoDatabase) : LocalDataSource {
+class RoomDataSource(db: MeteoMartoDatabase) : LocalDataSource {
 
     private val userDao = db.userDao()
 
-    override suspend fun newUser(user: UserDomain?) {
+    override suspend fun newUser(user: UserDomain) {
 
-        withContext(Dispatchers.IO) { userDao.insertUser(user?.toRoom()) }
+        withContext(Dispatchers.IO) {
+            userDao.insertUser(user.toRoom())
+        }
 
     }
 

@@ -61,7 +61,8 @@ fun SignUpScreen(
         onPasswordChange = viewModel::setPassword,
         onPasswordVisibilityChange = viewModel::setPasswordVisible,
         signUpUnchecked = viewModel::signUpUnchecked,
-        signUpEnabled = viewModel::buttonEnabled
+        signUpEnabled = viewModel::buttonEnabled,
+        tryAgainClicked = viewModel::tryAgainClicked
     )
 
 }
@@ -76,7 +77,8 @@ fun SignUpContent(
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: (Boolean) -> Unit,
     signUpUnchecked: () -> Unit,
-    signUpEnabled: () -> Boolean
+    signUpEnabled: () -> Boolean,
+    tryAgainClicked: () -> Unit
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -106,7 +108,12 @@ fun SignUpContent(
                 ) {
 
                     if (!state.value.validUser && state.value.signUpChecked)
-                        state.value.error?.let { ErrorScreen(it) }
+                        state.value.error?.let {
+                            ErrorScreen(
+                                it,
+                                tryAgainClicked
+                            )
+                        }
                     else {
                         Text(
                             text = stringResource(R.string.sign_up_title),
@@ -170,7 +177,12 @@ fun SignUpContent(
                             goToDashboard()
                         else
                             if (state.value.signUpChecked)
-                                state.value.error?.let { ErrorScreen(it) }
+                                state.value.error?.let {
+                                    ErrorScreen(
+                                        it,
+                                        tryAgainClicked
+                                    )
+                                }
 
                         Button(
                             modifier = Modifier

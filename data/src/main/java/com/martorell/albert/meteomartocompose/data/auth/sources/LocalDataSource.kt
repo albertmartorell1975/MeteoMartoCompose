@@ -4,6 +4,6 @@ import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 
 interface LocalDataSource {
 
-    suspend fun newUser(user: UserDomain?)
+    suspend fun newUser(user: UserDomain)
 
 }
