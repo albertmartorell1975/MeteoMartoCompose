@@ -1,13 +1,13 @@
 package com.martorell.albert.meteomartocompose.data.auth.repositories
 
-import arrow.core.Either
-import com.martorell.albert.meteomartocompose.data.CustomError
+import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 
 interface AuthRepository {
 
     suspend fun singUp(
         email: String,
         password: String
-    ): Either<CustomError, String?>
+    ): ResultResponse<UserDomain?>
 
 }

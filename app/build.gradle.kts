@@ -76,5 +76,9 @@ dependencies {
     //Either
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
+    //Room (the below order is mandatory)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
 }

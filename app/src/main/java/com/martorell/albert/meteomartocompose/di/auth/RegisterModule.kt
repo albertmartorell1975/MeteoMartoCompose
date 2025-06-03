@@ -1,9 +1,10 @@
 package com.martorell.albert.meteomartocompose.di.auth
 
-import com.martorell.albert.meteomartocompose.data.AccountServiceImpl
-import com.martorell.albert.meteomartocompose.data.auth.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.AccountServiceImpl
 import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
 import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepositoryImpl
+import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.sources.LocalDataSource
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpUseCase
 import dagger.Module
@@ -28,8 +29,14 @@ class RegisterModule {
     }
 
     @Provides
-    fun providesAuthRepository(accountService: AccountService): AuthRepository {
-        return AuthRepositoryImpl(accountService)
+    fun providesAuthRepository(
+        accountService: AccountService,
+        authLocalSource: LocalDataSource
+    ): AuthRepository {
+        return AuthRepositoryImpl(
+            accountService = accountService,
+            authLocalSource = authLocalSource
+        )
     }
 
 }

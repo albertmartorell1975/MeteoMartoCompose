@@ -2,6 +2,7 @@ package com.martorell.albert.meteomartocompose.usecases.signup
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
+import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(private val authRepository: AuthRepository) {
@@ -9,7 +10,7 @@ class SignUpUseCase @Inject constructor(private val authRepository: AuthReposito
     suspend fun invoke(
         email: String,
         password: String
-    ): ResultResponse<String?> =
+    ): ResultResponse<UserDomain?> =
 
         authRepository.singUp(
             email = email,
