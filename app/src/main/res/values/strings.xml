@@ -14,5 +14,8 @@
     <string name="sign_up_title">Create a new user</string>
     <string name="sign_up">Sign up</string>
     <string name="sign_up_call_to_action">Create a new user</string>
+    <string name="city_tab">City</string>
+    <string name="favorite_tab">Favorites</string>
+    <string name="weather_warnings_tab">Weather warnings</string>
 
 </resources>

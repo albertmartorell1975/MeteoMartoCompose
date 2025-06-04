@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.martorell.albert.meteomartocompose.ui.screens.dashboard.CityWeatherScreen
+import com.martorell.albert.meteomartocompose.ui.screens.dashboard.HomeScreen
 
 @Composable
 fun Navigation() {
@@ -17,7 +17,7 @@ fun Navigation() {
     ) {
         authSubGraph(navController = navController)
         composable<SubGraphs.Dashboard> {
-            CityWeatherScreen()
+            HomeScreen()
         }
     }
 

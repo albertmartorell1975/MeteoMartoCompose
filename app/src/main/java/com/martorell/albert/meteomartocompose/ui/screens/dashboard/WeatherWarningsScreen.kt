@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CityWeatherScreen(modifier: Modifier = Modifier) {
+fun WeatherWarningsScreen(modifier: Modifier = Modifier) {
 
 }
