@@ -21,12 +21,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -36,12 +41,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
+import com.martorell.albert.meteomartocompose.ui.screens.shared.SnackBarCustom
+import kotlin.reflect.KSuspendFunction2
 
 /**
  * To keep the LoginContent as stateless composable (so a composable that does not hold any state),
@@ -65,12 +71,13 @@ fun LoginScreen(
         goToDashboard = { goToDashboard() },
         goToSignUp = { goToSignUp() },
         state = state,
-        onUserChange = viewModel::setUser,
+        onEmailChange = viewModel::setEmail,
         onPasswordChange = viewModel::setPassword,
         onPasswordVisibilityChange = viewModel::setPasswordVisible,
         loginUnchecked = viewModel::loginUnchecked,
         checkLogin = viewModel::checkLogin,
-        loginEnabled = viewModel::buttonEnabled
+        loginEnabled = viewModel::buttonEnabled,
+        logInClicked = viewModel::logInClicked
     )
 
 }
@@ -82,24 +89,29 @@ fun LoginContent(
     goToDashboard: () -> Unit,
     goToSignUp: () -> Unit,
     state: State<LoginViewModel.UiState>,
-    onUserChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onPasswordVisibilityChange: (Boolean) -> Unit,
     loginUnchecked: () -> Unit,
     checkLogin: () -> Unit,
-    loginEnabled: () -> Boolean
+    loginEnabled: () -> Boolean,
+    logInClicked: KSuspendFunction2<String, String, Unit>
 ) {
+
     val keyboardController = LocalSoftwareKeyboardController.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     MeteoMartoComposeLayout {
 
-        Scaffold { innerPadding ->
+        Scaffold(snackbarHost = {
+            SnackbarHost(snackBarHostState)
+        }) { innerPadding ->
 
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-
                 Column(
                     modifier = modifier
                         .fillMaxSize()
@@ -120,18 +132,17 @@ fun LoginContent(
                     )
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
                     TextField(
-                        value = state.value.user,
+                        value = state.value.email,
                         onValueChange = {
-                            onUserChange(it)
+                            onEmailChange(it)
                             loginUnchecked()
                         },
-                        label = { Text(text = stringResource(R.string.label_user_text_field)) },
-                        placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
+                        label = { Text(text = stringResource(R.string.label_email_text_field)) },
+                        placeholder = { Text(text = stringResource(R.string.placeholder_email_text_field)) },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Text
-                        ),
-                        isError = state.value.showError
+                            keyboardType = KeyboardType.Email
+                        )
                     )
 
                     TextField(
@@ -165,17 +176,10 @@ fun LoginContent(
                                     contentDescription = stringResource(R.string.visibility_password)
                                 )
                             }
-                        },
-                        isError = !state.value.loginStatus && state.value.loginChecked
+                        }
                     )
 
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
-
-                    if (state.value.loginChecked)
-                        if (state.value.loginStatus)
-                            goToDashboard()
-                        else
-                            Text(text = stringResource(R.string.login_failure))
 
                     Button(
                         modifier = Modifier
@@ -214,6 +218,32 @@ fun LoginContent(
 
                 }
 
+                if (state.value.loginChecked)
+                    if (state.value.loginStatus)
+                        LaunchedEffect(key1 = state.value.loginStatus) {
+                            logInClicked(
+                                state.value.email,
+                                state.value.password
+                            )
+                        }
+                    else {
+
+                        snackBarHostState.SnackBarCustom(
+                            title = R.string.title_login_snack_bar,
+                            action = R.string.action_login_snack_bar,
+                            key = arrayOf(
+                                !state.value.validUser,
+                                !state.value.loginStatus
+                            ),
+                            coroutineScope = coroutineScope,
+                            performAction = {},
+                            performDismissed = {}
+                        )
+
+                    }
+                if (state.value.validUser)
+                    goToDashboard()
+
                 if (state.value.loading)
                     MeteoMartoCircularProgressIndicator()
 
@@ -224,16 +254,3 @@ fun LoginContent(
     }
 
 }
-
-@Preview
-@Composable
-fun LoginPreview() {
-
-    LoginScreen(
-        goToTerms = {},
-        goToDashboard = {},
-        goToSignUp = {}
-    )
-
-}
-

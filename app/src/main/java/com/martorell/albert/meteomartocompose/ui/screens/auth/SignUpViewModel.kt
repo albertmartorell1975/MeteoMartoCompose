@@ -69,7 +69,10 @@ class SignUpViewModel @Inject constructor(private val signUpInteractors: SignUpI
 
     }
 
-    suspend fun signUpClicked(email: String, password: String) {
+    suspend fun signUpClicked(
+        email: String,
+        password: String
+    ) {
 
         var tmpState = _state.value
         var updatedState = tmpState.copy(

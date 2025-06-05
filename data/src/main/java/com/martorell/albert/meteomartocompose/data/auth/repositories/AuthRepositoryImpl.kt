@@ -12,6 +12,30 @@ class AuthRepositoryImpl @Inject constructor(
 ) :
     AuthRepository {
 
+    override suspend fun logIn(
+        email: String,
+        password: String
+    ): ResultResponse<UserDomain?> {
+
+        val result = accountService.logIn(
+            email = email,
+            password = password
+        )
+
+        // Only if the result is correct, will be saved on the local database
+        result.fold(
+            {},
+            {
+                if (it != null) {
+                    authLocalSource.newUser(it)
+                }
+            }
+        )
+
+        return result
+
+    }
+
     override suspend fun singUp(
         email: String,
         password: String

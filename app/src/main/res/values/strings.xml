@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">MeteoMartoCompose</string>
     <string name="login">Login</string>
-    <string name="label_user_text_field">User</string>
+    <string name="label_email_text_field">Email</string>
     <string name="label_password_text_field">Password</string>
-    <string name="placeholder_user_text_field">Type your wonderful user</string>
+    <string name="placeholder_email_text_field">Type your wonderful e-mail</string>
     <string name="placeholder_password_text_field">A safety password</string>
     <string name="login_title">Welcome to MeteoMarto</string>
     <string name="terms_and_conditions">Terms and conditions</string>
@@ -17,5 +17,7 @@
     <string name="city_tab">City</string>
     <string name="favorite_tab">Favorites</string>
     <string name="weather_warnings_tab">Weather warnings</string>
+    <string name="action_login_snack_bar">Accept</string>
+    <string name="title_login_snack_bar">Login failure</string>
 
 </resources>

@@ -17,11 +17,28 @@ class AccountServiceImpl @Inject constructor() : AccountService {
             ResultResponse<UserDomain?> =
 
         customTryCatch {
+
             val result = Firebase.auth.createUserWithEmailAndPassword(
                 email,
                 password
             ).await()
+
             return result.user?.toDomain().right()
+
         }
+
+    override suspend fun logIn(email: String, password: String): ResultResponse<UserDomain?> =
+
+        customTryCatch {
+
+            val result = Firebase.auth.signInWithEmailAndPassword(
+                email,
+                password
+            ).await()
+
+            return result.user?.toDomain().right()
+
+        }
+
 
 }

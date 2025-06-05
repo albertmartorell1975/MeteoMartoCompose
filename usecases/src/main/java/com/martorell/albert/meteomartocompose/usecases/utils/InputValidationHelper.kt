@@ -2,9 +2,9 @@ package com.martorell.albert.meteomartocompose.usecases.utils
 
 class InputValidationHelper {
 
-    fun credentialsReadyToBeSent(user: String, password: String): Boolean {
+    fun credentialsReadyToBeSent(email: String, password: String): Boolean {
 
-        return user.isFieldNotEmpty() && password.isFieldNotEmpty()
+        return email.isFieldNotEmpty() && password.isFieldNotEmpty()
 
     }
 

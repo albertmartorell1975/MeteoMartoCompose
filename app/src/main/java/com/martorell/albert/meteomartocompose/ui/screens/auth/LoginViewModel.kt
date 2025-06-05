@@ -20,10 +20,11 @@ class LoginViewModel @Inject constructor(val loginInteractors: LoginInteractors)
         val loading: Boolean = false,
         val loginChecked: Boolean = false,
         val loginStatus: Boolean = false,
-        val user: String = "",
+        val email: String = "",
         val password: String = "",
         val passwordVisible: Boolean = false,
-        val showError: Boolean = false
+        val showError: Boolean = false,
+        val validUser: Boolean = false
     )
 
     fun checkLogin() {
@@ -36,12 +37,11 @@ class LoginViewModel @Inject constructor(val loginInteractors: LoginInteractors)
             )
 
             _state.value = updatedState
-            delay(2000)
 
             updatedState = tmpState.copy(
                 loginChecked = true,
                 loginStatus = loginInteractors.validateLoginUseCase.invoke(
-                    user = _state.value.user,
+                    email = _state.value.email,
                     password = _state.value.password,
                 ),
                 showError = !state.value.loginStatus && state.value.loginChecked
@@ -53,7 +53,7 @@ class LoginViewModel @Inject constructor(val loginInteractors: LoginInteractors)
     }
 
     fun buttonEnabled(): Boolean =
-        _state.value.user.isNotEmpty() && _state.value.password.isNotEmpty()
+        _state.value.email.isNotEmpty() && _state.value.password.isNotEmpty()
 
     fun loginUnchecked() {
 
@@ -65,10 +65,10 @@ class LoginViewModel @Inject constructor(val loginInteractors: LoginInteractors)
 
     }
 
-    fun setUser(user: String) {
+    fun setEmail(email: String) {
 
         val tmpState = _state.value
-        val updatedState = tmpState.copy(user = user)
+        val updatedState = tmpState.copy(email = email)
         _state.value = updatedState
 
     }
@@ -88,6 +88,47 @@ class LoginViewModel @Inject constructor(val loginInteractors: LoginInteractors)
             passwordVisible = visibility
         )
         _state.value = updatedState
+
+    }
+
+    suspend fun logInClicked(
+        email: String,
+        password: String
+    ) {
+
+        var tmpState = _state.value
+        var updatedState = tmpState.copy(
+            loading = true
+        )
+        _state.value = updatedState
+        delay(2000)
+
+        val result = loginInteractors.logInUseCase.invoke(
+            email = email,
+            password = password
+        )
+
+        result.fold({
+            tmpState = _state.value
+            updatedState = tmpState.copy(
+                validUser = false,
+                loading = false,
+                loginChecked = true,
+                showError = false,
+                loginStatus = false
+            )
+            _state.value = updatedState
+
+        }) {
+
+            tmpState = _state.value
+            updatedState = tmpState.copy(
+                validUser = true,
+                loginChecked = true,
+                loading = false
+            )
+            _state.value = updatedState
+        }
 
     }
 

@@ -127,8 +127,8 @@ fun SignUpContent(
                                 onEmailChange(it)
                                 signUpUnchecked()
                             },
-                            label = { Text(text = stringResource(R.string.label_user_text_field)) },
-                            placeholder = { Text(text = stringResource(R.string.placeholder_user_text_field)) },
+                            label = { Text(text = stringResource(R.string.label_email_text_field)) },
+                            placeholder = { Text(text = stringResource(R.string.placeholder_email_text_field)) },
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Next,
                                 keyboardType = KeyboardType.Email

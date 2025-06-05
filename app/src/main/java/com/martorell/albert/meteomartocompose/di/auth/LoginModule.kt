@@ -1,6 +1,6 @@
 package com.martorell.albert.meteomartocompose.di.auth
 
-import com.martorell.albert.meteomartocompose.usecases.login.CredentialsReadyUseCase
+import com.martorell.albert.meteomartocompose.usecases.login.LogInUseCase
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors
 import com.martorell.albert.meteomartocompose.usecases.login.ValidateLoginUseCase
 import com.martorell.albert.meteomartocompose.usecases.utils.InputValidationHelper
@@ -22,10 +22,10 @@ class LoginModule {
     @Provides
     fun loginInteractorsProvider(
         validateLoginUseCase: ValidateLoginUseCase,
-        credentialsReadyUseCase: CredentialsReadyUseCase
+        logInUseCase: LogInUseCase
     ) = LoginInteractors(
         validateLoginUseCase = validateLoginUseCase,
-        credentialsReadyUseCase = credentialsReadyUseCase
+        logInUseCase = logInUseCase
     )
 
     @Provides

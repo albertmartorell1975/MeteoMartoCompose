@@ -10,4 +10,9 @@ interface AuthRepository {
         password: String
     ): ResultResponse<UserDomain?>
 
+    suspend fun logIn(
+        email: String,
+        password: String
+    ): ResultResponse<UserDomain?>
+
 }
