@@ -1,6 +1,5 @@
 package com.martorell.albert.meteomartocompose.ui
 
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationCity
@@ -81,7 +80,6 @@ class AppState(
     @Composable
     fun selectCurrentDestination(screen: DashboardScreens): Boolean {
 
-        Log.i("NavigationBar", "The current destination is  $screen")
         val navBackStackEntry = navController.currentBackStackEntryAsState().value
         val currentDestination = navBackStackEntry?.destination
         return currentDestination?.hierarchy?.any { it.hasRoute(screen::class) } == true

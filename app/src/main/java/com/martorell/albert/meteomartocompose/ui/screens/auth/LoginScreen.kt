@@ -11,21 +11,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -39,14 +32,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
-import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
+import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.SnackBarCustom
+import com.martorell.albert.meteomartocompose.ui.screens.shared.TextFieldCustom
 import kotlin.reflect.KSuspendFunction2
 
 /**
@@ -131,52 +123,30 @@ fun LoginContent(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
-                    TextField(
+                    TextFieldCustom(
                         value = state.value.email,
-                        onValueChange = {
+                        title = R.string.label_email_text_field,
+                        placeholder = R.string.placeholder_email_text_field,
+                        keyboardType = KeyboardType.Email,
+                        onValueChanged = {
                             onEmailChange(it)
                             loginUnchecked()
                         },
-                        label = { Text(text = stringResource(R.string.label_email_text_field)) },
-                        placeholder = { Text(text = stringResource(R.string.placeholder_email_text_field)) },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Email
-                        )
+                        onTrailIconChange = { }
                     )
 
-                    TextField(
+                    TextFieldCustom(
                         value = state.value.password,
-                        onValueChange = {
+                        title = R.string.label_password_text_field,
+                        placeholder = R.string.placeholder_password_text_field,
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Password,
+                        onValueChanged = {
                             onPasswordChange(it)
                             loginUnchecked()
                         },
-                        label = { Text(text = stringResource(R.string.label_password_text_field)) },
-                        placeholder = { Text(text = stringResource(R.string.placeholder_password_text_field)) },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Password
-                        ),
-                        visualTransformation =
-                            if (state.value.passwordVisible)
-                                VisualTransformation.None
-                            else
-                                PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconToggleButton(
-                                checked = state.value.passwordVisible,
-                                onCheckedChange = { onPasswordVisibilityChange(it) }
-                            ) {
-                                Icon(
-                                    imageVector =
-                                        if (state.value.passwordVisible)
-                                            Icons.Default.VisibilityOff
-                                        else
-                                            Icons.Default.Visibility,
-                                    contentDescription = stringResource(R.string.visibility_password)
-                                )
-                            }
-                        }
+                        passwordVisible = state.value.passwordVisible,
+                        onTrailIconChange = { onPasswordVisibilityChange(it) }
                     )
 
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))
@@ -245,7 +215,7 @@ fun LoginContent(
                     goToDashboard()
 
                 if (state.value.loading)
-                    MeteoMartoCircularProgressIndicator()
+                    CircularProgressIndicatorCustom()
 
             }
 
