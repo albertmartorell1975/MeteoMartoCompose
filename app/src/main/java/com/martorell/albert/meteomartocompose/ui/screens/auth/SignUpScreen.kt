@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.ErrorScreen
-import com.martorell.albert.meteomartocompose.ui.screens.shared.MeteoMartoCircularProgressIndicator
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction2
 
@@ -205,7 +205,7 @@ fun SignUpContent(
                 }
 
                 if (state.value.loading)
-                    MeteoMartoCircularProgressIndicator()
+                    CircularProgressIndicatorCustom()
 
             }
 

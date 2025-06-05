@@ -18,9 +18,12 @@ sealed class CustomError {
 fun Exception.toCustomError(): CustomError =
 
     when (this) {
-        is IOException -> CustomError.Connectivity
-        is HttpException -> CustomError.FirebaseError(code())
-        else -> CustomError.Unknown(message ?: "")
+        is IOException ->
+            CustomError.Connectivity
+        is HttpException ->
+            CustomError.FirebaseError(code())
+        else ->
+            CustomError.Unknown(message?: "")
     }
 
 
