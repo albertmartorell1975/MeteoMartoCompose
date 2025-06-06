@@ -1,13 +1,17 @@
 package com.martorell.albert.meteomartocompose.ui.screens.dashboard
 
+import android.content.Intent
 import android.location.Location
+import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,8 @@ import kotlinx.coroutines.launch
 fun CityWeatherScreen(modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
+    var showSettingsDialog by remember { mutableStateOf(false) }
+
     val locationManagerCustom = remember {
         LocationManagerCustom(
             context = context,
@@ -66,17 +72,33 @@ fun CityWeatherScreen(modifier: Modifier = Modifier) {
                 color = Color.Red,
                 fontWeight = FontWeight.Bold
             )
-        }
-        /*location?.let {
-            Text(
-                text = "${it.latitude} ${it.longitude}",
-                fontSize = 32.sp,
-                color = Color.Red,
-                fontWeight = FontWeight.Bold
-            )
-        }*
+        } else {
 
-         */
+            if (showSettingsDialog) {
+
+                AlertDialog(
+                    onDismissRequest = { showSettingsDialog = false },
+                    title = { Text("Location Permission Required") },
+                    text = {
+                        Text("Location permission has been permanently denied. Please enable it in app settings to continue.")
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                            showSettingsDialog = false
+                        }) {
+                            Text("Open Settings")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showSettingsDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+        }
 
         Spacer(Modifier.height(40.dp))
 
@@ -87,8 +109,8 @@ fun CityWeatherScreen(modifier: Modifier = Modifier) {
             } else {
                 coroutineScope.launch @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION]) {
                     location = locationManagerCustom.getLocation()
-                    val k = location?.longitude
-                    val kk = location?.latitude
+                    if (location == null)
+                        showSettingsDialog = true
                 }
             }
 
@@ -112,11 +134,7 @@ fun CityWeatherScreenPreview() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Button(onClick = {
-
-
-        }) {
-
+        Button(onClick = {}) {
             Text(text = "Get my location")
         }
         Spacer(Modifier.height(40.dp))
