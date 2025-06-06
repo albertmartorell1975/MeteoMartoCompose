@@ -20,8 +20,10 @@ firebaseBom = "33.14.0"
 firebaseAuth = "23.2.1"
 arrowVer = "2.1.0"
 retrofitVer = "3.0.0"
-okhttpVer ="4.12.0"
+okhttpVer = "4.12.0"
 roomVer = "2.7.1"
+accompanistPermissionsVer = "0.37.3"
+playServicesLocationVer = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,9 +60,12 @@ retofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVer" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpVer" }
 #Room
-room-runtime = {group = "androidx.room", name = "room-runtime", version.ref="roomVer"}
-room-ktx = {group = "androidx.room", name = "room-ktx", version.ref="roomVer"}
-room-compiler = {group="androidx.room", name= "room-compiler", version.ref="roomVer"}
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVer" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVer" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVer" }
+#Location
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissionsVer" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocationVer" }
 
 [plugins]
 #Ksp

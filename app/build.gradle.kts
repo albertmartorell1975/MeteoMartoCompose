@@ -80,5 +80,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
+    //Location
+    implementation(libs.accompanist.permissions)
+    implementation(libs.play.services.location)
 
 }
