@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
+import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.utils.LocationManagerCustom
 import kotlinx.coroutines.launch
 
@@ -78,21 +80,21 @@ fun CityWeatherScreen(modifier: Modifier = Modifier) {
 
                 AlertDialog(
                     onDismissRequest = { showSettingsDialog = false },
-                    title = { Text("Location Permission Required") },
+                    title = { Text(stringResource(R.string.location_request_title)) },
                     text = {
-                        Text("Location permission has been permanently denied. Please enable it in app settings to continue.")
+                        Text(stringResource(R.string.location_request_explanation))
                     },
                     confirmButton = {
                         TextButton(onClick = {
                             context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
                             showSettingsDialog = false
                         }) {
-                            Text("Open Settings")
+                            Text(stringResource(R.string.location_request_action))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showSettingsDialog = false }) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.location_request_cancel))
                         }
                     }
                 )
