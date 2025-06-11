@@ -25,15 +25,11 @@ fun HomeNavGraph(navController: NavHostController, modifier: Modifier) {
         ) {
 
             composable<DashboardScreens.CityWeather> { entry ->
-                CityWeatherScreen(
-                    modifier = modifier.padding()
-                )
+                CityWeatherScreen()
             }
 
             composable<DashboardScreens.Favorites> { entry ->
-                CityWeatherScreen(
-                    modifier = modifier.padding()
-                )
+                CityWeatherScreen()
             }
 
             composable<DashboardScreens.WeatherWarnings> { entry ->

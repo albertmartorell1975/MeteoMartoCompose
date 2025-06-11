@@ -1,9 +1,9 @@
-package com.martorell.albert.meteomartocompose.data.auth.repositories
+package com.martorell.albert.meteomartocompose.data.auth.sources.auth
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 
-interface AuthRepository {
+interface AccountService {
 
     suspend fun singUp(
         email: String,

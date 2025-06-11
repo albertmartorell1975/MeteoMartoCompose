@@ -23,12 +23,14 @@ fun Exception.toCustomError(): CustomError =
         is HttpException ->
             CustomError.FirebaseError(code())
         else ->
-            CustomError.Unknown(message?: "")
+            CustomError.Unknown(message ?: "")
     }
 
 
 inline fun <T> customTryCatch(action: () -> T): ResultResponse<T> = try {
     action().right()
+} catch (ex: IllegalArgumentException) {
+    ex.toCustomError().left()
 } catch (ex: Exception) {
     ex.toCustomError().left()
 }

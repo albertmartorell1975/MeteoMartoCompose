@@ -1,6 +1,6 @@
 package com.martorell.albert.meteomartocompose.data.auth
 
-import com.martorell.albert.meteomartocompose.data.auth.sources.LocalDataSource
+import com.martorell.albert.meteomartocompose.data.auth.sources.auth.LocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.utils.toRoom
