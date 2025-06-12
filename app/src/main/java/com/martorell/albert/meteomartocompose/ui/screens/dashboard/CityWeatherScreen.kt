@@ -1,5 +1,6 @@
 package com.martorell.albert.meteomartocompose.ui.screens.dashboard
 
+import android.Manifest
 import android.content.Intent
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import androidx.compose.foundation.layout.Arrangement
@@ -9,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
@@ -44,8 +43,7 @@ fun CityWeatherScreen(viewModel: CityWeatherViewModel = hiltViewModel()) {
         getLocation = viewModel::getCurrentLocationStarted,
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
-        hideRationaleDialog = viewModel::rationaleDialogHid,
-
+        hideRationaleDialog = viewModel::rationaleDialogHid
     )
 
 }
@@ -65,8 +63,8 @@ fun CityWeatherContent(
 
     val locationPermissions = rememberMultiplePermissionsState(
         permissions = listOf(
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
     )
 
@@ -79,24 +77,16 @@ fun CityWeatherContent(
     ) {
 
         if (state.value.locationChecked && state.value.showRationale) {
-            AlertDialog(
-                onDismissRequest = { hideRationaleDialog() },
-                title = { Text("Permisos de localització") },
-                text = {
-                    Text("Per obtenir la informació meteorològica, has de donar permisos de localització")
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
-                        hideRationaleDialog()
-                    }) {
-                        Text(stringResource(R.string.location_request_action))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { hideGPSDialog() }) {
-                        Text(stringResource(R.string.location_request_cancel))
-                    }
+
+            AlertDialogCustom(
+                title = R.string.location_rationale_title,
+                content = R.string.location_rationale_explanation,
+                actionText = R.string.location_rationale_action,
+                dismissText = R.string.location_rationale_cancel,
+                onDismissAction = hideRationaleDialog,
+                onConfirmAction = {
+                    context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                    hideRationaleDialog()
                 }
             )
         }
@@ -107,34 +97,22 @@ fun CityWeatherContent(
                 LaunchedEffect(key1 = state.value.permissionsGranted) {
                     locationPermissions.launchMultiplePermissionRequest()
                 }
-            } else {
-
+            } else
                 showRationaleDialog()
-
-            }
 
         } else {
 
-            if (state.value.locationChecked && !state.value.gpsEnabled) {
+            if (state.value.locationChecked && state.value.showGPSDialog) {
 
-                AlertDialog(
-                    onDismissRequest = { hideGPSDialog() },
-                    title = { Text(stringResource(R.string.location_request_title)) },
-                    text = {
-                        Text(stringResource(R.string.location_request_explanation))
-                    },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
-                            hideGPSDialog()
-                        }) {
-                            Text(stringResource(R.string.location_request_action))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { hideGPSDialog() }) {
-                            Text(stringResource(R.string.location_request_cancel))
-                        }
+                AlertDialogCustom(
+                    title = R.string.location_request_title,
+                    content = R.string.location_request_explanation,
+                    actionText = R.string.location_request_action,
+                    dismissText = R.string.location_request_cancel,
+                    onDismissAction = hideGPSDialog,
+                    onConfirmAction = {
+                        context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                        hideGPSDialog()
                     }
                 )
 

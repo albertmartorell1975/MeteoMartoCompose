@@ -24,7 +24,8 @@ class CityWeatherViewModel @Inject constructor(
 
     data class UiState(
         val loading: Boolean = false,
-        val gpsEnabled: Boolean = false,
+       // val gpsEnabled: Boolean = false,
+        val showGPSDialog: Boolean = false,
         val locationChecked: Boolean = false,
         val showRationale: Boolean = false,
         val permissionsGranted: Boolean = false,
@@ -42,22 +43,26 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
-    fun rationaleDialogShowed() {
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            locationChecked = true,
-            showRationale = true
-        )
-        _state.value = updatedState
-    }
-
     fun gpsDialogHid() {
 
         val tmpState = _state.value
         val updatedState = tmpState.copy(
             loading = false,
-            gpsEnabled = false,
-            error = null
+            //gpsEnabled = false,
+            showGPSDialog = false,
+            error = null,
+            coordinates = Either.Right(CurrentLocationDomain())
+        )
+        _state.value = updatedState
+
+    }
+
+    fun rationaleDialogShowed() {
+
+        val tmpState = _state.value
+        val updatedState = tmpState.copy(
+            locationChecked = true,
+            showRationale = true
         )
         _state.value = updatedState
 
@@ -66,10 +71,11 @@ class CityWeatherViewModel @Inject constructor(
     fun rationaleDialogHid() {
 
         val tmpState = _state.value
-        var updatedState = tmpState.copy(
+        val updatedState = tmpState.copy(
             loading = false,
             error = null,
-            locationChecked = false
+            locationChecked = false,
+            showRationale = false
         )
 
         _state.value = updatedState
@@ -95,7 +101,8 @@ class CityWeatherViewModel @Inject constructor(
                 result.fold({
                     updatedState = tmpState.copy(
                         loading = false,
-                        gpsEnabled = false,
+                        //gpsEnabled = false,
+                        showGPSDialog = true,
                         error = it,
                         locationChecked = true
                     )
@@ -104,8 +111,9 @@ class CityWeatherViewModel @Inject constructor(
                 }) {
                     updatedState = tmpState.copy(
                         loading = false,
-                        gpsEnabled = true,
+                        //gpsEnabled = true,
                         coordinates = result,
+                        showGPSDialog = false,
                         error = null,
                         locationChecked = true
                     )
@@ -120,7 +128,8 @@ class CityWeatherViewModel @Inject constructor(
                     error = null,
                     permissionsGranted = true,
                     locationChecked = true,
-                    gpsEnabled = false
+                    //gpsEnabled = false,
+                    showGPSDialog = true
                 )
                 _state.value = updatedState
 
@@ -134,7 +143,7 @@ class CityWeatherViewModel @Inject constructor(
                 error = null,
                 permissionsGranted = false,
                 locationChecked = true,
-                gpsEnabled = false
+                //gpsEnabled = false
             )
             _state.value = updatedState
 

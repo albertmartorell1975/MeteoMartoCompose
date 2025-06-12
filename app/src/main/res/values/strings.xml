@@ -19,9 +19,13 @@
     <string name="weather_warnings_tab">Weather warnings</string>
     <string name="action_login_snack_bar">Accept</string>
     <string name="title_login_snack_bar">Login failure</string>
-    <string name="location_request_title">Location Permission Required</string>
-    <string name="location_request_explanation">Location permission has been permanently denied. Please enable it in app settings to continue.</string>
-    <string name="location_request_action">Open Settings</string>
+    <string name="location_request_title">GPS is Required</string>
+    <string name="location_request_explanation">To know the city forecast, GPS must be enabled</string>
+    <string name="location_request_action">Accept</string>
     <string name="location_request_cancel">Cancel</string>
+    <string name="location_rationale_title">Location Permission Required</string>
+    <string name="location_rationale_explanation">Location permission has been permanently denied. Please enable it in app settings to continue.</string>
+    <string name="location_rationale_action">Accept</string>
+    <string name="location_rationale_cancel">Cancel</string>
 
 </resources>
