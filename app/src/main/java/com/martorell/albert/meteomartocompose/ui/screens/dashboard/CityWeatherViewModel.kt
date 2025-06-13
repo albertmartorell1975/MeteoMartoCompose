@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,13 +25,14 @@ class CityWeatherViewModel @Inject constructor(
 
     data class UiState(
         val loading: Boolean = false,
-       // val gpsEnabled: Boolean = false,
         val showGPSDialog: Boolean = false,
         val locationChecked: Boolean = false,
         val showRationale: Boolean = false,
         val permissionsGranted: Boolean = false,
         val error: CustomError? = null,
-        val coordinates: ResultResponse<CurrentLocationDomain> = Either.Right(CurrentLocationDomain())
+        val coordinates: ResultResponse<CurrentLocationDomain> =
+            Either.Right(CurrentLocationDomain()),
+        val city: CityWeatherDomain? = null
     )
 
     init {
@@ -38,6 +40,7 @@ class CityWeatherViewModel @Inject constructor(
         viewModelScope.launch {
 
             getCurrentLocationStarted()
+            //cityWeatherInteractors.loadCityForecastUseCase.invoke("0","0").collect{
 
         }
 
@@ -147,6 +150,17 @@ class CityWeatherViewModel @Inject constructor(
             )
             _state.value = updatedState
 
+        }
+
+    }
+
+    suspend fun cityWeatherLoaded() {
+
+        _state.value.coordinates.fold({}) {
+            cityWeatherInteractors.loadCityForecastUseCase.invoke(
+                it.latitude.toString(),
+                it.longitude.toString()
+            )
         }
 
     }

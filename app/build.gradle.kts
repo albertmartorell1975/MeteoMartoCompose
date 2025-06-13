@@ -83,5 +83,9 @@ dependencies {
     //Location
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.location)
+    //Retrofit
+    implementation(libs.retofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
 
 }

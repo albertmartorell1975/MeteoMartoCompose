@@ -43,7 +43,8 @@ fun CityWeatherScreen(viewModel: CityWeatherViewModel = hiltViewModel()) {
         getLocation = viewModel::getCurrentLocationStarted,
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
-        hideRationaleDialog = viewModel::rationaleDialogHid
+        hideRationaleDialog = viewModel::rationaleDialogHid,
+        loadCityWeather = viewModel::cityWeatherLoaded
     )
 
 }
@@ -55,7 +56,8 @@ fun CityWeatherContent(
     getLocation: KSuspendFunction0<Unit>,
     hideGPSDialog: () -> Unit,
     showRationaleDialog: () -> Unit,
-    hideRationaleDialog: () -> Unit
+    hideRationaleDialog: () -> Unit,
+    loadCityWeather: KSuspendFunction0<Unit>
 ) {
 
     val context = LocalContext.current
@@ -120,6 +122,14 @@ fun CityWeatherContent(
         }
 
         if (state.value.locationChecked && state.value.error == null) {
+
+            LaunchedEffect(key1 = state.value.locationChecked, key2 = state.value.error == null) {
+
+                coroutineScope.launch {
+                    loadCityWeather()
+                }
+
+            }
 
             state.value.coordinates.fold(
 
