@@ -49,51 +49,50 @@ class CityWeatherViewModel @Inject constructor(
 
     fun gpsDialogHid() {
 
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            loading = false,
-            showGPSDialog = false,
-            error = null,
-            coordinates = Either.Right(CurrentLocationDomain())
-        )
-        _state.value = updatedState
+        _state.update {
+            it.copy(
+                loading = false,
+                showGPSDialog = false,
+                error = null,
+                coordinates = Either.Right(CurrentLocationDomain())
+            )
+        }
 
     }
 
     fun rationaleDialogShowed() {
 
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            locationChecked = true,
-            showRationale = true
-        )
-        _state.value = updatedState
+        _state.update {
+            it.copy(
+                locationChecked = true,
+                showRationale = true
+            )
+        }
 
     }
 
     fun rationaleDialogHid() {
 
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            loading = false,
-            error = null,
-            locationChecked = false,
-            showRationale = false
-        )
-
-        _state.value = updatedState
+        _state.update {
+            it.copy(
+                loading = false,
+                error = null,
+                locationChecked = false,
+                showRationale = false
+            )
+        }
 
     }
 
     suspend fun getCurrentLocationStarted() {
 
-        val tmpState = _state.value
-        var updatedState = tmpState.copy(
-            loading = true,
-            error = null,
-            locationChecked = false
-        )
-        _state.value = updatedState
+        _state.update {
+            it.copy(
+                loading = true,
+                error = null,
+                locationChecked = false
+            )
+        }
 
         if (cityWeatherInteractors.checkLocationPermissionsUseCase.invoke()) {
 
@@ -102,49 +101,58 @@ class CityWeatherViewModel @Inject constructor(
                 val result = cityWeatherInteractors.currentLocationUseCase.invoke()
 
                 result.fold({
-                    updatedState = tmpState.copy(
-                        loading = false,
-                        showGPSDialog = true,
-                        error = it,
-                        locationChecked = true
-                    )
-                    _state.value = updatedState
+
+                    // current location not loaded
+                    _state.update { updatedState ->
+                        updatedState.copy(
+                            loading = false,
+                            showGPSDialog = true,
+                            error = it,
+                            locationChecked = true
+                        )
+                    }
 
                 }) {
-                    updatedState = tmpState.copy(
-                        loading = false,
-                        coordinates = result,
-                        showGPSDialog = false,
-                        error = null,
-                        locationChecked = true
-                    )
-                    _state.value = updatedState
+
+                    // current location loaded
+                    _state.update { updatedState ->
+                        updatedState.copy(
+                            loading = false,
+                            coordinates = result,
+                            showGPSDialog = false,
+                            error = null,
+                            locationChecked = true
+                        )
+                    }
+
                 }
 
             } else {
 
                 // gps is not enabled
-                updatedState = tmpState.copy(
-                    loading = false,
-                    error = null,
-                    permissionsGranted = true,
-                    locationChecked = true,
-                    showGPSDialog = true
-                )
-                _state.value = updatedState
+                _state.update { updatedState ->
+                    updatedState.copy(
+                        loading = false,
+                        error = null,
+                        permissionsGranted = true,
+                        locationChecked = true,
+                        showGPSDialog = true
+                    )
+                }
 
             }
 
         } else {
 
             // permissions are not granted
-            updatedState = tmpState.copy(
-                loading = false,
-                error = null,
-                permissionsGranted = false,
-                locationChecked = true
-            )
-            _state.value = updatedState
+            _state.update { updatedState ->
+                updatedState.copy(
+                    loading = false,
+                    error = null,
+                    permissionsGranted = false,
+                    locationChecked = true
+                )
+            }
 
         }
 
