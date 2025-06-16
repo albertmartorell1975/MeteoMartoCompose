@@ -11,6 +11,7 @@ import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,7 +33,8 @@ class CityWeatherViewModel @Inject constructor(
         val error: CustomError? = null,
         val coordinates: ResultResponse<CurrentLocationDomain> =
             Either.Right(CurrentLocationDomain()),
-        val city: CityWeatherDomain? = null
+        val city: CityWeatherDomain? = null,
+        val loadedForecast: Boolean = false
     )
 
     init {
@@ -40,7 +42,6 @@ class CityWeatherViewModel @Inject constructor(
         viewModelScope.launch {
 
             getCurrentLocationStarted()
-            //cityWeatherInteractors.loadCityForecastUseCase.invoke("0","0").collect{
 
         }
 
@@ -51,7 +52,6 @@ class CityWeatherViewModel @Inject constructor(
         val tmpState = _state.value
         val updatedState = tmpState.copy(
             loading = false,
-            //gpsEnabled = false,
             showGPSDialog = false,
             error = null,
             coordinates = Either.Right(CurrentLocationDomain())
@@ -104,7 +104,6 @@ class CityWeatherViewModel @Inject constructor(
                 result.fold({
                     updatedState = tmpState.copy(
                         loading = false,
-                        //gpsEnabled = false,
                         showGPSDialog = true,
                         error = it,
                         locationChecked = true
@@ -114,7 +113,6 @@ class CityWeatherViewModel @Inject constructor(
                 }) {
                     updatedState = tmpState.copy(
                         loading = false,
-                        //gpsEnabled = true,
                         coordinates = result,
                         showGPSDialog = false,
                         error = null,
@@ -131,7 +129,6 @@ class CityWeatherViewModel @Inject constructor(
                     error = null,
                     permissionsGranted = true,
                     locationChecked = true,
-                    //gpsEnabled = false,
                     showGPSDialog = true
                 )
                 _state.value = updatedState
@@ -145,8 +142,7 @@ class CityWeatherViewModel @Inject constructor(
                 loading = false,
                 error = null,
                 permissionsGranted = false,
-                locationChecked = true,
-                //gpsEnabled = false
+                locationChecked = true
             )
             _state.value = updatedState
 
@@ -154,13 +150,22 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
-    suspend fun cityWeatherLoaded() {
+    suspend fun loadCityWeather() {
 
         _state.value.coordinates.fold({}) {
-            cityWeatherInteractors.loadCityForecastUseCase.invoke(
+
+            val error = cityWeatherInteractors.loadCityForecastUseCase.invoke(
                 it.latitude.toString(),
                 it.longitude.toString()
             )
+
+            _state.update { stateUpdated ->
+                stateUpdated.copy(
+                    error = error.leftOrNull(),
+                    loadedForecast = true
+                )
+            }
+
         }
 
     }

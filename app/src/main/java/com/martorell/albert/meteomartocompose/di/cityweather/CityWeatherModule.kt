@@ -4,12 +4,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.LocationRepository
 import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationDataSource
+import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationLocalDataSource
+import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
 import com.martorell.albert.meteomartocompose.data.cityweather.CityRoomDataSource
 import com.martorell.albert.meteomartocompose.data.cityweather.CityWeatherRepositoryImpl
-import com.martorell.albert.meteomartocompose.data.cityweather.LocationDataSourceImpl
 import com.martorell.albert.meteomartocompose.data.cityweather.LocationRepositoryImpl
+import com.martorell.albert.meteomartocompose.data.cityweather.LocationRoomDataImpl
+import com.martorell.albert.meteomartocompose.data.cityweather.LocationServerDataSourceImpl
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckLocationPermissionsUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
@@ -40,17 +42,23 @@ class CityWeatherModule {
 
     @Provides
     fun providesLocationRepository(
-        locationDataSource: LocationDataSource
+        locationServerDataSource: LocationServerDataSource,
+        locationLocalDataSource: LocationLocalDataSource
     ): LocationRepository {
         return LocationRepositoryImpl(
-            locationDataSource = locationDataSource
+            locationServerDataSource = locationServerDataSource,
+            locationLocalDataSource = locationLocalDataSource
         )
     }
 
     @Provides
-    fun providesLocationDataSource(fusedLocationProviderClient: FusedLocationProviderClient): LocationDataSource {
-        return LocationDataSourceImpl(fusedLocationProviderClient)
+    fun providesLocationServerDataSource(fusedLocationProviderClient: FusedLocationProviderClient): LocationServerDataSource {
+        return LocationServerDataSourceImpl(fusedLocationProviderClient)
     }
+
+    @Provides
+    fun providesLocationLocalDataSource(db: MeteoMartoDatabase): LocationLocalDataSource =
+        LocationRoomDataImpl(db)
 
     @Provides
     fun providesCityLocalDataSource(db: MeteoMartoDatabase): CityWeatherLocalDataSource =

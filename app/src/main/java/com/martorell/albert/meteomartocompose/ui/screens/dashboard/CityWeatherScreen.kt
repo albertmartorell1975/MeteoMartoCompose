@@ -44,7 +44,7 @@ fun CityWeatherScreen(viewModel: CityWeatherViewModel = hiltViewModel()) {
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
         hideRationaleDialog = viewModel::rationaleDialogHid,
-        loadCityWeather = viewModel::cityWeatherLoaded
+        loadCityWeather = viewModel::loadCityWeather
     )
 
 }
@@ -131,17 +131,33 @@ fun CityWeatherContent(
 
             }
 
-            state.value.coordinates.fold(
+        }
 
-                { {} }) {
+        if (state.value.loadedForecast) {
+
+            if (state.value.error != null) {
                 Text(
-                    text = "${it.latitude} ${it.longitude}",
+                    text = "Error en obtenir la previsió del temps",
                     fontSize = 32.sp,
                     color = Color.Red,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(Modifier.height(40.dp))
+            } else {
+
+                state.value.coordinates.fold({}) {
+
+                    Text(
+                        text = "${it.latitude} ${it.longitude}",
+                        fontSize = 32.sp,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                }
+
             }
+
+            Spacer(Modifier.height(40.dp))
 
         }
 

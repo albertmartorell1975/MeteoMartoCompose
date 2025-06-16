@@ -6,7 +6,7 @@ import arrow.core.right
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationDataSource
+import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain
@@ -15,8 +15,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 @SuppressLint("MissingPermission")
-class LocationDataSourceImpl @Inject constructor(private val fusedLocationProviderManager: FusedLocationProviderClient) :
-    LocationDataSource {
+class LocationServerDataSourceImpl @Inject constructor(
+    private val fusedLocationProviderManager: FusedLocationProviderClient
+) : LocationServerDataSource {
 
     override suspend fun loadCurrentLocation(): ResultResponse<CurrentLocationDomain> =
 
