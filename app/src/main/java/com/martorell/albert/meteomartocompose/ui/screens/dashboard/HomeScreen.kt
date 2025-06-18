@@ -8,6 +8,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.martorell.albert.meteomartocompose.ui.AppState
@@ -21,11 +22,12 @@ import com.martorell.albert.meteomartocompose.ui.rememberAppState
 @Composable
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
-    appState: AppState = rememberAppState(navController = navController)
+    appState: AppState = rememberAppState(navController = navController),
+    viewModel: CityWeatherViewModel = hiltViewModel()
 ) {
 
     val scrollState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(scrollState)
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState)
 
     MeteoMartoComposeLayout {
 
@@ -34,8 +36,10 @@ fun HomeScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 if (appState.showBottomNavigation) {
-                    TopAppBarCustom(scrollBehavior = scrollBehavior)
-
+                    TopAppBarCustom(
+                        scrollBehavior = scrollBehavior,
+                        markCityAsFavorite = viewModel::onFavoriteClicked
+                    )
                 }
             },
             bottomBar = {

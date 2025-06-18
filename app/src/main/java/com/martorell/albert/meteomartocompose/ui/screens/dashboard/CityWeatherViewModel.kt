@@ -162,18 +162,38 @@ class CityWeatherViewModel @Inject constructor(
 
         _state.value.coordinates.fold({}) {
 
-            val error = cityWeatherInteractors.loadCityForecastUseCase.invoke(
+            cityWeatherInteractors.loadCityForecastUseCase.invoke(
                 it.latitude.toString(),
                 it.longitude.toString()
-            )
-
-            _state.update { stateUpdated ->
-                stateUpdated.copy(
-                    error = error.leftOrNull(),
-                    loadedForecast = true
-                )
+            ).fold({
+                _state.update { stateUpdated ->
+                    stateUpdated.copy(
+                        error = it,
+                        loadedForecast = true,
+                        city = null
+                    )
+                }
+            }) {
+                _state.update { stateUpdated ->
+                    stateUpdated.copy(
+                        error = null,
+                        loadedForecast = true,
+                        city = it
+                    )
+                }
             }
 
+        }
+
+    }
+
+    suspend fun onFavoriteClicked() {
+
+        viewModelScope.launch {
+            _state.value.city?.let {
+                cityWeatherInteractors.switchFavoriteUseCase(it)
+                // modificar el camp favorit
+            }
         }
 
     }

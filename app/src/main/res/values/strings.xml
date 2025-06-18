@@ -27,5 +27,11 @@
     <string name="location_rationale_explanation">Location permission has been permanently denied. Please enable it in app settings to continue.</string>
     <string name="location_rationale_action">Accept</string>
     <string name="location_rationale_cancel">Cancel</string>
+    <string name="city_current_temperature">"Temperature: "</string>
+    <string name="city_min_temperature">"Min: "</string>
+    <string name="city_max_temperature">"Max: "</string>
+    <string name="city_pressure">"Pressure: "</string>
+    <string name="city_rain">"Rain: "</string>
+    <string name="city_forecast_error">Failed to find out the city forecast</string>
 
 </resources>

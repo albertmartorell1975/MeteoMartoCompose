@@ -9,10 +9,10 @@ fun CityWeatherResponse.toRoom(): CityWeather =
         name = this.name,
         weatherDescription = if (this.weather.isNotEmpty()) this.weather[0].description else "",
         weatherIcon = if (this.weather.isNotEmpty()) this.weather[0].icon else "",
-        temperature = this.main.temp,
-        temperatureMin = this.main.temp_min,
-        temperatureMax = this.main.temp_max,
-        rain = this.rain?.quantity,
+        temperature = this.main.temp.openWeatherConverter(),
+        temperatureMin = this.main.temp_min.openWeatherConverter(),
+        temperatureMax = this.main.temp_max.openWeatherConverter(),
+        rain = if (this.rain != null) this.rain?.quantity else 0.0,
         pressure = this.main.pressure
     )
 
@@ -21,10 +21,11 @@ fun CityWeather.toDomain(): CityWeatherDomain =
     CityWeatherDomain(
         name = this.name,
         weatherDescription = this.weatherDescription,
-        weatherIcon = this.weatherIcon,
+        weatherIcon = "https://openweathermap.org/img/wn/${this.weatherIcon}@2x.png",
         temperature = this.temperature,
         temperatureMin = this.temperatureMin,
         temperatureMax = this.temperatureMax,
         rain = this.rain,
-        pressure = this.pressure
+        pressure = this.pressure,
+        favorite = this.favorite
     )

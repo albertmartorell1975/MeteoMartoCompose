@@ -10,4 +10,6 @@ interface CityWeatherRepository {
         longitude: String
     ): ResultResponse<CityWeatherDomain>
 
+    suspend fun switchFavorite(city: CityWeatherDomain)
+
 }

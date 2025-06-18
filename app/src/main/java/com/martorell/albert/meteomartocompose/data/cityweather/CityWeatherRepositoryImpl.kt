@@ -32,4 +32,8 @@ class CityWeatherRepositoryImpl(
 
         }
 
+    override suspend fun switchFavorite(city: CityWeatherDomain) {
+        val updatedCity = city.copy(favorite = !city.favorite)
+        cityWeatherLocalDataSource.addCity(updatedCity)
+    }
 }

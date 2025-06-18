@@ -14,7 +14,7 @@ interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(city: CityWeather)
 
-    @Query("SELECT * FROM CityWeather LIMIT 1")
+    @Query("SELECT * FROM CityWeather WHERE id = (SELECT MAX(id) FROM CityWeather)")
     fun getCity(): CityWeather
 
     @Query(value = "SELECT * FROM CityWeather WHERE name = :name")

@@ -9,7 +9,11 @@ import com.martorell.albert.meteomartocompose.framework.db.model.CityWeather
 import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
 import com.martorell.albert.meteomartocompose.framework.db.model.User
 
-@Database(entities = [User::class, CityWeather::class, LocationLocal::class], version = 4, exportSchema = false)
+@Database(
+    entities = [User::class, CityWeather::class, LocationLocal::class],
+    version = 5,
+    exportSchema = false
+)
 abstract class MeteoMartoDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao

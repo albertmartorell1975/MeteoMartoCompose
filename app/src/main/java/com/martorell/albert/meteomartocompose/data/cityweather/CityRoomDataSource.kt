@@ -14,7 +14,6 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
     private val cityDao = db.cityDao()
 
     //val city = cityDao.getCity()
-
     override suspend fun addCity(cityServer: CityWeatherResponse) {
         withContext(Dispatchers.IO) {
             cityDao.insert(cityServer.toRoom())

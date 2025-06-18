@@ -13,5 +13,6 @@ data class CityWeather(
     val temperatureMin: Double,
     val temperatureMax: Double,
     val rain: Double? = 0.0,
-    val pressure: Int
+    val pressure: Int,
+    val favorite: Boolean = false
 )

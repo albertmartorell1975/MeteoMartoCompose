@@ -1,41 +1,36 @@
 package com.martorell.albert.meteomartocompose.ui.navigation.shared
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.martorell.albert.meteomartocompose.R
+import kotlinx.coroutines.launch
+import kotlin.reflect.KSuspendFunction0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarCustom(scrollBehavior: TopAppBarScrollBehavior? = null) {
+fun TopAppBarCustom(
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    markCityAsFavorite: KSuspendFunction0<Unit>
+) {
 
-    //TopAppBar(
-    LargeTopAppBar(
+    TopAppBar(
         title = { Text(text = stringResource(id = R.string.app_name)) },
         actions = {
 
             AppBarAction(
-                imageVector = Icons.Default.Search,
-                onClick = {/*TODO*/ })
-            AppBarAction(
-                imageVector = Icons.Default.Share,
-                onClick = {/*TODO*/ })
-
-        },
-        navigationIcon = {
-            AppBarAction(
-                imageVector = Icons.Default.Menu,
-                onClick = {/*TODO*/ })
+                imageVector = Icons.Default.FavoriteBorder,
+                onClickAction = markCityAsFavorite
+            )
         },
         scrollBehavior = scrollBehavior
     )
@@ -43,11 +38,20 @@ fun TopAppBarCustom(scrollBehavior: TopAppBarScrollBehavior? = null) {
 }
 
 @Composable
-private fun AppBarAction(imageVector: ImageVector, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
+private fun AppBarAction(imageVector: ImageVector, onClickAction: KSuspendFunction0<Unit>) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    IconButton(
+        onClick =
+            {
+                coroutineScope.launch { onClickAction() }
+            }
+    ) {
         Icon(
             imageVector = imageVector,
             contentDescription = null
         )
     }
+
 }

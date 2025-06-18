@@ -87,5 +87,8 @@ dependencies {
     implementation(libs.retofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
 }
