@@ -8,10 +8,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.ui.screens.dashboard.CityWeatherScreen
+import com.martorell.albert.meteomartocompose.ui.screens.dashboard.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.dashboard.WeatherWarningsScreen
 
 @Composable
-fun HomeNavGraph(navController: NavHostController, modifier: Modifier) {
+
+fun HomeNavGraph(
+    navController: NavHostController,
+    modifier: Modifier,
+    cityWeatherViewModel: CityWeatherViewModel
+) {
 
     NavHost(
         navController = navController,
@@ -21,15 +27,15 @@ fun HomeNavGraph(navController: NavHostController, modifier: Modifier) {
 
         // navigation és l'inici del sub-graph de navegació
         navigation<SubGraphs.Dashboard>(
-            startDestination = DashboardScreens.CityWeather
+            startDestination = DashboardScreens.CityWeather,
         ) {
 
             composable<DashboardScreens.CityWeather> { entry ->
-                CityWeatherScreen()
+                CityWeatherScreen(viewModel = cityWeatherViewModel)
             }
 
             composable<DashboardScreens.Favorites> { entry ->
-                CityWeatherScreen()
+                CityWeatherScreen(viewModel = cityWeatherViewModel)
             }
 
             composable<DashboardScreens.WeatherWarnings> { entry ->

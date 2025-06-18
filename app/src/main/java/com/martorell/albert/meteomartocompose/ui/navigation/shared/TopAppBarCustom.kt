@@ -14,13 +14,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.martorell.albert.meteomartocompose.R
 import kotlinx.coroutines.launch
-import kotlin.reflect.KSuspendFunction0
+import kotlin.reflect.KFunction0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarCustom(
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    markCityAsFavorite: KSuspendFunction0<Unit>
+    markCityAsFavorite: KFunction0<Unit>
 ) {
 
     TopAppBar(
@@ -38,15 +38,17 @@ fun TopAppBarCustom(
 }
 
 @Composable
-private fun AppBarAction(imageVector: ImageVector, onClickAction: KSuspendFunction0<Unit>) {
+private fun AppBarAction(
+    imageVector: ImageVector,
+    onClickAction: KFunction0<Unit>
+) {
 
     val coroutineScope = rememberCoroutineScope()
 
     IconButton(
-        onClick =
-            {
-                coroutineScope.launch { onClickAction() }
-            }
+        onClick = {
+            coroutineScope.launch { onClickAction() }
+        }
     ) {
         Icon(
             imageVector = imageVector,

@@ -22,18 +22,22 @@ class CityWeatherRepositoryImpl(
     ): ResultResponse<CityWeatherDomain> =
 
         customTryCatch {
+
             val cityServer = cityWeatherServerDataSource.getWeather(
                 lat = latitude,
                 lon = longitude
             )
 
             cityWeatherLocalDataSource.addCity(cityServer)
-            return cityWeatherLocalDataSource.loadCity().right()
+            return cityWeatherLocalDataSource.loadCity(cityServer.name).right()
 
         }
 
     override suspend fun switchFavorite(city: CityWeatherDomain) {
+
         val updatedCity = city.copy(favorite = !city.favorite)
-        cityWeatherLocalDataSource.addCity(updatedCity)
+        cityWeatherLocalDataSource.updateFavorite(updatedCity)
+
     }
+
 }

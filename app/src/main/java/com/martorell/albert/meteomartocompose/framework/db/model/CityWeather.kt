@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class CityWeather(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = false)
     val name: String = "",
     val weatherDescription: String? = "",
     val weatherIcon: String? = "",

@@ -1,7 +1,7 @@
 package com.martorell.albert.meteomartocompose.domain.cityweather
 
 data class CityWeatherDomain(
-    val name: String? = "",
+    val name: String = "",
     val weatherDescription: String? = "",
     val weatherIcon: String? = "",
     val temperature: Double,

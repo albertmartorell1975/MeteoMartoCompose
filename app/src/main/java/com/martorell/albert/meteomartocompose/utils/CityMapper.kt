@@ -29,3 +29,17 @@ fun CityWeather.toDomain(): CityWeatherDomain =
         pressure = this.pressure,
         favorite = this.favorite
     )
+
+fun CityWeatherDomain.toRoom(): CityWeather =
+
+    CityWeather(
+        name = this.name,
+        weatherDescription = this.weatherDescription,
+        weatherIcon = "https://openweathermap.org/img/wn/${this.weatherIcon}@2x.png",
+        temperature = this.temperature,
+        temperatureMin = this.temperatureMin,
+        temperatureMax = this.temperatureMax,
+        rain = this.rain,
+        pressure = this.pressure,
+        favorite = this.favorite
+    )

@@ -23,7 +23,7 @@ import com.martorell.albert.meteomartocompose.ui.rememberAppState
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
     appState: AppState = rememberAppState(navController = navController),
-    viewModel: CityWeatherViewModel = hiltViewModel()
+    cityWeatherViewModel: CityWeatherViewModel =  hiltViewModel()
 ) {
 
     val scrollState = rememberTopAppBarState()
@@ -38,7 +38,7 @@ fun HomeScreen(
                 if (appState.showBottomNavigation) {
                     TopAppBarCustom(
                         scrollBehavior = scrollBehavior,
-                        markCityAsFavorite = viewModel::onFavoriteClicked
+                        markCityAsFavorite = cityWeatherViewModel::onFavoriteClicked
                     )
                 }
             },
@@ -54,9 +54,10 @@ fun HomeScreen(
         ) { innerPadding ->
 
             // Scaffold's content
-            HomeNavGraph(
+           HomeNavGraph(
                 navController = navController,
-                Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                cityWeatherViewModel = cityWeatherViewModel
             )
 
         }

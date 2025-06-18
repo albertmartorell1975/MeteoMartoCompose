@@ -6,6 +6,7 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.response.CityWe
 interface CityWeatherLocalDataSource {
 
     suspend fun addCity(cityServer: CityWeatherResponse)
-    suspend fun loadCity(): CityWeatherDomain
+    suspend fun loadCity(name: String): CityWeatherDomain
+    suspend fun updateFavorite(cityWeatherDomain: CityWeatherDomain)
 
 }

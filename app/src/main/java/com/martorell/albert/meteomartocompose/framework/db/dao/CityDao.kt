@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.martorell.albert.meteomartocompose.framework.db.model.CityWeather
 import kotlinx.coroutines.flow.Flow
 
@@ -14,16 +13,10 @@ interface CityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(city: CityWeather)
 
-    @Query("SELECT * FROM CityWeather WHERE id = (SELECT MAX(id) FROM CityWeather)")
-    fun getCity(): CityWeather
-
     @Query(value = "SELECT * FROM CityWeather WHERE name = :name")
-    fun geCityByName(name: String): Flow<CityWeather>
+    fun getCityByName(name: String): CityWeather
 
     @Query("SELECT * FROM CityWeather")
     fun getAll(): Flow<List<CityWeather>>
-
-    @Update
-    suspend fun update(city: CityWeather)
 
 }

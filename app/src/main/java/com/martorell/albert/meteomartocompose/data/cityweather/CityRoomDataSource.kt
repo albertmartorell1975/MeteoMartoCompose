@@ -20,7 +20,12 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
         }
     }
 
-    override suspend fun loadCity(): CityWeatherDomain =
-        withContext(Dispatchers.IO) { cityDao.getCity().toDomain() }
+    override suspend fun loadCity(name: String): CityWeatherDomain =
+        withContext(Dispatchers.IO) { cityDao.getCityByName(name).toDomain() }
 
+    override suspend fun updateFavorite(cityWeatherDomain: CityWeatherDomain) {
+        withContext(Dispatchers.IO){
+            cityDao.insert(cityWeatherDomain.toRoom())
+        }
+    }
 }

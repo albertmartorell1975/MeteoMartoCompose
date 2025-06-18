@@ -187,15 +187,19 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
-    suspend fun onFavoriteClicked() {
+    fun onFavoriteClicked() {
 
         viewModelScope.launch {
             _state.value.city?.let {
-                cityWeatherInteractors.switchFavoriteUseCase(it)
-                // modificar el camp favorit
+                cityWeatherInteractors.switchFavoriteUseCase.invoke(it)
             }
         }
 
+    }
+
+    override fun onCleared() {
+        val k = ""
+        super.onCleared()
     }
 
 }
