@@ -16,6 +16,7 @@ import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckLocationPermissionsUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CurrentLocationUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.IsGPSEnableUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.SwitchFavoriteUseCase
@@ -34,13 +35,15 @@ class CityWeatherModule {
         currentLocationUseCase: CurrentLocationUseCase,
         isGPSEnableUseCase: IsGPSEnableUseCase,
         loadCityWeatherUseCase: LoadCityWeatherUseCase,
-        switchFavoriteUseCase: SwitchFavoriteUseCase
+        switchFavoriteUseCase: SwitchFavoriteUseCase,
+        getAllCitiesUseCase: GetAllCitiesUseCase
     ) = CityWeatherInteractors(
         checkLocationPermissionsUseCase = checkLocationPermissionsUseCase,
         currentLocationUseCase = currentLocationUseCase,
         isGPSEnableUseCase = isGPSEnableUseCase,
         loadCityForecastUseCase = loadCityWeatherUseCase,
-        switchFavoriteUseCase = switchFavoriteUseCase
+        switchFavoriteUseCase = switchFavoriteUseCase,
+        getAllCitiesUseCase = getAllCitiesUseCase
     )
 
     @Provides

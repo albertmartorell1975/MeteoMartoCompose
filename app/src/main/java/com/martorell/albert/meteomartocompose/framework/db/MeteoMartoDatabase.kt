@@ -10,7 +10,9 @@ import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
 import com.martorell.albert.meteomartocompose.framework.db.model.User
 
 @Database(
-    entities = [User::class, CityWeather::class, LocationLocal::class],
+    entities = [User::class,
+        CityWeather::class,
+        LocationLocal::class],
     version = 1,
     exportSchema = false
 )

@@ -4,7 +4,7 @@ data class CityWeatherResponse(
     val base: String,
     val clouds: Clouds,
     val cod: Int,
-    val coordinates: Coord,
+    val coord: Coord,
     val dt: Int,
     val id: Int,
     val main: Main,

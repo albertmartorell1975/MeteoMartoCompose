@@ -57,8 +57,7 @@ fun CityWeatherScreen(viewModel: CityWeatherViewModel) {
         getLocation = viewModel::getCurrentLocationStarted,
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
-        hideRationaleDialog = viewModel::rationaleDialogHid,
-        loadCityWeather = viewModel::loadCityWeather
+        hideRationaleDialog = viewModel::rationaleDialogHid
     )
 
 }
@@ -70,8 +69,7 @@ fun CityWeatherContent(
     getLocation: KSuspendFunction0<Unit>,
     hideGPSDialog: () -> Unit,
     showRationaleDialog: () -> Unit,
-    hideRationaleDialog: () -> Unit,
-    loadCityWeather: KSuspendFunction0<Unit>
+    hideRationaleDialog: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -132,21 +130,9 @@ fun CityWeatherContent(
             }
         }
 
-        if (state.value.locationChecked && state.value.error == null) {
-
-            LaunchedEffect(key1 = state.value.locationChecked, key2 = state.value.error == null) {
-
-                coroutineScope.launch {
-                    loadCityWeather()
-                }
-
-            }
-
-        }
-
         if (state.value.loadedForecast) {
 
-            if (state.value.error != null) {
+            if (state.value.errorLocation != null || state.value.errorForecast != null) {
 
                 CityText(
                     contentFix = stringResource(R.string.city_forecast_error),

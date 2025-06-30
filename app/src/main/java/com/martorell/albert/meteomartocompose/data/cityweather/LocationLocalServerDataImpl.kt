@@ -3,6 +3,8 @@ package com.martorell.albert.meteomartocompose.data.cityweather
 import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationLocalDataSource
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class LocationRoomDataImpl(db: MeteoMartoDatabase) : LocationLocalDataSource {
 
@@ -13,12 +15,16 @@ class LocationRoomDataImpl(db: MeteoMartoDatabase) : LocationLocalDataSource {
         longitude: Double?
     ) {
 
-        locationDao.insertLocation(
-            LocationLocal(
-                latitude = latitude,
-                longitude = longitude
+        withContext(Dispatchers.IO) {
+            locationDao.cleanTable()
+            locationDao.insertLocation(
+                LocationLocal(
+                    latitude = latitude,
+                    longitude = longitude
+                )
             )
-        )
+        }
+
     }
 
 }

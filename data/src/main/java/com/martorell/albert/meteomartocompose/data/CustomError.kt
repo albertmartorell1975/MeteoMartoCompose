@@ -8,6 +8,9 @@ import java.io.IOException
 
 typealias ResultResponse<T> = Either<CustomError, T>
 
+/**
+ * This custom error class is meant for requests approach, which can be two sides of response (right or left) following the Either pattern
+ */
 sealed class CustomError {
 
     class FirebaseError(val code: Int) : CustomError()
@@ -18,12 +21,17 @@ sealed class CustomError {
 fun Exception.toCustomError(): CustomError =
 
     when (this) {
+
         is IOException ->
             CustomError.Connectivity
+
         is HttpException ->
+
             CustomError.FirebaseError(code())
+
         else ->
             CustomError.Unknown(message ?: "")
+
     }
 
 

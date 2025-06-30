@@ -1,12 +1,12 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
-import arrow.core.right
-import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
-import com.martorell.albert.meteomartocompose.data.customTryCatch
+import com.martorell.albert.meteomartocompose.data.customFlowTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import kotlinx.coroutines.flow.Flow
 
 class CityWeatherRepositoryImpl(
     private val cityWeatherServerDataSource: CityWeatherServerDataSource,
@@ -14,24 +14,24 @@ class CityWeatherRepositoryImpl(
 ) :
     CityWeatherRepository {
 
-    //val city = cityWeatherLocalDataSource.loadCity()
+    override val listOfCities: Flow<List<CityWeatherDomain>>
+        get() =
+            cityWeatherLocalDataSource.getAll()
 
     override suspend fun loadCityCurrentWeather(
         latitude: String,
         longitude: String
-    ): ResultResponse<CityWeatherDomain> =
+    ): CustomErrorFlow? = customFlowTryCatch {
 
-        customTryCatch {
+        val cityServer = cityWeatherServerDataSource.getWeather(
+            lat = latitude,
+            lon = longitude
+        )
 
-            val cityServer = cityWeatherServerDataSource.getWeather(
-                lat = latitude,
-                lon = longitude
-            )
+        cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
+        cityWeatherLocalDataSource.addCity(cityServer)
 
-            cityWeatherLocalDataSource.addCity(cityServer)
-            return cityWeatherLocalDataSource.loadCity(cityServer.name).right()
-
-        }
+    }
 
     override suspend fun switchFavorite(city: CityWeatherDomain) {
 
