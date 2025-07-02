@@ -20,16 +20,42 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
     override suspend fun addCity(cityServer: CityWeatherResponse) {
 
         withContext(Dispatchers.IO) {
+
             cityDao.insert(cityServer.toRoom())
+
         }
 
+    }
+
+    override suspend fun updateCity(
+        cityName: String,
+        weatherDescription: String?,
+        weatherIcon: String?,
+        pressure: Int,
+        temperatureMax: Double,
+        temperatureMin: Double,
+        temperature: Double
+    ) {
+        withContext(Dispatchers.IO) {
+            cityDao.update(
+                name = cityName,
+                weatherDescription = weatherDescription,
+                weatherIcon = weatherIcon,
+                pressure = pressure,
+                temperatureMax = temperatureMax,
+                temperatureMin = temperatureMin,
+                temperature = temperature
+            )
+        }
     }
 
     override suspend fun makeAllCitiesAsNotJustAdded() {
 
         withContext(Dispatchers.IO) {
+
             if (!isEmpty())
                 cityDao.allCitiesAsNotJustAdded()
+
         }
 
     }
@@ -49,5 +75,20 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
 
     override fun getAll(): Flow<List<CityWeatherDomain>> =
         cityDao.getAll().map { it.listToDomain() }
+
+    override suspend fun isCurrentCityFavorite(): Boolean =
+
+        withContext(Dispatchers.IO) {
+
+            if (!isEmpty())
+                if (cityDao.loadCurrentCity() != null) {
+                    return@withContext cityDao.loadCurrentCity()!!.favorite
+                } else
+                    return@withContext false
+            else
+                return@withContext false
+
+        }
+
 
 }

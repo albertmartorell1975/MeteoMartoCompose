@@ -28,8 +28,31 @@ class CityWeatherRepositoryImpl(
             lon = longitude
         )
 
-        cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
-        cityWeatherLocalDataSource.addCity(cityServer)
+        if (cityWeatherLocalDataSource.isEmpty()) {
+
+            cityWeatherLocalDataSource.addCity(cityServer)
+
+        } else {
+
+            cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
+            val city = cityWeatherLocalDataSource.loadCity(cityServer.name)
+
+            if (city.name.isNotEmpty())
+
+                cityWeatherLocalDataSource.updateCity(
+                    cityName = city.name,
+                    weatherDescription = city.weatherDescription,
+                    weatherIcon =  city.weatherIcon,
+                    pressure = city.pressure,
+                    temperatureMax = city.temperatureMax,
+                    temperatureMin = city.temperatureMin,
+                    temperature = city.temperature
+                )
+
+            else
+                cityWeatherLocalDataSource.addCity(cityServer)
+
+        }
 
     }
 
@@ -39,5 +62,8 @@ class CityWeatherRepositoryImpl(
         cityWeatherLocalDataSource.updateFavorite(updatedCity)
 
     }
+
+    override suspend fun isCurrentCityFavorite(): Boolean =
+        cityWeatherLocalDataSource.isCurrentCityFavorite()
 
 }

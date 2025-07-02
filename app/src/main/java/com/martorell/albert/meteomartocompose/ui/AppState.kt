@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -49,15 +50,31 @@ class AppState(
 
     }
 
+    val showFavoriteButton: Boolean
+        @Composable get() {
+
+            BOTTOM_NAV_OPTIONS.forEach { _ ->
+
+                val navBackStackEntry = navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry.value?.destination ?: return false
+                currentDestination.route?.let {
+                    return it.contains(stringResource(id = R.string.city_tab))
+                }
+
+            }
+
+            return false
+
+        }
+
     val showBottomNavigation: Boolean
         @Composable get() {
 
             BOTTOM_NAV_OPTIONS.forEach { destination ->
 
                 val navBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry.value?.destination
+                val currentDestination = navBackStackEntry.value?.destination ?: return true
 
-                if (currentDestination == null) return true
                 if (currentDestination.hierarchy.any {
                         it.hasRoute(destination.route::class)
                     } == true)

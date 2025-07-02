@@ -41,8 +41,6 @@ class AppModule {
     ).fallbackToDestructiveMigration(true)
         .build() //fallbackToDestructiveMigration: each time there is an increase version we enable a destructive migration (database is cleared)
 
-
-
     @Provides
     fun providesPermissionRepository(
         permissionChecker: PermissionChecker

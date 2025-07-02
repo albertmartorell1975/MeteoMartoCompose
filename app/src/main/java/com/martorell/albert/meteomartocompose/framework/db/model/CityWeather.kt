@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class CityWeather(
     @PrimaryKey(autoGenerate = false)
     val name: String = "",
+    val favorite: Boolean = false,
     val justAdded: Boolean = false,
     val weatherDescription: String? = "",
     val weatherIcon: String? = "",
@@ -15,7 +16,6 @@ data class CityWeather(
     val temperatureMax: Double,
     val rain: Double? = 0.0,
     val pressure: Int,
-    val favorite: Boolean = false,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0
 )

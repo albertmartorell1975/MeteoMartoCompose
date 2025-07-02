@@ -28,4 +28,22 @@ interface CityDao {
     @Query("SELECT COUNT(name) FROM CityWeather ")
     suspend fun cityCount(): Int
 
+    @Query(value = "SELECT * FROM CityWeather WHERE justAdded = 1")
+    suspend fun loadCurrentCity(): CityWeather?
+
+    @Query(
+        "UPDATE CityWeather SET weatherDescription = :weatherDescription," +
+                "weatherIcon = :weatherIcon, pressure = :pressure, temperatureMax = :temperatureMax, " +
+                "temperatureMin = :temperatureMin, temperature = :temperature,justAdded = 1  WHERE name =:name "
+    )
+    suspend fun update(
+        name: String,
+        weatherDescription: String?,
+        weatherIcon: String?,
+        pressure: Int,
+        temperatureMax: Double,
+        temperatureMin: Double,
+        temperature: Double,
+    )
+
 }

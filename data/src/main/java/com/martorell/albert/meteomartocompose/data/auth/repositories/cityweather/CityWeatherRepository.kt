@@ -15,4 +15,6 @@ interface CityWeatherRepository {
 
     suspend fun switchFavorite(city: CityWeatherDomain)
 
+    suspend fun isCurrentCityFavorite(): Boolean
+
 }

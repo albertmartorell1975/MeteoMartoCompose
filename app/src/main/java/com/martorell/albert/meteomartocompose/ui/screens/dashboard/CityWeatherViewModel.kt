@@ -168,9 +168,13 @@ class CityWeatherViewModel @Inject constructor(
 
         _state.value.coordinates.fold({}) {
 
-            //Coordenades de Terrassa
-            //  longitude = "2.01667",
-            //  latitude = "41.56667"
+            /*Coordenades de Terrassa
+            val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
+                latitude = "41.56667",
+                longitude = "2.01667"
+            )
+
+             */
             val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
                 latitude = it.latitude.toString(),
                 longitude = it.longitude.toString()
@@ -196,7 +200,6 @@ class CityWeatherViewModel @Inject constructor(
                     }
                 }
                 .collect { listOfCities ->
-
                     _state.update { stateUpdated ->
                         stateUpdated.copy(
                             loading = false,
@@ -221,5 +224,25 @@ class CityWeatherViewModel @Inject constructor(
         }
 
     }
+
+    suspend fun isCityFavorite(): Boolean {
+
+         return cityWeatherInteractors.isCurrentCityFavoriteUseCase.invoke()
+
+    }
+
+    /*
+     fun isCityFavorite(): Boolean {
+
+        return if (_state.value.city == null)
+            false
+        else
+            _state.value.city!!.favorite
+
+        //return cityWeatherInteractors.isCurrentCityFavoriteUseCase.invoke()
+
+    }
+
+     */
 
 }

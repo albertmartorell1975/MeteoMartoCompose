@@ -6,5 +6,6 @@ data class CityWeatherInteractors(
     val isGPSEnableUseCase: IsGPSEnableUseCase,
     val loadCityForecastUseCase: LoadCityWeatherUseCase,
     val switchFavoriteUseCase: SwitchFavoriteUseCase,
-    val getAllCitiesUseCase: GetAllCitiesUseCase
+    val getAllCitiesUseCase: GetAllCitiesUseCase,
+    val isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase
 )
