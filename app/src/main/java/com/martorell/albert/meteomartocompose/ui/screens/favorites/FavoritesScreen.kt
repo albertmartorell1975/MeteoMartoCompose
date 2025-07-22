@@ -6,12 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -20,17 +23,23 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.dimensionResource
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import kotlinx.coroutines.launch
+import kotlin.reflect.KSuspendFunction0
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    goToDetail: () -> Unit,
+    onTestSharedViewModel: KSuspendFunction0<Boolean>
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
 
     MeteoMartoComposeLayout {
 
         Scaffold(
         ) { innerPadding ->
+
 
             Column(
                 modifier = modifier
@@ -39,6 +48,34 @@ fun FavoritesScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "És la current la city?",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            shadow = Shadow(
+                                offset = Offset(
+                                    x = 5f, y = 5f
+                                ), blurRadius = 6f, color = Color.Black.copy(alpha = 0.5f)
+                            )
+                        ),
+                        modifier = Modifier
+                            .clickable { coroutineScope.launch { onTestSharedViewModel.invoke() } }
+                            .background(Color.Cyan)
+                            .border(
+                                width = dimensionResource(R.dimen.padding_small), color = Color.Blue
+                            )
+                            .padding(
+                                horizontal = dimensionResource(R.dimen.padding_small),
+                                vertical = dimensionResource(R.dimen.padding_small)
+                            )
+
+                    )
+                }
+
+                Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
 
                 Box(
                     contentAlignment = Alignment.Center
@@ -54,7 +91,7 @@ fun FavoritesScreen(
                         ),
 
                         modifier = Modifier
-                            .clickable { onClick() }
+                            .clickable { goToDetail() }
                             .background(Color.Cyan)
                             .border(
                                 width = dimensionResource(R.dimen.padding_small), color = Color.Blue

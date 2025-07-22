@@ -231,18 +231,5 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
-    /*
-     fun isCityFavorite(): Boolean {
-
-        return if (_state.value.city == null)
-            false
-        else
-            _state.value.city!!.favorite
-
-        //return cityWeatherInteractors.isCurrentCityFavoriteUseCase.invoke()
-
-    }
-
-     */
 
 }

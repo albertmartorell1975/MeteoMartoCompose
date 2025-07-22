@@ -2,10 +2,12 @@ package com.martorell.albert.meteomartocompose.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
+import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
 @Composable
@@ -13,7 +15,6 @@ import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScre
 fun HomeNavGraph(
     navController: NavHostController,
     modifier: Modifier
-    //  cityWeatherViewModel: CityWeatherViewModel
 ) {
 
     NavHost(
@@ -23,14 +24,22 @@ fun HomeNavGraph(
     {
 
         composable<DashboardScreens.CityWeather> { entry ->
-            //CityWeatherScreen(viewModel = cityWeatherViewModel)
             CityWeatherScreen()
         }
 
         composable<DashboardScreens.Favorites> { entry ->
-            FavoritesScreen(onClick = {
-                navController.navigate(SubGraphs.Favorites)
-            })
+            val sharedViewModel: CityWeatherViewModel =
+                if (navController.previousBackStackEntry != null) hiltViewModel(
+                    navController.previousBackStackEntry!!
+                ) else
+                    hiltViewModel()
+
+            FavoritesScreen(
+                onTestSharedViewModel = sharedViewModel::isCityFavorite,
+                goToDetail = {
+                    navController.navigate(SubGraphs.Favorites)
+                }
+            )
         }
 
         favoriteSubGraph(navController = navController)
