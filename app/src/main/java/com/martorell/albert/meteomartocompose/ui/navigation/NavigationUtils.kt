@@ -12,6 +12,9 @@ sealed class SubGraphs {
     @Serializable
     data object Dashboard : SubGraphs()
 
+    @Serializable
+    data object Favorites : SubGraphs()
+
 }
 
 sealed class AuthScreens {
@@ -29,13 +32,15 @@ sealed class AuthScreens {
 sealed class DashboardScreens {
 
     @Serializable
-    data object Home : DashboardScreens()
-    @Serializable
     data object CityWeather : DashboardScreens()
+
     @Serializable
     data object Favorites : DashboardScreens()
+}
+
+sealed class FavoritesScreens {
     @Serializable
-    data object WeatherWarnings : DashboardScreens()
+    data object FavoritesDetail : FavoritesScreens()
 }
 
 fun NavHostController.navigatePoppingUpToStartDestination(route: Any) {

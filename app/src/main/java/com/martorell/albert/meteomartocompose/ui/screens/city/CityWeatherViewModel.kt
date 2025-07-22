@@ -1,4 +1,4 @@
-package com.martorell.albert.meteomartocompose.ui.screens.dashboard
+package com.martorell.albert.meteomartocompose.ui.screens.city
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

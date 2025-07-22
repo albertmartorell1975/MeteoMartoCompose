@@ -3,7 +3,6 @@ package com.martorell.albert.meteomartocompose.ui
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationCity
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -40,11 +39,6 @@ class AppState(
                 R.string.favorite_tab,
                 DashboardScreens.Favorites,
                 Icons.Default.Favorite
-            ),
-            TopLevelRoute(
-                R.string.weather_warnings_tab,
-                DashboardScreens.WeatherWarnings,
-                Icons.Default.Warning
             )
         )
 

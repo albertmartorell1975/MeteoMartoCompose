@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -21,18 +22,8 @@ class MainActivity : ComponentActivity() {
         auth = Firebase.auth
         enableEdgeToEdge()
         setContent {
-            Navigation()
-            //MeteoMartoComposeTheme {
-            //    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            /*Greeting(
-                name = "Android",
-                modifier = Modifier.padding(innerPadding)
-            )
-
-             */
+            Navigation(navController = rememberNavController())
         }
-        // }
-        //}
     }
 
     override fun onStart() {
