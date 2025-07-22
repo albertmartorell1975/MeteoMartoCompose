@@ -112,8 +112,7 @@ fun HomeScreen(
             // Scaffold's content
             HomeNavGraph(
                 navController = navController,
-                modifier = Modifier.padding(innerPadding),
-                // cityWeatherViewModel = cityWeatherViewModel
+                modifier = Modifier.padding(innerPadding)
             )
 
         }

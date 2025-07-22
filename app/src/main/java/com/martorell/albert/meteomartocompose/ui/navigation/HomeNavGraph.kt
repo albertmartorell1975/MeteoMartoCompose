@@ -1,5 +1,6 @@
 package com.martorell.albert.meteomartocompose.ui.navigation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,7 +15,7 @@ import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScre
 
 fun HomeNavGraph(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
 
     NavHost(
@@ -35,6 +36,7 @@ fun HomeNavGraph(
                     hiltViewModel()
 
             FavoritesScreen(
+                modifier = modifier.padding(),
                 onTestSharedViewModel = sharedViewModel::isCityFavorite,
                 goToDetail = {
                     navController.navigate(SubGraphs.Favorites)
