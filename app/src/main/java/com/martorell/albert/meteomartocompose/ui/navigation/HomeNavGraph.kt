@@ -3,16 +3,13 @@ package com.martorell.albert.meteomartocompose.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
-import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
 @Composable
-
 fun HomeNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
@@ -29,7 +26,16 @@ fun HomeNavGraph(
         }
 
         composable<DashboardScreens.Favorites> { entry ->
-            val sharedViewModel: CityWeatherViewModel =
+
+            FavoritesScreen(
+                modifier = modifier.padding(),
+                goToDetail = {
+                    navController.navigate(SubGraphs.Favorites)
+                }
+            )
+
+            // No eliminar. És un exemple de com compartir ViewModel
+            /*val sharedViewModel: CityWeatherViewModel =
                 if (navController.previousBackStackEntry != null) hiltViewModel(
                     navController.previousBackStackEntry!!
                 ) else
@@ -42,6 +48,8 @@ fun HomeNavGraph(
                     navController.navigate(SubGraphs.Favorites)
                 }
             )
+
+             */
         }
 
         favoriteSubGraph(navController = navController)
