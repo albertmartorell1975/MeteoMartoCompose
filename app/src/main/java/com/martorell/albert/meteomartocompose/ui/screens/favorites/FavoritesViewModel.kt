@@ -60,7 +60,7 @@ class FavoritesViewModel @Inject constructor(
                     stateUpdated.copy(
                         loading = false,
                         error = null,
-                        citiesFavorites = listOfCities
+                        citiesFavorites = listOfCities.filter { it.favorite }
                     )
                 }
 

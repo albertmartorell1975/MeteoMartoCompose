@@ -34,5 +34,6 @@
     <string name="city_rain">"Rain: "</string>
     <string name="city_forecast_error">Failed to find out the city forecast</string>
     <string name="favorite">Favorite</string>
+    <string name="no_favorites_cities">There are no cities added as \'Favorite\'</string>
 
 </resources>
