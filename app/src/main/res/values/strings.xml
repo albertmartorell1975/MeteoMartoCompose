@@ -35,5 +35,6 @@
     <string name="city_forecast_error">Failed to find out the city forecast</string>
     <string name="favorite">Favorite</string>
     <string name="no_favorites_cities">There are no cities added as \'Favorite\'</string>
+    <string name="weather_not_available">Wheather info is not available</string>
 
 </resources>

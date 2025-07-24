@@ -86,6 +86,7 @@ fun FavoriteContent(
 
             items(count = state.value.citiesFavorites.size) { index ->
                 FavoriteItem(
+                    city = state.value.citiesFavorites[index],
                     clickOnDelete = {
                         coroutineScope.launch {
                             removeCityAsFavorite(state.value.citiesFavorites[index].name)
