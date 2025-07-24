@@ -26,7 +26,7 @@ class FavoritesViewModel @Inject constructor(
         val loading: Boolean = false,
         val error: CustomErrorFlow? = null,
         val citiesFavorites: List<CityWeatherDomain> = emptyList(),
-        val cityClicked: Int = -1
+        val cityToUnMarkAsFavorite: String = ""
     )
 
     init {
@@ -67,9 +67,35 @@ class FavoritesViewModel @Inject constructor(
             }
     }
 
-    suspend fun removeCityFromFavorites(cityName: String) {
+    suspend fun removeCityFromFavorites() {
 
-        favoritesInteractors.removeCityAsFavoriteUseCase.invoke(cityName)
+        favoritesInteractors.removeCityAsFavoriteUseCase.invoke(_state.value.cityToUnMarkAsFavorite)
+
+        _state.update { stateUpdated ->
+            stateUpdated.copy(
+                cityToUnMarkAsFavorite = ""
+            )
+        }
+
+    }
+
+    fun userClickedOnDeleteFavoriteCity(cityName: String) {
+
+        _state.update { stateUpdated ->
+            stateUpdated.copy(
+                cityToUnMarkAsFavorite = cityName
+            )
+        }
+
+    }
+
+    fun userDismissedAlertDialog() {
+
+        _state.update {
+            it.copy(
+                cityToUnMarkAsFavorite = ""
+            )
+        }
 
     }
 

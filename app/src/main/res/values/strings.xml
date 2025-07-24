@@ -35,6 +35,11 @@
     <string name="city_forecast_error">Failed to find out the city forecast</string>
     <string name="favorite">Favorite</string>
     <string name="no_favorites_cities">There are no cities added as \'Favorite\'</string>
-    <string name="weather_not_available">Wheather info is not available</string>
+    <string name="weather_not_available">Weather info is not available</string>
+    <string name="update_forecast">Update forecast</string>
+    <string name="delete_favority_city_title">Unmark city as favorite</string>
+    <string name="delete_favority_city_explanation">Are you sure to unmark the city as favorite?</string>
+    <string name="delete_favority_city_action">Unmark</string>
+    <string name="delete_favority_city_cancel">Cancel</string>
 
 </resources>

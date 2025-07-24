@@ -218,7 +218,7 @@ fun CityWeatherContent(
 
         }) {
 
-            Text(text = "Get my location")
+            Text(text = stringResource(R.string.update_forecast))
 
         }
 

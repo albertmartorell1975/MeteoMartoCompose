@@ -21,8 +21,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import kotlinx.coroutines.launch
-import kotlin.reflect.KSuspendFunction1
+import kotlin.reflect.KFunction1
+import kotlin.reflect.KSuspendFunction0
 
 @Composable
 fun FavoritesScreen(
@@ -37,7 +39,9 @@ fun FavoritesScreen(
         modifier = modifier,
         state = state,
         goToDetail = { goToDetail() },
-        removeCityAsFavorite = viewModel::removeCityFromFavorites
+        displayAlertDialogAction = viewModel::userClickedOnDeleteFavoriteCity,
+        dismissAlertDialogAction = viewModel::userDismissedAlertDialog,
+        removeCityFromFavoritesAction = viewModel::removeCityFromFavorites
     )
 
 }
@@ -48,7 +52,9 @@ fun FavoriteContent(
     modifier: Modifier = Modifier,
     state: State<FavoritesViewModel.UiState>,
     goToDetail: () -> Unit,
-    removeCityAsFavorite: KSuspendFunction1<String, Unit>,
+    displayAlertDialogAction: KFunction1<String, Unit>,
+    dismissAlertDialogAction: () -> Unit,
+    removeCityFromFavoritesAction: KSuspendFunction0<Unit>
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -88,14 +94,25 @@ fun FavoriteContent(
                 FavoriteItem(
                     city = state.value.citiesFavorites[index],
                     clickOnDelete = {
-                        coroutineScope.launch {
-                            removeCityAsFavorite(state.value.citiesFavorites[index].name)
-                        }
+                        displayAlertDialogAction(state.value.citiesFavorites[index].name)
                     },
                     clickOnRow = goToDetail
                 )
             }
         }
+
+        if (state.value.cityToUnMarkAsFavorite.isNotEmpty())
+            AlertDialogCustom(
+                title = R.string.delete_favority_city_title,
+                content = R.string.delete_favority_city_explanation,
+                actionText = R.string.delete_favority_city_action,
+                dismissText = R.string.delete_favority_city_cancel,
+                onDismissAction = dismissAlertDialogAction,
+                onConfirmAction = {
+                    coroutineScope.launch {
+                        removeCityFromFavoritesAction()
+                    }
+                })
 
     }
 
