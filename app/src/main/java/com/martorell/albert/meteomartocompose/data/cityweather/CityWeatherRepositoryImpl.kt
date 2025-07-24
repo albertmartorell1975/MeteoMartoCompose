@@ -42,13 +42,12 @@ class CityWeatherRepositoryImpl(
                 cityWeatherLocalDataSource.updateCity(
                     cityName = city.name,
                     weatherDescription = city.weatherDescription,
-                    weatherIcon =  city.weatherIcon,
+                    weatherIcon = city.weatherIcon,
                     pressure = city.pressure,
                     temperatureMax = city.temperatureMax,
                     temperatureMin = city.temperatureMin,
                     temperature = city.temperature
                 )
-
             else
                 cityWeatherLocalDataSource.addCity(cityServer)
 
@@ -65,5 +64,11 @@ class CityWeatherRepositoryImpl(
 
     override suspend fun isCurrentCityFavorite(): Boolean =
         cityWeatherLocalDataSource.isCurrentCityFavorite()
+
+    override suspend fun removeCityAsFavorite(cityName: String) {
+
+        cityWeatherLocalDataSource.removeCityAsFavorite(cityName)
+
+    }
 
 }

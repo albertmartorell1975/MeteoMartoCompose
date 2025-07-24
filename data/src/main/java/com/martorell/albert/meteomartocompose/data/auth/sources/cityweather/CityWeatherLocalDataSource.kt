@@ -23,5 +23,6 @@ interface CityWeatherLocalDataSource {
     suspend fun makeAllCitiesAsNotJustAdded()
     fun getAll(): Flow<List<CityWeatherDomain>>
     suspend fun isCurrentCityFavorite(): Boolean
+    suspend fun removeCityAsFavorite(cityName: String)
 
 }

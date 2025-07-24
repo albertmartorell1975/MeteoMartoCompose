@@ -46,4 +46,9 @@ interface CityDao {
         temperature: Double,
     )
 
+    @Query(
+        "UPDATE CityWeather SET favorite = false WHERE name =:name "
+    )
+    suspend fun removeCityAsFavorite(name: String)
+
 }

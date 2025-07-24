@@ -67,10 +67,9 @@ class FavoritesViewModel @Inject constructor(
             }
     }
 
-    public suspend fun removeCityFromFavorites(cityName: String) {
+    suspend fun removeCityFromFavorites(cityName: String) {
 
-        val k =""
-        //favoritesInteractors.removeCityAsFavoriteUseCase.invoke(cityName)
+        favoritesInteractors.removeCityAsFavoriteUseCase.invoke(cityName)
 
     }
 

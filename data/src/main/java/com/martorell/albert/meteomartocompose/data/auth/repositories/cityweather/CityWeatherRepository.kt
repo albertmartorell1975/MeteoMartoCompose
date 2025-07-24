@@ -17,4 +17,6 @@ interface CityWeatherRepository {
 
     suspend fun isCurrentCityFavorite(): Boolean
 
+    suspend fun removeCityAsFavorite(cityName: String)
+
 }

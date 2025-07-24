@@ -90,5 +90,14 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
 
         }
 
+    override suspend fun removeCityAsFavorite(cityName: String) {
+
+        withContext(Dispatchers.IO) {
+
+            cityDao.removeCityAsFavorite(cityName)
+
+        }
+
+    }
 
 }
