@@ -4,11 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -16,8 +12,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
@@ -46,7 +40,6 @@ fun FavoritesScreen(
 
 }
 
-
 @Composable
 fun FavoriteContent(
     modifier: Modifier = Modifier,
@@ -59,60 +52,61 @@ fun FavoriteContent(
 
     val coroutineScope = rememberCoroutineScope()
 
-    if (state.value.citiesFavorites.isEmpty()) {
+    if (state.value.error != null) {
 
         Box(
             modifier = Modifier
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(24.dp)
-                    // make text center vertical
-                    .wrapContentHeight()
-                // align bottom
-                //.wrapContentHeight(Alignment.Bottom)
-                ,
-                text = stringResource(R.string.no_favorites_cities),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
+            FavoriteEmptyState(stringResource(R.string.city_forecast_error))
         }
 
     } else {
 
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        if (state.value.citiesFavorites.isEmpty()) {
 
-            items(count = state.value.citiesFavorites.size) { index ->
-                FavoriteItem(
-                    city = state.value.citiesFavorites[index],
-                    clickOnDelete = {
-                        displayAlertDialogAction(state.value.citiesFavorites[index].name)
-                    },
-                    clickOnRow = goToDetail
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                FavoriteEmptyState(stringResource(R.string.no_favorites_cities))
             }
-        }
 
-        if (state.value.cityToUnMarkAsFavorite.isNotEmpty())
-            AlertDialogCustom(
-                title = R.string.delete_favority_city_title,
-                content = R.string.delete_favority_city_explanation,
-                actionText = R.string.delete_favority_city_action,
-                dismissText = R.string.delete_favority_city_cancel,
-                onDismissAction = dismissAlertDialogAction,
-                onConfirmAction = {
-                    coroutineScope.launch {
-                        removeCityFromFavoritesAction()
-                    }
-                })
+        } else {
+
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+
+                items(count = state.value.citiesFavorites.size) { index ->
+                    FavoriteItem(
+                        city = state.value.citiesFavorites[index],
+                        clickOnDelete = {
+                            displayAlertDialogAction(state.value.citiesFavorites[index].name)
+                        },
+                        clickOnRow = goToDetail
+                    )
+                }
+            }
+
+            if (state.value.cityToUnMarkAsFavorite.isNotEmpty())
+                AlertDialogCustom(
+                    title = R.string.delete_favority_city_title,
+                    content = R.string.delete_favority_city_explanation,
+                    actionText = R.string.delete_favority_city_action,
+                    dismissText = R.string.delete_favority_city_cancel,
+                    onDismissAction = dismissAlertDialogAction,
+                    onConfirmAction = {
+                        coroutineScope.launch {
+                            removeCityFromFavoritesAction()
+                        }
+                    })
+
+        }
 
     }
 
