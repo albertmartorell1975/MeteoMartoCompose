@@ -19,7 +19,7 @@ import com.martorell.albert.meteomartocompose.usecases.cityweather.CurrentLocati
 import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.IsCurrentCityFavoriteUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.IsGPSEnableUseCase
-import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.SwitchFavoriteUseCase
 import dagger.Module
 import dagger.Provides
@@ -35,7 +35,7 @@ class CityWeatherModule {
         checkLocationPermissionsUseCase: CheckLocationPermissionsUseCase,
         currentLocationUseCase: CurrentLocationUseCase,
         isGPSEnableUseCase: IsGPSEnableUseCase,
-        loadCityWeatherUseCase: LoadCityWeatherUseCase,
+        loadCityWeatherByCoordinatesUseCase: LoadCityWeatherByCoordinatesUseCase,
         switchFavoriteUseCase: SwitchFavoriteUseCase,
         getAllCitiesUseCase: GetAllCitiesUseCase,
         isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase
@@ -43,7 +43,7 @@ class CityWeatherModule {
         checkLocationPermissionsUseCase = checkLocationPermissionsUseCase,
         currentLocationUseCase = currentLocationUseCase,
         isGPSEnableUseCase = isGPSEnableUseCase,
-        loadCityForecastUseCase = loadCityWeatherUseCase,
+        loadCityWeatherByCoordinatesUseCase = loadCityWeatherByCoordinatesUseCase,
         switchFavoriteUseCase = switchFavoriteUseCase,
         getAllCitiesUseCase = getAllCitiesUseCase,
         isCurrentCityFavoriteUseCase = isCurrentCityFavoriteUseCase

@@ -19,4 +19,6 @@ interface CityWeatherRepository {
 
     suspend fun removeCityAsFavorite(cityName: String)
 
+    suspend fun loadCityByName(cityName: String): CityWeatherDomain
+
 }

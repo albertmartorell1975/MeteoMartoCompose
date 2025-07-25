@@ -71,4 +71,7 @@ class CityWeatherRepositoryImpl(
 
     }
 
+    override suspend fun loadCityByName(cityName: String): CityWeatherDomain =
+        cityWeatherLocalDataSource.loadCity(cityName)
+
 }

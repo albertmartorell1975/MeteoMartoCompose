@@ -175,7 +175,7 @@ class CityWeatherViewModel @Inject constructor(
             )
 
              */
-            val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
+            val myError = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
                 latitude = it.latitude.toString(),
                 longitude = it.longitude.toString()
             )

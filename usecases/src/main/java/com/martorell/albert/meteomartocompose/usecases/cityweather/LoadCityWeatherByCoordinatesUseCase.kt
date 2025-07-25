@@ -4,7 +4,7 @@ import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
 import javax.inject.Inject
 
-class LoadCityWeatherUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
+class LoadCityWeatherByCoordinatesUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
     suspend fun invoke(
         latitude: String,
