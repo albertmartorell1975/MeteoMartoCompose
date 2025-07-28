@@ -99,9 +99,6 @@ class FavoritesViewModel @Inject constructor(
 
     }
 
-    fun loadedCityWeather(){
-       // favoritesInteractors
-    }
     override fun onCleared() {
         super.onCleared()
     }

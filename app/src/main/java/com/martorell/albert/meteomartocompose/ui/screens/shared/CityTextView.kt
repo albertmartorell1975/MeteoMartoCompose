@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.martorell.albert.meteomartocompose.R
 
 @Composable
-fun CityText(
+fun CityTextView(
     fontSize: TextUnit = 25.sp,
     fontWeight: FontWeight = FontWeight.W400,
     contentFix: String,

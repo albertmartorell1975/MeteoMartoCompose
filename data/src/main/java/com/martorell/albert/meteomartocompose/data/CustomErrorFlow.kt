@@ -8,7 +8,7 @@ import java.io.IOException
  */
 sealed class CustomErrorFlow {
 
-    class FirebaseError(val code: Int) : CustomErrorFlow()
+    class Server(val code: Int) : CustomErrorFlow()
     data object Connectivity : CustomErrorFlow()
     class Unknown(val message: String) : CustomErrorFlow()
 }
@@ -21,7 +21,7 @@ fun Throwable.toCustomErrorFlow(): CustomErrorFlow =
             CustomErrorFlow.Connectivity
 
         is HttpException ->
-            CustomErrorFlow.FirebaseError(code())
+            CustomErrorFlow.Server(code())
 
         else ->
             CustomErrorFlow.Unknown(message ?: "")
@@ -29,7 +29,7 @@ fun Throwable.toCustomErrorFlow(): CustomErrorFlow =
 
 
 /**
- * If everything works fine it will return null else the customErrorFlow
+ * If everything works fine it will return null, else the customErrorFlow
  */
 inline fun <T> customFlowTryCatch(action: () -> T): CustomErrorFlow? = try {
     action()

@@ -9,7 +9,9 @@ import java.io.IOException
 typealias ResultResponse<T> = Either<CustomError, T>
 
 /**
- * This custom error class is meant for requests approach, which can be two sides of response (right or left) following the Either pattern
+ * This custom error class is meant for requests approach, which can be two sides of response (right or left), which follows the Either pattern:
+ * -> Left is the wrong response
+ * -> Right is the expected response
  */
 sealed class CustomError {
 

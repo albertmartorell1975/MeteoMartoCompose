@@ -13,7 +13,7 @@ sealed class SubGraphs {
     data object Dashboard : SubGraphs()
 
     @Serializable
-    data object Favorites : SubGraphs()
+    data class FavoritesGraph(val cityName: String?) : SubGraphs()
 
 }
 
@@ -36,11 +36,14 @@ sealed class DashboardScreens {
 
     @Serializable
     data object Favorites : DashboardScreens()
+
 }
 
 sealed class FavoritesScreens {
+
     @Serializable
-    data object FavoritesDetail : FavoritesScreens()
+    data class FavoritesDetail(val cityName: String = "") : FavoritesScreens()
+
 }
 
 fun NavHostController.navigatePoppingUpToStartDestination(route: Any) {

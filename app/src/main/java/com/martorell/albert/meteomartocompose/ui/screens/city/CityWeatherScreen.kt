@@ -46,7 +46,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
-import com.martorell.albert.meteomartocompose.ui.screens.shared.CityText
+import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
 
@@ -135,7 +135,7 @@ fun CityWeatherContent(
 
             if (state.value.errorLocation != null || state.value.errorForecast != null) {
 
-                CityText(
+                CityTextView(
                     contentFix = stringResource(R.string.city_forecast_error),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
@@ -147,7 +147,7 @@ fun CityWeatherContent(
 
                     state.value.city?.name?.let { cityName ->
 
-                        CityText(
+                        CityTextView(
                             contentFix = cityName,
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold
@@ -170,35 +170,35 @@ fun CityWeatherContent(
 
                     state.value.city?.weatherDescription?.let { weatherDescription ->
 
-                        CityText(
+                        CityTextView(
                             contentFix = weatherDescription,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    CityText(
+                    CityTextView(
                         contentFix = stringResource(R.string.city_current_temperature),
                         contentDynamic = state.value.city?.temperature.toString()
                     )
 
-                    CityText(
+                    CityTextView(
                         contentFix = stringResource(R.string.city_max_temperature),
                         contentDynamic = state.value.city?.temperatureMax.toString(),
                         colorDynamic = Color.Red
                     )
 
-                    CityText(
+                    CityTextView(
                         contentFix = stringResource(R.string.city_min_temperature),
                         contentDynamic = state.value.city?.temperatureMin.toString(),
                         colorDynamic = Color.Blue
                     )
 
-                    CityText(
+                    CityTextView(
                         contentFix = stringResource(R.string.city_pressure),
                         contentDynamic = state.value.city?.pressure.toString()
                     )
 
-                    CityText(
+                    CityTextView(
                         contentFix = stringResource(R.string.city_rain),
                         contentDynamic = state.value.city?.rain.toString(),
                         colorDynamic = Color.Blue
@@ -320,7 +320,7 @@ fun CityForecastData() {
 
         Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
 
-        CityText(contentFix = "Pressió atomsfèrica")
+        CityTextView(contentFix = "Pressió atomsfèrica")
 
     }
 

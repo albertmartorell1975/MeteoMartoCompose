@@ -30,7 +30,7 @@ fun HomeNavGraph(
             FavoritesScreen(
                 modifier = modifier.padding(),
                 goToDetail = {
-                    navController.navigate(SubGraphs.Favorites)
+                    navController.navigate(SubGraphs.FavoritesGraph(cityName = it?.name))
                 }
             )
 
@@ -52,7 +52,7 @@ fun HomeNavGraph(
              */
         }
 
-        favoriteSubGraph(navController = navController)
+        favoriteSubGraph()
 
     }
 

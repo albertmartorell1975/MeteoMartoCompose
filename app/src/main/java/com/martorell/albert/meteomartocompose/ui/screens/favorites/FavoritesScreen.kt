@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
@@ -23,7 +24,7 @@ import kotlin.reflect.KSuspendFunction0
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    goToDetail: () -> Unit,
+    goToDetail: (CityWeatherDomain?) -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel<FavoritesViewModel>()
 ) {
 
@@ -32,7 +33,7 @@ fun FavoritesScreen(
     FavoriteContent(
         modifier = modifier,
         state = state,
-        goToDetail = { goToDetail() },
+        goToDetail = goToDetail,
         displayAlertDialogAction = viewModel::userClickedOnDeleteFavoriteCity,
         dismissAlertDialogAction = viewModel::userDismissedAlertDialog,
         removeCityFromFavoritesAction = viewModel::removeCityFromFavorites
@@ -44,7 +45,7 @@ fun FavoritesScreen(
 fun FavoriteContent(
     modifier: Modifier = Modifier,
     state: State<FavoritesViewModel.UiState>,
-    goToDetail: () -> Unit,
+    goToDetail: (CityWeatherDomain?) -> Unit,
     displayAlertDialogAction: KFunction1<String, Unit>,
     dismissAlertDialogAction: () -> Unit,
     removeCityFromFavoritesAction: KSuspendFunction0<Unit>
@@ -88,7 +89,7 @@ fun FavoriteContent(
                         clickOnDelete = {
                             displayAlertDialogAction(state.value.citiesFavorites[index].name)
                         },
-                        clickOnRow = goToDetail
+                        clickOnRow = { goToDetail(state.value.citiesFavorites[index]) }
                     )
                 }
             }
