@@ -111,6 +111,7 @@ fun SignUpContent(
                         state.value.error?.let {
                             ErrorScreen(
                                 it,
+                                tryAgainClicked,
                                 tryAgainClicked
                             )
                         }
@@ -180,6 +181,7 @@ fun SignUpContent(
                                 state.value.error?.let {
                                     ErrorScreen(
                                         it,
+                                        tryAgainClicked,
                                         tryAgainClicked
                                     )
                                 }

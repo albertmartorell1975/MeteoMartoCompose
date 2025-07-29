@@ -1,6 +1,8 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
+import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
+import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.response.CityWeatherResponse
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
@@ -60,9 +62,11 @@ class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
 
     }
 
-    override suspend fun loadCity(name: String): CityWeatherDomain =
-        withContext(Dispatchers.IO) { cityDao.getCityByName(name).toDomain() }
-
+    override suspend fun loadCity(name: String): ResultResponse<CityWeatherDomain> =
+        customTryCatch {
+            withContext(Dispatchers.IO) { cityDao.getCityByName(name).toDomain() }
+        }
+    
     override suspend fun updateFavorite(cityWeatherDomain: CityWeatherDomain) {
 
         withContext(Dispatchers.IO) {

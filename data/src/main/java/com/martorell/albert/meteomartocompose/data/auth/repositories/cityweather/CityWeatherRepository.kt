@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather
 
 import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
+import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import kotlinx.coroutines.flow.Flow
 
@@ -19,6 +20,6 @@ interface CityWeatherRepository {
 
     suspend fun removeCityAsFavorite(cityName: String)
 
-    suspend fun loadCityByName(cityName: String): CityWeatherDomain
+    suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain>
 
 }

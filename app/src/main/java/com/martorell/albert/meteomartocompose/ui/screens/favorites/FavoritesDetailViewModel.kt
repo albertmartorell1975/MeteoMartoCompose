@@ -4,7 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.martorell.albert.meteomartocompose.data.CustomError
+import arrow.core.Either
+import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.ui.navigation.FavoritesScreens
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
@@ -32,8 +33,7 @@ class FavoritesDetailViewModel @Inject constructor(
 
     data class UiState(
         val loading: Boolean = false,
-        val error: CustomError? = null,
-        val city: CityWeatherDomain? = null
+        val city: ResultResponse<CityWeatherDomain?> = Either.Right(null)
     )
 
     init {
@@ -46,7 +46,7 @@ class FavoritesDetailViewModel @Inject constructor(
 
     }
 
-    private suspend fun loadCityWeather() {
+    suspend fun loadCityWeather() {
 
         _state.update {
             it.copy(

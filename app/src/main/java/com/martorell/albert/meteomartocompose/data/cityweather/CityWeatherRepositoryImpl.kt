@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
 import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
+import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
@@ -36,20 +37,25 @@ class CityWeatherRepositoryImpl(
 
             cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
             val city = cityWeatherLocalDataSource.loadCity(cityServer.name)
+            city.fold({
+                // In case of error does nothing
 
-            if (city.name.isNotEmpty())
+            }) { cityInfo ->
 
-                cityWeatherLocalDataSource.updateCity(
-                    cityName = city.name,
-                    weatherDescription = city.weatherDescription,
-                    weatherIcon = city.weatherIcon,
-                    pressure = city.pressure,
-                    temperatureMax = city.temperatureMax,
-                    temperatureMin = city.temperatureMin,
-                    temperature = city.temperature
-                )
-            else
-                cityWeatherLocalDataSource.addCity(cityServer)
+                if (cityInfo.name.isNotEmpty())
+
+                    cityWeatherLocalDataSource.updateCity(
+                        cityName = cityInfo.name,
+                        weatherDescription = cityInfo.weatherDescription,
+                        weatherIcon = cityInfo.weatherIcon,
+                        pressure = cityInfo.pressure,
+                        temperatureMax = cityInfo.temperatureMax,
+                        temperatureMin = cityInfo.temperatureMin,
+                        temperature = cityInfo.temperature
+                    )
+                else
+                    cityWeatherLocalDataSource.addCity(cityServer)
+            }
 
         }
 
@@ -71,7 +77,7 @@ class CityWeatherRepositoryImpl(
 
     }
 
-    override suspend fun loadCityByName(cityName: String): CityWeatherDomain =
+    override suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain> =
         cityWeatherLocalDataSource.loadCity(cityName)
 
 }

@@ -41,5 +41,6 @@
     <string name="delete_favority_city_explanation">Are you sure to unmark the city as favorite?</string>
     <string name="delete_favority_city_action">Unmark</string>
     <string name="delete_favority_city_cancel">Cancel</string>
+    <string name="train_again">Try it again</string>
 
 </resources>

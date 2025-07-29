@@ -21,11 +21,11 @@ fun HomeNavGraph(
     )
     {
 
-        composable<DashboardScreens.CityWeather> { entry ->
+        composable<DashboardScreens.CityWeather> { _ ->
             CityWeatherScreen()
         }
 
-        composable<DashboardScreens.Favorites> { entry ->
+        composable<DashboardScreens.Favorites> { _ ->
 
             FavoritesScreen(
                 modifier = modifier.padding(),
@@ -34,7 +34,7 @@ fun HomeNavGraph(
                 }
             )
 
-            // No eliminar. És un exemple de com compartir ViewModel
+            // Do not delete. It is an approach to share a ViewModel
             /*val sharedViewModel: CityWeatherViewModel =
                 if (navController.previousBackStackEntry != null) hiltViewModel(
                     navController.previousBackStackEntry!!
@@ -52,7 +52,7 @@ fun HomeNavGraph(
              */
         }
 
-        favoriteSubGraph()
+        favoriteSubGraph(navController = navController)
 
     }
 

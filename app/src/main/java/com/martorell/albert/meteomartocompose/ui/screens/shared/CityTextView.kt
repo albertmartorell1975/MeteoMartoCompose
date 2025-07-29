@@ -21,7 +21,7 @@ import com.martorell.albert.meteomartocompose.R
 fun CityTextView(
     fontSize: TextUnit = 25.sp,
     fontWeight: FontWeight = FontWeight.W400,
-    contentFix: String,
+    contentFix: String?,
     contentDynamic: String = "",
     colorFix: Color = Color.DarkGray,
     colorDynamic: Color = Color.DarkGray,

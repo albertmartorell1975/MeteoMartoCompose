@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,12 +28,13 @@ import com.martorell.albert.meteomartocompose.data.CustomError
 @Composable
 fun ErrorScreen(
     customError: CustomError,
-    setTryAgainState: () -> Unit
+    setTryAgainState: () -> Unit,
+    onBackHandlerAction:() ->Unit
 ) {
 
     val message = when (customError) {
         CustomError.Connectivity -> "Connectivity error"
-        is CustomError.FirebaseError -> "Firebase error"
+        is CustomError.FirebaseError -> "Server error"
         is CustomError.Unknown -> "CustomError error: ${customError.message}"
     }
 
@@ -60,12 +62,13 @@ fun ErrorScreen(
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.standard_height)))
         Button(onClick = { setTryAgainState() }) {
-            Text(text = "Try again")
+            Text(text = stringResource(R.string.train_again))
         }
 
         BackHandler {
-            setTryAgainState()
+            onBackHandlerAction()
         }
+
     }
 
 }
