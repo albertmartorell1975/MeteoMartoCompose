@@ -154,10 +154,12 @@ fun LoginContent(
                     Button(
                         modifier = Modifier
                             .widthIn(min = 200.dp)
-                            .height(dimensionResource(R.dimen.standard_height_button)), onClick = {
+                            .height(dimensionResource(R.dimen.standard_height_button)),
+                        onClick = {
                             keyboardController?.hide()
                             checkLogin()
-                        }, enabled = loginEnabled()
+                        },
+                        enabled = loginEnabled()
                     ) {
                         Text(text = stringResource(R.string.login))
                     }

@@ -15,4 +15,6 @@ interface AccountService {
         password: String
     ): ResultResponse<UserDomain?>
 
+    suspend fun hasUser(): Boolean
+
 }

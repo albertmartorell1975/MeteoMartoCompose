@@ -13,6 +13,9 @@ import javax.inject.Inject
 
 class AccountServiceImpl @Inject constructor() : AccountService {
 
+    override suspend fun hasUser(): Boolean =
+        Firebase.auth.currentUser != null
+
     override suspend fun singUp(email: String, password: String):
             ResultResponse<UserDomain?> =
 

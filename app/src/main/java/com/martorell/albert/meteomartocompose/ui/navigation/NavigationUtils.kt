@@ -20,6 +20,9 @@ sealed class SubGraphs {
 sealed class AuthScreens {
 
     @Serializable
+    data object Splash : AuthScreens()
+
+    @Serializable
     data object Login : AuthScreens()
 
     @Serializable

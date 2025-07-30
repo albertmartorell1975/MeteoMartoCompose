@@ -32,23 +32,4 @@ class LoginModule {
     fun getInputValidationHelperProvider() =
         InputValidationHelper()
 
-    /* @Provides
-     fun forgotPasswordServerSourceProvider(
-         forgotPasswordApi: ForgotPasswordApi,
-         headerForgotPasswordParams: HeaderForgotPasswordParams
-     ): ForgotPasswordServerSource =
-         ImpForgotPasswordServerSource(
-             forgotPasswordApi,
-             headerForgotPasswordParams
-         )
-
-     @Provides
-     fun forgotPwMethodInteractorProvider(
-         smsActivationStatus: GetSMSActivationStatus
-     ) = InteractorForgotPWMethod(
-         smsActivationStatus
-     )
-
-     */
-
 }

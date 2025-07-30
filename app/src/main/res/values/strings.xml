@@ -42,5 +42,6 @@
     <string name="delete_favority_city_action">Unmark</string>
     <string name="delete_favority_city_cancel">Cancel</string>
     <string name="train_again">Try it again</string>
+    <string name="welcome">Welcome</string>
 
 </resources>

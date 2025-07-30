@@ -7,10 +7,25 @@ import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.ui.screens.auth.LoginScreen
 import com.martorell.albert.meteomartocompose.ui.screens.auth.SignUpScreen
 import com.martorell.albert.meteomartocompose.ui.screens.auth.TermsScreen
+import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashScreen
 
 fun NavGraphBuilder.authSubGraph(navController: NavHostController) {
 
-    navigation<SubGraphs.Auth>(startDestination = AuthScreens.Login) {
+    navigation<SubGraphs.Auth>(startDestination = AuthScreens.Splash) {
+
+        composable<AuthScreens.Splash> {
+
+            SplashScreen(
+                goToLogin = {
+                    navController.popBackStack()
+                    navController.navigate(AuthScreens.Login)
+                { popUpTo(SubGraphs.Auth) }},
+                goToDashboard = {
+                    navController.navigate(SubGraphs.Dashboard)
+                    { popUpTo(SubGraphs.Auth) }
+                })
+
+        }
 
         composable<AuthScreens.Login> {
 

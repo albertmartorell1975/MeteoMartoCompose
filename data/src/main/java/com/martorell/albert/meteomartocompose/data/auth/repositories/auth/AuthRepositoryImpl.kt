@@ -12,6 +12,9 @@ class AuthRepositoryImpl @Inject constructor(
 ) :
     AuthRepository {
 
+    override suspend fun userLogged(): Boolean =
+        accountService.hasUser()
+
     override suspend fun logIn(
         email: String,
         password: String
