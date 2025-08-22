@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
@@ -17,39 +18,49 @@ fun HomeNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = DashboardScreens.CityWeather
-    )
-    {
+        startDestination = SubGraphs.Dashboard
+    ) {
 
-        composable<DashboardScreens.CityWeather> { _ ->
-            CityWeatherScreen()
-        }
+        navigation<SubGraphs.Dashboard>(
+            startDestination = DashboardScreens.CityWeather
+        ) {
 
-        composable<DashboardScreens.Favorites> { _ ->
-
-            FavoritesScreen(
-                modifier = modifier.padding(),
-                goToDetail = {
-                    navController.navigate(SubGraphs.FavoritesGraph(cityName = it?.name))
-                }
+            authSubGraph(
+                navController = navController,
+                logOut = true
             )
 
-            // Do not delete. It is an approach to share a ViewModel
-            /*val sharedViewModel: CityWeatherViewModel =
-                if (navController.previousBackStackEntry != null) hiltViewModel(
-                    navController.previousBackStackEntry!!
-                ) else
-                    hiltViewModel()
+            composable<DashboardScreens.CityWeather> { _ ->
+                CityWeatherScreen()
+            }
 
-            FavoritesScreen(
-                modifier = modifier.padding(),
-                onTestSharedViewModel = sharedViewModel::isCityFavorite,
-                goToDetail = {
-                    navController.navigate(SubGraphs.Favorites)
-                }
-            )
+            composable<DashboardScreens.Favorites> { _ ->
 
-             */
+                FavoritesScreen(
+                    modifier = modifier.padding(),
+                    goToDetail = {
+                        navController.navigate(SubGraphs.FavoritesGraph(cityName = it?.name))
+                    }
+                )
+
+                // Do not delete. It is an approach to share a ViewModel
+                /*val sharedViewModel: CityWeatherViewModel =
+                    if (navController.previousBackStackEntry != null) hiltViewModel(
+                        navController.previousBackStackEntry!!
+                    ) else
+                        hiltViewModel()
+
+                FavoritesScreen(
+                    modifier = modifier.padding(),
+                    onTestSharedViewModel = sharedViewModel::isCityFavorite,
+                    goToDetail = {
+                        navController.navigate(SubGraphs.Favorites)
+                    }
+                )
+
+                 */
+            }
+
         }
 
         favoriteSubGraph(navController = navController)

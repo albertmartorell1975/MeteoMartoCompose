@@ -34,7 +34,7 @@ class SplashViewModel @Inject constructor(val splashInteractors: SplashInteracto
 
         _state.update {
             it.copy(
-                userLogged = result,
+                userLogged = result
             )
         }
     }

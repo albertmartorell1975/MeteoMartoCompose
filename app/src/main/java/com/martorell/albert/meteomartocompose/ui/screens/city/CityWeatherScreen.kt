@@ -51,7 +51,9 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
 
 @Composable
-fun CityWeatherScreen(viewModel: CityWeatherViewModel = hiltViewModel()) {
+fun CityWeatherScreen(
+    viewModel: CityWeatherViewModel = hiltViewModel()
+) {
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
         state = state,

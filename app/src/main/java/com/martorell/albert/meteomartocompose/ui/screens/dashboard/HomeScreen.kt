@@ -27,7 +27,9 @@ import androidx.navigation.compose.rememberNavController
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import com.martorell.albert.meteomartocompose.ui.navigation.DashboardScreens
 import com.martorell.albert.meteomartocompose.ui.navigation.HomeNavGraph
+import com.martorell.albert.meteomartocompose.ui.navigation.SubGraphs
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.NavigationBarCustom
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
@@ -54,7 +56,32 @@ fun HomeScreen(
             topBar = {
                 if (appState.showBottomNavigation) {
                     TopAppBarCustom(
-                        scrollBehavior = scrollBehavior
+                        scrollBehavior = scrollBehavior,
+                        logOut = {
+                            cityWeatherViewModel::onLogOutClicked
+                            navController.navigate(SubGraphs.Auth) {
+                                launchSingleTop = true
+                                popUpTo<DashboardScreens.CityWeather> {
+                                    inclusive = true
+                                }
+                            }
+
+
+                            //Dep Link
+                            // val intent = Intent(context, MainActivity::class.java).apply {
+                            //     data = Uri.parse(BASE_DEEP_LINK + LOGOUT)
+                            // }
+                            //  context.startActivity(intent)
+
+
+                            //navController.popBackStack(
+                            //    destinationId = navController.graph.id,
+                            //    inclusive = true
+                            //)
+
+                            //end deep link
+                        }
+
                     )
                 }
             },
@@ -64,9 +91,7 @@ fun HomeScreen(
                         appState = appState
                     )
                 }
-
             },
-
             floatingActionButton = {
 
                 if (appState.showFavoriteButton) {
@@ -84,15 +109,8 @@ fun HomeScreen(
                             Icons.Default.FavoriteBorder
                     }
 
-                    /*FabCustom(onClicked = {
-                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() };
-                        userClickedOnFab += 1
-                    }, icon = icon)
-
-                     */
-
                     FloatingActionButton(onClick = {
-                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() };
+                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() }
                         userClickedOnFab += 1
                     }) {
                         icon?.run {
@@ -102,7 +120,6 @@ fun HomeScreen(
                             )
                         }
                     }
-
 
                 }
             }

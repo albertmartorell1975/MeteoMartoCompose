@@ -37,13 +37,15 @@ class CityWeatherViewModel @Inject constructor(
         val coordinates: ResultResponse<CurrentLocationDomain> =
             Either.Right(CurrentLocationDomain()),
         val city: CityWeatherDomain? = null,
-        val loadedForecast: Boolean = false
+        val loadedForecast: Boolean = false,
+        val logOut: Boolean = false
     )
 
     init {
 
         viewModelScope.launch {
 
+            //initialize()
             getCurrentLocationStarted()
 
         }
@@ -227,9 +229,40 @@ class CityWeatherViewModel @Inject constructor(
 
     suspend fun isCityFavorite(): Boolean {
 
-         return cityWeatherInteractors.isCurrentCityFavoriteUseCase.invoke()
+        return cityWeatherInteractors.isCurrentCityFavoriteUseCase.invoke()
 
     }
 
+    fun onLogOutClicked() {
+
+        cityWeatherInteractors.logOutUseCase.invoke()
+
+
+    }
+
+    private fun initialize() {
+
+        viewModelScope.launch {
+
+            cityWeatherInteractors.userFirebaseUseCase.invoke().collect { user ->
+
+                if (user == null) {
+                    _state.update { stateUpdated ->
+                        stateUpdated.copy(
+                            loading = false,
+                            errorForecast = null,
+                            loadedForecast = false,
+                            city = null,
+                            logOut = true
+                        )
+
+                    }
+                }
+
+            }
+
+        }
+
+    }
 
 }
