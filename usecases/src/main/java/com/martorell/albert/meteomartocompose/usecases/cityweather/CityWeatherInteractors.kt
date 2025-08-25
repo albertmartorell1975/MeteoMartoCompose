@@ -8,6 +8,5 @@ data class CityWeatherInteractors(
     val switchFavoriteUseCase: SwitchFavoriteUseCase,
     val getAllCitiesUseCase: GetAllCitiesUseCase,
     val isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase,
-    val logOutUseCase: LogOutUseCase,
-    val userFirebaseUseCase: UserFirebaseUseCase
+    val logOutUseCase: LogOutUseCase
 )

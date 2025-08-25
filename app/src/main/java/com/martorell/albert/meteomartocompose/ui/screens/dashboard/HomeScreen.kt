@@ -58,7 +58,7 @@ fun HomeScreen(
                     TopAppBarCustom(
                         scrollBehavior = scrollBehavior,
                         logOut = {
-                            cityWeatherViewModel::onLogOutClicked
+                            cityWeatherViewModel::onLogOutClicked.invoke()
                             navController.navigate(SubGraphs.Auth) {
                                 launchSingleTop = true
                                 popUpTo<DashboardScreens.CityWeather> {

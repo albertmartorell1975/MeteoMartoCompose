@@ -45,7 +45,6 @@ class CityWeatherViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            //initialize()
             getCurrentLocationStarted()
 
         }
@@ -237,31 +236,6 @@ class CityWeatherViewModel @Inject constructor(
 
         cityWeatherInteractors.logOutUseCase.invoke()
 
-
-    }
-
-    private fun initialize() {
-
-        viewModelScope.launch {
-
-            cityWeatherInteractors.userFirebaseUseCase.invoke().collect { user ->
-
-                if (user == null) {
-                    _state.update { stateUpdated ->
-                        stateUpdated.copy(
-                            loading = false,
-                            errorForecast = null,
-                            loadedForecast = false,
-                            city = null,
-                            logOut = true
-                        )
-
-                    }
-                }
-
-            }
-
-        }
 
     }
 

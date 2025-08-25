@@ -22,7 +22,6 @@ import com.martorell.albert.meteomartocompose.usecases.cityweather.IsGPSEnableUs
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LogOutUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.SwitchFavoriteUseCase
-import com.martorell.albert.meteomartocompose.usecases.cityweather.UserFirebaseUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,8 +40,7 @@ class CityWeatherModule {
         switchFavoriteUseCase: SwitchFavoriteUseCase,
         getAllCitiesUseCase: GetAllCitiesUseCase,
         isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase,
-        logOutUseCase: LogOutUseCase,
-        userFirebaseUseCase: UserFirebaseUseCase
+        logOutUseCase: LogOutUseCase
     ) = CityWeatherInteractors(
         checkLocationPermissionsUseCase = checkLocationPermissionsUseCase,
         currentLocationUseCase = currentLocationUseCase,
@@ -51,8 +49,7 @@ class CityWeatherModule {
         switchFavoriteUseCase = switchFavoriteUseCase,
         getAllCitiesUseCase = getAllCitiesUseCase,
         isCurrentCityFavoriteUseCase = isCurrentCityFavoriteUseCase,
-        logOutUseCase = logOutUseCase ,
-        userFirebaseUseCase = userFirebaseUseCase
+        logOutUseCase = logOutUseCase
     )
 
     @Provides
