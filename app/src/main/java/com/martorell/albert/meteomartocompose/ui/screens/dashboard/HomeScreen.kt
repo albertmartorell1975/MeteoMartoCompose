@@ -66,20 +66,6 @@ fun HomeScreen(
                                 }
                             }
 
-
-                            //Dep Link
-                            // val intent = Intent(context, MainActivity::class.java).apply {
-                            //     data = Uri.parse(BASE_DEEP_LINK + LOGOUT)
-                            // }
-                            //  context.startActivity(intent)
-
-
-                            //navController.popBackStack(
-                            //    destinationId = navController.graph.id,
-                            //    inclusive = true
-                            //)
-
-                            //end deep link
                         }
 
                     )
