@@ -43,5 +43,9 @@
     <string name="delete_favority_city_cancel">Cancel</string>
     <string name="train_again">Try it again</string>
     <string name="welcome">Welcome</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_explanation">Are you sure to want to log out?</string>
+    <string name="logout_accept">Continue</string>
+    <string name="logout_cancel">Cancel</string>
 
 </resources>

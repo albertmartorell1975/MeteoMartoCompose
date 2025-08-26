@@ -37,8 +37,7 @@ class CityWeatherViewModel @Inject constructor(
         val coordinates: ResultResponse<CurrentLocationDomain> =
             Either.Right(CurrentLocationDomain()),
         val city: CityWeatherDomain? = null,
-        val loadedForecast: Boolean = false,
-        val logOut: Boolean = false
+        val loadedForecast: Boolean = false
     )
 
     init {
@@ -235,7 +234,6 @@ class CityWeatherViewModel @Inject constructor(
     fun onLogOutClicked() {
 
         cityWeatherInteractors.logOutUseCase.invoke()
-
 
     }
 

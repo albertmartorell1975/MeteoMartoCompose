@@ -27,11 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
-import com.martorell.albert.meteomartocompose.ui.navigation.DashboardScreens
 import com.martorell.albert.meteomartocompose.ui.navigation.HomeNavGraph
-import com.martorell.albert.meteomartocompose.ui.navigation.SubGraphs
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.NavigationBarCustom
-import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import kotlinx.coroutines.launch
@@ -53,24 +50,6 @@ fun HomeScreen(
         Scaffold(
             // It is the connection between the nested scroll the TopAppBar behaviour
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                if (appState.showBottomNavigation) {
-                    TopAppBarCustom(
-                        scrollBehavior = scrollBehavior,
-                        logOut = {
-                            cityWeatherViewModel::onLogOutClicked.invoke()
-                            navController.navigate(SubGraphs.Auth) {
-                                launchSingleTop = true
-                                popUpTo<DashboardScreens.CityWeather> {
-                                    inclusive = true
-                                }
-                            }
-
-                        }
-
-                    )
-                }
-            },
             bottomBar = {
                 if (appState.showBottomNavigation) {
                     NavigationBarCustom(
@@ -114,6 +93,7 @@ fun HomeScreen(
 
             // Scaffold's content
             HomeNavGraph(
+                appState = appState,
                 navController = navController,
                 modifier = Modifier.padding(innerPadding)
             )
