@@ -19,23 +19,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -53,9 +45,6 @@ import coil3.request.crossfade
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.AppState
-import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
-import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
@@ -65,8 +54,7 @@ import kotlin.reflect.KSuspendFunction0
 @Composable
 fun CityWeatherScreen(
     viewModel: CityWeatherViewModel = hiltViewModel(),
-    goToLogin: () -> Unit,
-    appState: AppState
+    goToLogin: () -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
@@ -76,8 +64,8 @@ fun CityWeatherScreen(
         showRationaleDialog = viewModel::rationaleDialogShowed,
         hideRationaleDialog = viewModel::rationaleDialogHid,
         goToLoginAction = goToLogin,
-        logOutAction = viewModel::onLogOutClicked,
-        appState = appState
+        dismissLogOutDialogAction = viewModel::hideLogOutDialog,
+        logOutAction = viewModel::onLogOutClicked
     )
 
 }
@@ -85,12 +73,12 @@ fun CityWeatherScreen(
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CityWeatherContent(
-    appState: AppState,
     state: State<CityWeatherViewModel.UiState>,
     getLocation: KSuspendFunction0<Unit>,
     hideGPSDialog: () -> Unit,
     showRationaleDialog: () -> Unit,
     hideRationaleDialog: () -> Unit,
+    dismissLogOutDialogAction: () -> Unit,
     logOutAction: () -> Unit,
     goToLoginAction: () -> Unit
 ) {
@@ -104,188 +92,162 @@ fun CityWeatherContent(
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     )
-    val scrollState = rememberTopAppBarState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState)
-    var openAlertDialog by rememberSaveable { mutableStateOf(false) }
 
-    MeteoMartoComposeLayout {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-        Scaffold(
-            // It is the connection between the nested scroll the TopAppBar behaviour
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                if (appState.showBottomNavigation) {
-                    TopAppBarCustom(
-                        scrollBehavior = scrollBehavior,
-                        logOut = {
-                            openAlertDialog = true
-                        }
+        if (state.value.logOut)
+            AlertDialogCustom(
+                title = R.string.logout_title,
+                content = R.string.logout_explanation,
+                actionText = R.string.logout_accept,
+                dismissText = R.string.logout_cancel,
+                onDismissAction = { dismissLogOutDialogAction() },
+                onConfirmAction = {
+                    logOutAction()
+                    dismissLogOutDialogAction()
+                    goToLoginAction()
+                })
 
-                    )
+        if (state.value.locationChecked && state.value.showRationale) {
+
+            AlertDialogCustom(
+                title = R.string.location_rationale_title,
+                content = R.string.location_rationale_explanation,
+                actionText = R.string.location_rationale_action,
+                dismissText = R.string.location_rationale_cancel,
+                onDismissAction = hideRationaleDialog,
+                onConfirmAction = {
+                    context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                    hideRationaleDialog()
+                })
+        }
+
+        if (state.value.locationChecked && !state.value.permissionsGranted) {
+
+            if (!locationPermissions.shouldShowRationale) {
+                LaunchedEffect(key1 = state.value.permissionsGranted) {
+                    locationPermissions.launchMultiplePermissionRequest()
                 }
+            } else showRationaleDialog()
+
+        } else {
+
+            if (state.value.locationChecked && state.value.showGPSDialog) {
+
+                AlertDialogCustom(
+                    title = R.string.location_request_title,
+                    content = R.string.location_request_explanation,
+                    actionText = R.string.location_request_action,
+                    dismissText = R.string.location_request_cancel,
+                    onDismissAction = hideGPSDialog,
+                    onConfirmAction = {
+                        context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                        hideGPSDialog()
+                    })
+
             }
-        ) { innerPadding ->
+        }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        if (state.value.loadedForecast) {
 
-                if (openAlertDialog)
-                    AlertDialogCustom(
-                        title = R.string.logout_title,
-                        content = R.string.logout_explanation,
-                        actionText = R.string.logout_accept,
-                        dismissText = R.string.logout_cancel,
-                        onDismissAction = { openAlertDialog = false },
-                        onConfirmAction = {
-                            logOutAction()
-                            openAlertDialog = false
-                            goToLoginAction()
-                        })
+            if (state.value.errorLocation != null || state.value.errorForecast != null) {
 
-                if (state.value.locationChecked && state.value.showRationale) {
+                CityTextView(
+                    contentFix = stringResource(R.string.city_forecast_error),
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    AlertDialogCustom(
-                        title = R.string.location_rationale_title,
-                        content = R.string.location_rationale_explanation,
-                        actionText = R.string.location_rationale_action,
-                        dismissText = R.string.location_rationale_cancel,
-                        onDismissAction = hideRationaleDialog,
-                        onConfirmAction = {
-                            context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
-                            hideRationaleDialog()
-                        })
-                }
+            } else {
 
-                if (state.value.locationChecked && !state.value.permissionsGranted) {
+                state.value.coordinates.fold({}) {
 
-                    if (!locationPermissions.shouldShowRationale) {
-                        LaunchedEffect(key1 = state.value.permissionsGranted) {
-                            locationPermissions.launchMultiplePermissionRequest()
-                        }
-                    } else showRationaleDialog()
-
-                } else {
-
-                    if (state.value.locationChecked && state.value.showGPSDialog) {
-
-                        AlertDialogCustom(
-                            title = R.string.location_request_title,
-                            content = R.string.location_request_explanation,
-                            actionText = R.string.location_request_action,
-                            dismissText = R.string.location_request_cancel,
-                            onDismissAction = hideGPSDialog,
-                            onConfirmAction = {
-                                context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
-                                hideGPSDialog()
-                            })
-
-                    }
-                }
-
-                if (state.value.loadedForecast) {
-
-                    if (state.value.errorLocation != null || state.value.errorForecast != null) {
+                    state.value.city?.name?.let { cityName ->
 
                         CityTextView(
-                            contentFix = stringResource(R.string.city_forecast_error),
+                            contentFix = cityName,
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold
                         )
 
-                    } else {
-
-                        state.value.coordinates.fold({}) {
-
-                            state.value.city?.name?.let { cityName ->
-
-                                CityTextView(
-                                    contentFix = cityName,
-                                    fontSize = 32.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
-                            }
-
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(state.value.city?.weatherIcon).crossfade(true).build(),
-                                contentDescription = "El temps que fa",
-                                modifier = Modifier
-                                    .height(dimensionResource(R.dimen.weather_icon_size))
-                                    .width(
-                                        dimensionResource(R.dimen.weather_icon_size)
-                                    ),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            state.value.city?.weatherDescription?.let { weatherDescription ->
-
-                                CityTextView(
-                                    contentFix = weatherDescription,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            CityTextView(
-                                contentFix = stringResource(R.string.city_current_temperature),
-                                contentDynamic = state.value.city?.temperature.toString()
-                            )
-
-                            CityTextView(
-                                contentFix = stringResource(R.string.city_max_temperature),
-                                contentDynamic = state.value.city?.temperatureMax.toString(),
-                                colorDynamic = Color.Red
-                            )
-
-                            CityTextView(
-                                contentFix = stringResource(R.string.city_min_temperature),
-                                contentDynamic = state.value.city?.temperatureMin.toString(),
-                                colorDynamic = Color.Blue
-                            )
-
-                            CityTextView(
-                                contentFix = stringResource(R.string.city_pressure),
-                                contentDynamic = state.value.city?.pressure.toString()
-                            )
-
-                            CityTextView(
-                                contentFix = stringResource(R.string.city_rain),
-                                contentDynamic = state.value.city?.rain.toString(),
-                                colorDynamic = Color.Blue
-                            )
-
-                        }
-
+                        Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
                     }
 
-                }
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(state.value.city?.weatherIcon).crossfade(true).build(),
+                        contentDescription = "El temps que fa",
+                        modifier = Modifier
+                            .height(dimensionResource(R.dimen.weather_icon_size))
+                            .width(
+                                dimensionResource(R.dimen.weather_icon_size)
+                            ),
+                        contentScale = ContentScale.Crop
+                    )
 
-                Button(onClick = {
+                    state.value.city?.weatherDescription?.let { weatherDescription ->
 
-                    coroutineScope.launch {
-                        getLocation()
+                        CityTextView(
+                            contentFix = weatherDescription,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
-                }) {
+                    CityTextView(
+                        contentFix = stringResource(R.string.city_current_temperature),
+                        contentDynamic = state.value.city?.temperature.toString()
+                    )
 
-                    Text(text = stringResource(R.string.update_forecast))
+                    CityTextView(
+                        contentFix = stringResource(R.string.city_max_temperature),
+                        contentDynamic = state.value.city?.temperatureMax.toString(),
+                        colorDynamic = Color.Red
+                    )
+
+                    CityTextView(
+                        contentFix = stringResource(R.string.city_min_temperature),
+                        contentDynamic = state.value.city?.temperatureMin.toString(),
+                        colorDynamic = Color.Blue
+                    )
+
+                    CityTextView(
+                        contentFix = stringResource(R.string.city_pressure),
+                        contentDynamic = state.value.city?.pressure.toString()
+                    )
+
+                    CityTextView(
+                        contentFix = stringResource(R.string.city_rain),
+                        contentDynamic = state.value.city?.rain.toString(),
+                        colorDynamic = Color.Blue
+                    )
 
                 }
 
             }
 
-            if (state.value.loading) CircularProgressIndicatorCustom()
+        }
+
+        Button(onClick = {
+
+            coroutineScope.launch {
+                getLocation()
+            }
+
+        }) {
+
+            Text(text = stringResource(R.string.update_forecast))
 
         }
 
     }
+
+    if (state.value.loading) CircularProgressIndicatorCustom()
 
 }
 

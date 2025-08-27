@@ -1,9 +1,18 @@
 package com.martorell.albert.meteomartocompose.ui.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarNavigationIcon
+import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarTitle
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesDetailScreen
 
 fun NavGraphBuilder.favoriteSubGraph(navController: NavHostController) {
@@ -14,11 +23,23 @@ fun NavGraphBuilder.favoriteSubGraph(navController: NavHostController) {
 
         composable<FavoritesScreens.FavoritesDetail> { _ ->
 
-            //val args = navBackStackEntry.toRoute<FavoritesScreens.FavoritesDetail>()
-            //requireNotNull(args.cityName)// des d'aquest punt assegurem que "id" no és null
-            // Nota: les dues línies anteriors no fan falta posar-les ja que a FavoritesDetail s'injecta
-            // el ViewModel el qual ja té  assignat el valor de cityName a través de SavedStateHandle
+            ProvideAppBarTitle {
+                Text(text = stringResource(R.string.city_weather_detail))
+            }
+
+            ProvideAppBarNavigationIcon {
+                IconButton(
+                    onClick = { navController.navigateUp() },
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+
             FavoritesDetailScreen(navController = navController)
+
         }
 
     }

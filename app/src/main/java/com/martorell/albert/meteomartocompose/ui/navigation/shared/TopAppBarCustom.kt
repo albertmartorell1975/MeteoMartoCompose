@@ -1,57 +1,45 @@
 package com.martorell.albert.meteomartocompose.ui.navigation.shared
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import com.martorell.albert.meteomartocompose.R
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.navigation.FloatingWindow
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
+import com.martorell.albert.meteomartocompose.ui.screens.AppBarAction
+import com.martorell.albert.meteomartocompose.ui.screens.AppBarIcon
+import com.martorell.albert.meteomartocompose.ui.screens.AppBarTitle
+import kotlinx.coroutines.flow.filterNot
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarCustom(
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    logOut: () -> Unit
+    navController: NavHostController,
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
 
-    TopAppBar(
-        title = { Text(text = stringResource(id = R.string.app_name)) },
-        scrollBehavior = scrollBehavior,
-        actions = {
-            AppBarAction(
-                imageVector = Icons.AutoMirrored.Default.Logout,
-                onClickAction = logOut
-            )
+    val currentContentBackStackEntry by produceState(
+        initialValue = null as NavBackStackEntry?,
+        producer = {
+            navController.currentBackStackEntryFlow
+                .filterNot { it.destination is FloatingWindow }
+                .collect { value = it }
         }
     )
-
-}
-
-@Composable
-private fun AppBarAction(
-    imageVector: ImageVector,
-    onClickAction: () -> Unit
-) {
-
-    val coroutineScope = rememberCoroutineScope()
-
-    IconButton(
-        onClick = {
-            coroutineScope.launch { onClickAction() }
+    TopAppBar(
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            AppBarIcon(currentContentBackStackEntry)
+        },
+        title = {
+            AppBarTitle(currentContentBackStackEntry)
+        },
+        actions = {
+            AppBarAction(currentContentBackStackEntry)
         }
-    ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null
-        )
-    }
+    )
 
 }

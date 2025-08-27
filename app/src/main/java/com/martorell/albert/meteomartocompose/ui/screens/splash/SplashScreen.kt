@@ -59,7 +59,7 @@ fun SplashContent(
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.standard_height)))
         Text(
-            stringResource(R.string.welcome),
+            stringResource(R.string.login_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
@@ -92,7 +92,7 @@ fun SplashContentPreview() {
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.standard_height)))
         Text(
-            stringResource(R.string.welcome),
+            stringResource(R.string.login_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )

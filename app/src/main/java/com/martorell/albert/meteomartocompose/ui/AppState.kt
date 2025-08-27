@@ -80,10 +80,6 @@ class AppState(
 
         }
 
-    fun onUpClick() {
-        navController.popBackStack()
-    }
-
     fun onNavItemClick(screen: DashboardScreens) {
         navController.navigatePoppingUpToStartDestination(screen)
     }

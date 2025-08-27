@@ -29,6 +29,7 @@ import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.navigation.HomeNavGraph
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.NavigationBarCustom
+import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
     appState: AppState = rememberAppState(navController = navController),
-    cityWeatherViewModel: CityWeatherViewModel = hiltViewModel()
+    cityWeatherViewModel: CityWeatherViewModel = hiltViewModel(),
 ) {
 
     val scrollState = rememberTopAppBarState()
@@ -50,6 +51,12 @@ fun HomeScreen(
         Scaffold(
             // It is the connection between the nested scroll the TopAppBar behaviour
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                TopAppBarCustom(
+                    navController,
+                    scrollBehavior = scrollBehavior
+                )
+            },
             bottomBar = {
                 if (appState.showBottomNavigation) {
                     NavigationBarCustom(
@@ -93,7 +100,6 @@ fun HomeScreen(
 
             // Scaffold's content
             HomeNavGraph(
-                appState = appState,
                 navController = navController,
                 modifier = Modifier.padding(innerPadding)
             )
