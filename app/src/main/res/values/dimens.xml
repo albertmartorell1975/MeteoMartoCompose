@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="standard_height">40dp</dimen>
+    <dimen name="medium_spacer">16dp</dimen>
+    <dimen name="standard_height_button">50dp</dimen>
+    <dimen name="weather_icon_size">90dp</dimen>
+</resources>

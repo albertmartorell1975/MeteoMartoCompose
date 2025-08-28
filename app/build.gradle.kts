@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.kotlinAndroidKsp)
+    alias(libs.plugins.googleServices)
 }
 
 android {
@@ -40,7 +44,9 @@ android {
 }
 
 dependencies {
-
+    implementation((project(":usecases")))
+    implementation((project(":data")))
+    implementation((project(":domain")))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -51,9 +57,39 @@ dependencies {
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    //navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    //Extended icons
+    implementation(libs.material.icons.extended)
+    //Hilt
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    //Either
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
+    //Room (the below order is mandatory)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    //Location
+    implementation(libs.accompanist.permissions)
+    implementation(libs.play.services.location)
+    //Retrofit
+    implementation(libs.retofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    //Constraint layout
+    implementation(libs.constraint.compose)
 }

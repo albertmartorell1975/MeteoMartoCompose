@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.martorell.albert.meteomartocompose" />
+                  <option name="mobileSdkAppId" value="1:80789960058:android:3ffba72a1b30cc23f3d2c3" />
+                  <option name="projectId" value="meteomartocompose" />
+                  <option name="projectNumber" value="80789960058" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
