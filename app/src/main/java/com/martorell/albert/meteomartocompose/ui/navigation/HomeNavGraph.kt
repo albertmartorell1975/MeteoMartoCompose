@@ -9,20 +9,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarAction
-import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarTitle
+import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarAction
+import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarTitle
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
 @Composable
 fun HomeNavGraph(
+    viewModel: CityWeatherViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -43,11 +43,11 @@ fun HomeNavGraph(
 
             composable<DashboardScreens.CityWeather> { _ ->
 
-                val sharedCityWeatherViewModel: CityWeatherViewModel =
-                    if (navController.previousBackStackEntry != null) hiltViewModel(
-                        navController.previousBackStackEntry!!
-                    ) else
-                        hiltViewModel()
+                //val sharedCityWeatherViewModel: CityWeatherViewModel =
+                //    if (navController.previousBackStackEntry != null) hiltViewModel(
+                //        navController.previousBackStackEntry!!
+                //    ) else
+                //        hiltViewModel()
 
                 ProvideAppBarTitle {
                     Text(text = stringResource(R.string.city_top_bar_title))
@@ -57,7 +57,7 @@ fun HomeNavGraph(
                     // Add whichever actions are applicable to this screen.
                     IconButton(
                         onClick = {
-                            sharedCityWeatherViewModel.showLogOutDialog()
+                            viewModel.showLogOutDialog()
                         }
                     ) {
                         Icon(
@@ -68,6 +68,7 @@ fun HomeNavGraph(
                 }
 
                 CityWeatherScreen(
+                    viewModel = viewModel,
                     goToLogin = {
                         navController.navigate(SubGraphs.Auth) {
                             launchSingleTop = true

@@ -11,8 +11,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarNavigationIcon
-import com.martorell.albert.meteomartocompose.ui.screens.ProvideAppBarTitle
+import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarNavigationIcon
+import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarTitle
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesDetailScreen
 
 fun NavGraphBuilder.favoriteSubGraph(navController: NavHostController) {
