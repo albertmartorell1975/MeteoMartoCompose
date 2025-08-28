@@ -59,7 +59,7 @@ fun SplashContent(
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.standard_height)))
         Text(
-            stringResource(R.string.welcome),
+            stringResource(R.string.login_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )
@@ -68,7 +68,6 @@ fun SplashContent(
 
     // Executed only once
     LaunchedEffect(key1 = true) {
-        // this delay will be deleted if the checking done in the splash screen take some time
         delay(3000)
         if (state.value.userLogged)
             goToDashboard()
@@ -93,7 +92,7 @@ fun SplashContentPreview() {
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.standard_height)))
         Text(
-            stringResource(R.string.welcome),
+            stringResource(R.string.login_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold
         )

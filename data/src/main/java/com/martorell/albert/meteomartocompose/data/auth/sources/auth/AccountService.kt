@@ -2,6 +2,7 @@ package com.martorell.albert.meteomartocompose.data.auth.sources.auth
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import kotlinx.coroutines.flow.Flow
 
 interface AccountService {
 
@@ -16,5 +17,9 @@ interface AccountService {
     ): ResultResponse<UserDomain?>
 
     suspend fun hasUser(): Boolean
+
+    fun signOut()
+
+    val currentUser: Flow<UserDomain>
 
 }

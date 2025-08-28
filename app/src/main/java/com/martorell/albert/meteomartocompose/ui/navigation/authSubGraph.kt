@@ -9,9 +9,17 @@ import com.martorell.albert.meteomartocompose.ui.screens.auth.SignUpScreen
 import com.martorell.albert.meteomartocompose.ui.screens.auth.TermsScreen
 import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashScreen
 
-fun NavGraphBuilder.authSubGraph(navController: NavHostController) {
+fun NavGraphBuilder.authSubGraph(
+    navController: NavHostController,
+    logOut: Boolean = false
+) {
 
-    navigation<SubGraphs.Auth>(startDestination = AuthScreens.Splash) {
+    navigation<SubGraphs.Auth>(
+        startDestination = if (logOut)
+            AuthScreens.Login
+        else
+            AuthScreens.Splash
+    ) {
 
         composable<AuthScreens.Splash> {
 
@@ -19,7 +27,8 @@ fun NavGraphBuilder.authSubGraph(navController: NavHostController) {
                 goToLogin = {
                     navController.popBackStack()
                     navController.navigate(AuthScreens.Login)
-                { popUpTo(SubGraphs.Auth) }},
+                    { popUpTo(SubGraphs.Auth) }
+                },
                 goToDashboard = {
                     navController.navigate(SubGraphs.Dashboard)
                     { popUpTo(SubGraphs.Auth) }
@@ -27,8 +36,7 @@ fun NavGraphBuilder.authSubGraph(navController: NavHostController) {
 
         }
 
-        composable<AuthScreens.Login> {
-
+        composable<AuthScreens.Login>() {
             LoginScreen(
                 goToTerms = { navController.navigate(AuthScreens.Terms) },
                 goToDashboard = {

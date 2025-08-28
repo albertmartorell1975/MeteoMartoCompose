@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -41,6 +42,7 @@ fun FavoritesScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteContent(
     modifier: Modifier = Modifier,
@@ -77,8 +79,27 @@ fun FavoriteContent(
 
         } else {
 
+            /*if (openAlertDialog)
+
+                AlertDialogCustom(
+                    title = R.string.logout_title,
+                    content = R.string.logout_explanation,
+                    actionText = R.string.logout_accept,
+                    dismissText = R.string.logout_cancel,
+                    onDismissAction = {
+                        openAlertDialog = false
+                    },
+                    onConfirmAction = {
+                        logOutAction()
+                        openAlertDialog = false
+                        goToLoginAction()
+                    })
+
+             */
+
             LazyColumn(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier
+                    .fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {

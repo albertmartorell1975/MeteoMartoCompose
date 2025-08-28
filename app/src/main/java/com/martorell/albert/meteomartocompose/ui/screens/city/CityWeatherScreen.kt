@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -51,26 +51,35 @@ import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
 
 @Composable
-fun CityWeatherScreen(viewModel: CityWeatherViewModel = hiltViewModel()) {
+fun CityWeatherScreen(
+    viewModel: CityWeatherViewModel,
+    goToLogin: () -> Unit
+) {
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
         state = state,
         getLocation = viewModel::getCurrentLocationStarted,
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
-        hideRationaleDialog = viewModel::rationaleDialogHid
+        hideRationaleDialog = viewModel::rationaleDialogHid,
+        goToLoginAction = goToLogin,
+        dismissLogOutDialogAction = viewModel::hideLogOutDialog,
+        logOutAction = viewModel::onLogOutClicked
     )
 
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CityWeatherContent(
     state: State<CityWeatherViewModel.UiState>,
     getLocation: KSuspendFunction0<Unit>,
     hideGPSDialog: () -> Unit,
     showRationaleDialog: () -> Unit,
-    hideRationaleDialog: () -> Unit
+    hideRationaleDialog: () -> Unit,
+    dismissLogOutDialogAction: () -> Unit,
+    logOutAction: () -> Unit,
+    goToLoginAction: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -90,6 +99,19 @@ fun CityWeatherContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        if (state.value.logOut)
+            AlertDialogCustom(
+                title = R.string.logout_title,
+                content = R.string.logout_explanation,
+                actionText = R.string.logout_accept,
+                dismissText = R.string.logout_cancel,
+                onDismissAction = { dismissLogOutDialogAction() },
+                onConfirmAction = {
+                    logOutAction()
+                    dismissLogOutDialogAction()
+                    goToLoginAction()
+                })
 
         if (state.value.locationChecked && state.value.showRationale) {
 

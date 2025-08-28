@@ -12,6 +12,10 @@ class AuthRepositoryImpl @Inject constructor(
 ) :
     AuthRepository {
 
+    override fun logOut() {
+        accountService.signOut()
+    }
+
     override suspend fun userLogged(): Boolean =
         accountService.hasUser()
 

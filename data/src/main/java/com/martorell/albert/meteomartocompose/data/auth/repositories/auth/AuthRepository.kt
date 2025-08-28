@@ -15,7 +15,8 @@ interface AuthRepository {
         password: String
     ): ResultResponse<UserDomain?>
 
-    //fun userLogged(): ResultResponse<Boolean>
     suspend fun userLogged(): Boolean
+
+    fun logOut()
 
 }

@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
     appState: AppState = rememberAppState(navController = navController),
-    cityWeatherViewModel: CityWeatherViewModel = hiltViewModel()
+    cityWeatherViewModel: CityWeatherViewModel = hiltViewModel(),
 ) {
 
     val scrollState = rememberTopAppBarState()
@@ -52,11 +52,10 @@ fun HomeScreen(
             // It is the connection between the nested scroll the TopAppBar behaviour
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-                if (appState.showBottomNavigation) {
-                    TopAppBarCustom(
-                        scrollBehavior = scrollBehavior
-                    )
-                }
+                TopAppBarCustom(
+                    navController,
+                    scrollBehavior = scrollBehavior
+                )
             },
             bottomBar = {
                 if (appState.showBottomNavigation) {
@@ -64,9 +63,7 @@ fun HomeScreen(
                         appState = appState
                     )
                 }
-
             },
-
             floatingActionButton = {
 
                 if (appState.showFavoriteButton) {
@@ -84,15 +81,8 @@ fun HomeScreen(
                             Icons.Default.FavoriteBorder
                     }
 
-                    /*FabCustom(onClicked = {
-                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() };
-                        userClickedOnFab += 1
-                    }, icon = icon)
-
-                     */
-
                     FloatingActionButton(onClick = {
-                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() };
+                        coroutineScope.launch { cityWeatherViewModel::onFavoriteClicked.invoke() }
                         userClickedOnFab += 1
                     }) {
                         icon?.run {
@@ -103,7 +93,6 @@ fun HomeScreen(
                         }
                     }
 
-
                 }
             }
 
@@ -111,6 +100,7 @@ fun HomeScreen(
 
             // Scaffold's content
             HomeNavGraph(
+                viewModel = cityWeatherViewModel,
                 navController = navController,
                 modifier = Modifier.padding(innerPadding)
             )
