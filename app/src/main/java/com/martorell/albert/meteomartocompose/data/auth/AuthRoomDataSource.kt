@@ -7,7 +7,7 @@ import com.martorell.albert.meteomartocompose.utils.toRoom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RoomDataSource(db: MeteoMartoDatabase) : AuthLocalDataSource {
+class AuthRoomDataSource(db: MeteoMartoDatabase) : AuthLocalDataSource {
 
     private val userDao = db.userDao()
 

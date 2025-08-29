@@ -1,7 +1,7 @@
 package com.martorell.albert.meteomartocompose.di.auth
 
 import com.martorell.albert.meteomartocompose.data.auth.AccountServiceImpl
-import com.martorell.albert.meteomartocompose.data.auth.RoomDataSource
+import com.martorell.albert.meteomartocompose.data.auth.AuthRoomDataSource
 import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepository
 import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
@@ -42,7 +42,7 @@ class RegisterModule {
     }
 
     @Provides
-    fun providesAuthLocalDataSource(db: MeteoMartoDatabase): AuthLocalDataSource =
-        RoomDataSource(db)
+    fun providesAuthRoomDataSource(db: MeteoMartoDatabase): AuthLocalDataSource =
+        AuthRoomDataSource(db)
 
 }
