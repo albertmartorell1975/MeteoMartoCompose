@@ -118,6 +118,11 @@ class CityWeatherViewModel @Inject constructor(
 
                 }) {
 
+                    cityWeatherInteractors.saveLocationUseCase.invoke(
+                        latitude = it.latitude,
+                        longitude = it.longitude
+                    )
+
                     // current location loaded
                     _state.update { updatedState ->
                         updatedState.copy(
@@ -136,7 +141,7 @@ class CityWeatherViewModel @Inject constructor(
 
             } else {
 
-                // gps is not enabled
+                // GPS is not enabled
                 _state.update { updatedState ->
                     updatedState.copy(
                         loading = false,
@@ -151,7 +156,7 @@ class CityWeatherViewModel @Inject constructor(
 
         } else {
 
-            // permissions are not granted
+            // Permissions are not granted
             _state.update { updatedState ->
                 updatedState.copy(
                     loading = false,

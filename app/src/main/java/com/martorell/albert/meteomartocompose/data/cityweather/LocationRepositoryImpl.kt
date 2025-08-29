@@ -13,22 +13,15 @@ class LocationRepositoryImpl @Inject constructor(
 ) :
     LocationRepository {
 
-    override suspend fun loadCurrentLocation(): ResultResponse<CurrentLocationDomain> {
+    override suspend fun loadCurrentLocation(): ResultResponse<CurrentLocationDomain> =
+        locationServerDataSource.loadCurrentLocation()
 
-        val result = locationServerDataSource.loadCurrentLocation()
+    override suspend fun saveLocation(latitude: Double?, longitude: Double?) {
 
-        // Only if the result is correct, will be saved on the local database
-        result.fold(
-            {},
-            {
-                locationLocalDataSource.saveLocation(
-                    latitude = it.latitude,
-                    longitude = it.longitude
-                )
-            }
+        locationLocalDataSource.saveLocation(
+            latitude = latitude,
+            longitude = longitude
         )
-
-        return result
 
     }
 
