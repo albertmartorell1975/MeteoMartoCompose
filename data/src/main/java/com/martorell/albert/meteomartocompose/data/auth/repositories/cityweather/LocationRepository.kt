@@ -6,4 +6,6 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocation
 interface LocationRepository {
 
     suspend fun loadCurrentLocation(): ResultResponse<CurrentLocationDomain>
+    suspend fun saveLocation(latitude: Double?, longitude: Double?)
+
 }
