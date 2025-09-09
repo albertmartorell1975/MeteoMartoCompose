@@ -172,10 +172,11 @@ class CityWeatherViewModel @Inject constructor(
     private suspend fun loadCityWeather() {
 
         /*Coordenades de Terrassa
-        val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
-            latitude = "41.56667",
-            longitude = "2.01667"
-        )
+                val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
+                    latitude = "41.56667",
+                    longitude = "2.01667"
+                )
+
          */
 
         val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
