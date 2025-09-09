@@ -34,11 +34,11 @@ class CityWeatherViewModel @Inject constructor(
         val permissionsGranted: Boolean = false,
         val errorLocation: CustomError? = null,
         val errorForecast: CustomErrorFlow? = null,
-        val coordinates: ResultResponse<CurrentLocationDomain> =
-            Either.Right(CurrentLocationDomain()),
+        val coordinates: ResultResponse<CurrentLocationDomain> = Either.Right(CurrentLocationDomain()),
         val city: CityWeatherDomain? = null,
         val loadedForecast: Boolean = false,
-        val logOut: Boolean = false
+        val logOut: Boolean = false,
+        val showFab: Boolean = false
     )
 
     init {
@@ -102,9 +102,9 @@ class CityWeatherViewModel @Inject constructor(
 
             if (cityWeatherInteractors.isGPSEnableUseCase.invoke()) {
 
-                val result = cityWeatherInteractors.currentLocationUseCase.invoke()
+                val currentLocation = cityWeatherInteractors.currentLocationUseCase.invoke()
 
-                result.fold({
+                currentLocation.fold({
 
                     // current location not loaded
                     _state.update { updatedState ->
@@ -118,16 +118,15 @@ class CityWeatherViewModel @Inject constructor(
 
                 }) {
 
+                    // current location loaded
                     cityWeatherInteractors.saveLocationUseCase.invoke(
-                        latitude = it.latitude,
-                        longitude = it.longitude
+                        latitude = it.latitude, longitude = it.longitude
                     )
 
-                    // current location loaded
                     _state.update { updatedState ->
                         updatedState.copy(
                             loading = true,
-                            coordinates = result,
+                            coordinates = currentLocation,
                             showGPSDialog = false,
                             errorLocation = null,
                             errorForecast = null,
@@ -172,50 +171,50 @@ class CityWeatherViewModel @Inject constructor(
 
     private suspend fun loadCityWeather() {
 
-        _state.value.coordinates.fold({}) {
+        /*Coordenades de Terrassa
+        val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
+            latitude = "41.56667",
+            longitude = "2.01667"
+        )
+         */
 
-            /*Coordenades de Terrassa
-            val myError = cityWeatherInteractors.loadCityForecastUseCase.invoke(
-                latitude = "41.56667",
-                longitude = "2.01667"
-            )
+        val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
+            latitude = _state.value.coordinates.getOrNull()?.latitude.toString(),
+            longitude = _state.value.coordinates.getOrNull()?.longitude.toString()
+        )
 
-             */
-            val myError = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
-                latitude = it.latitude.toString(),
-                longitude = it.longitude.toString()
-            )
-
+        errorLoadForecast?.also {
             _state.update { stateUpdated ->
                 stateUpdated.copy(
                     loading = false,
-                    errorForecast = myError,
+                    errorForecast = errorLoadForecast,
                     loadedForecast = true,
-                    locationChecked = true
+                    locationChecked = true,
+                    showFab = false
                 )
             }
-
-            cityWeatherInteractors.getAllCitiesUseCase.invoke()
-                .catch { cause ->
-                    _state.update { stateUpdated ->
-                        stateUpdated.copy(
-                            loading = false,
-                            errorForecast = cause.toCustomErrorFlow(),
-                            city = null
-                        )
-                    }
+        } ?: run {
+            cityWeatherInteractors.getAllCitiesUseCase.invoke().catch { cause ->
+                _state.update { stateUpdated ->
+                    stateUpdated.copy(
+                        loading = false,
+                        errorForecast = cause.toCustomErrorFlow(),
+                        city = null,
+                        showFab = false
+                    )
                 }
-                .collect { listOfCities ->
-                    _state.update { stateUpdated ->
-                        stateUpdated.copy(
-                            loading = false,
-                            errorForecast = null,
-                            loadedForecast = true,
-                            city = listOfCities.find { city -> city.justAdded }
-                        )
-                    }
-
+            }.collect { listOfCities ->
+                _state.update { stateUpdated ->
+                    stateUpdated.copy(
+                        loading = false,
+                        errorForecast = null,
+                        loadedForecast = true,
+                        city = listOfCities.find { city -> city.justAdded },
+                        showFab = listOfCities.isNotEmpty()
+                    )
                 }
+
+            }
 
         }
 

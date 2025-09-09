@@ -24,7 +24,8 @@ import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScre
 fun HomeNavGraph(
     viewModel: CityWeatherViewModel,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
 
     NavHost(
@@ -76,7 +77,8 @@ fun HomeNavGraph(
                                 inclusive = true
                             }
                         }
-                    })
+                    },
+                    setFabVisibility)
             }
 
             composable<DashboardScreens.Favorites> { _ ->

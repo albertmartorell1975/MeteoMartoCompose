@@ -53,7 +53,8 @@ import kotlin.reflect.KSuspendFunction0
 @Composable
 fun CityWeatherScreen(
     viewModel: CityWeatherViewModel,
-    goToLogin: () -> Unit
+    goToLogin: () -> Unit,
+    setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
@@ -64,7 +65,8 @@ fun CityWeatherScreen(
         hideRationaleDialog = viewModel::rationaleDialogHid,
         goToLoginAction = goToLogin,
         dismissLogOutDialogAction = viewModel::hideLogOutDialog,
-        logOutAction = viewModel::onLogOutClicked
+        logOutAction = viewModel::onLogOutClicked,
+        setFabVisibility = setFabVisibility
     )
 
 }
@@ -79,7 +81,8 @@ fun CityWeatherContent(
     hideRationaleDialog: () -> Unit,
     dismissLogOutDialogAction: () -> Unit,
     logOutAction: () -> Unit,
-    goToLoginAction: () -> Unit
+    goToLoginAction: () -> Unit,
+    setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -99,6 +102,11 @@ fun CityWeatherContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // setFabVisibility in CityWeatherContent is called.
+        // This updates the isFabVisible state in the parent (HomeScreen).
+        // Because isFabVisible is a state variable, Scaffold (and its floatingActionButton slot) will recompose.
+        setFabVisibility(state.value.showFab)
 
         if (state.value.logOut)
             AlertDialogCustom(

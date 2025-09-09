@@ -13,6 +13,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,6 +46,9 @@ fun HomeScreen(
     val scrollState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState)
     val coroutineScope = rememberCoroutineScope()
+    // State to hold the FAB's visibility.
+    // This state variable directly controls whether the FAB should be part of the composition. It's initialized to false (hidden by default).
+    var isFabVisible by remember { mutableStateOf(false) }
 
     MeteoMartoComposeLayout {
 
@@ -66,7 +70,7 @@ fun HomeScreen(
             },
             floatingActionButton = {
 
-                if (appState.showFavoriteButton) {
+                if (appState.showFavoriteButton && isFabVisible) {
 
                     // According to if the just loaded city is favorite or not, we display the proper icon
                     var userClickedOnFab by remember { mutableIntStateOf(0) }
@@ -99,11 +103,14 @@ fun HomeScreen(
         ) { innerPadding ->
 
             // Scaffold's content
+            // We pass a lambda setFabVisibility to it. This lambda takes a Boolean argument.
             HomeNavGraph(
                 viewModel = cityWeatherViewModel,
                 navController = navController,
-                modifier = Modifier.padding(innerPadding)
-            )
+                modifier = Modifier.padding(innerPadding),
+                setFabVisibility = { newVisibility ->
+                    isFabVisible = newVisibility
+                })
 
         }
     }
