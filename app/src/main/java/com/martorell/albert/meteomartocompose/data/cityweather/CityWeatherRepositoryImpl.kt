@@ -38,23 +38,23 @@ class CityWeatherRepositoryImpl(
             cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
             val city = cityWeatherLocalDataSource.loadCity(cityServer.name)
             city.fold({
-                // In case of error does nothing
+
+                // It means that the city does not exist yet, and we must add it
+                cityWeatherLocalDataSource.addCity(cityServer)
 
             }) { cityInfo ->
 
-                if (cityInfo.name.isNotEmpty())
+                // It means the city was already stored on the local database, and we must edit it
+                cityWeatherLocalDataSource.updateCity(
+                    cityName = cityInfo.name,
+                    weatherDescription = cityInfo.weatherDescription,
+                    weatherIcon = cityInfo.weatherIcon,
+                    pressure = cityInfo.pressure,
+                    temperatureMax = cityInfo.temperatureMax,
+                    temperatureMin = cityInfo.temperatureMin,
+                    temperature = cityInfo.temperature
+                )
 
-                    cityWeatherLocalDataSource.updateCity(
-                        cityName = cityInfo.name,
-                        weatherDescription = cityInfo.weatherDescription,
-                        weatherIcon = cityInfo.weatherIcon,
-                        pressure = cityInfo.pressure,
-                        temperatureMax = cityInfo.temperatureMax,
-                        temperatureMin = cityInfo.temperatureMin,
-                        temperature = cityInfo.temperature
-                    )
-                else
-                    cityWeatherLocalDataSource.addCity(cityServer)
             }
 
         }
