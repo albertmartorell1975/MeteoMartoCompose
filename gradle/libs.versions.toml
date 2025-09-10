@@ -1,31 +1,32 @@
 [versions]
-agp = "8.9.3"
+agp = "8.12.2"
 javaxInjectVersion = "1"
-kotlin = "2.1.20"
-coreKtx = "1.16.0"
+kotlin = "2.2.20"
+coreKtx = "1.17.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-lifecycleRuntimeKtx = "2.9.0"
+junitVersion = "1.3.0"
+lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.10.1"
-composeBom = "2025.05.01"
-jetbrainsKotlinJvm = "2.0.21"
-navigationVer = "2.9.0"
-kotlinSerializationPluginVer = "2.1.20"
-kotlinSerializationVer = "1.7.3"
+composeBom = "2025.08.01"
+jetbrainsKotlinJvm = "2.2.20"
+navigationVer = "2.9.3"
+kotlinSerializationPluginVer = "2.2.20"
+kotlinSerializationVer = "1.9.0"
 materialIconsVer = "1.7.8"
-hiltVer = "2.56.2"
+hiltVer = "2.57.1"
 hiltNavigationComposeVer = "1.2.0"
 kspVer = "2.1.20-2.0.1"
-firebaseBom = "33.14.0"
+firebaseBom = "34.2.0"
 firebaseAuth = "23.2.1"
-arrowVer = "2.1.0"
+arrowVer = "2.1.2"
 retrofitVer = "3.0.0"
-okhttpVer = "4.12.0"
-roomVer = "2.7.1"
+okhttpVer = "5.1.0"
+roomVer = "2.7.2"
 accompanistPermissionsVer = "0.37.3"
 playServicesLocationVer = "21.3.0"
-coilVersion = "3.1.0"
+coilVersion = "3.3.0"
 constraintVersion = "1.1.1"
+googleServicesVersion ="4.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -87,4 +88,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 #Hilt
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltVer" }
 #Firebase
-googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" }

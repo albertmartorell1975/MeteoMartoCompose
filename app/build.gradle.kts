@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.martorell.albert.meteomartocompose"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.martorell.albert.meteomartocompose"
@@ -35,12 +35,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
     }
+}
+
+// Add or modify this block
+kotlin {
+    jvmToolchain(11) // Set your desired JVM target version here
 }
 
 dependencies {

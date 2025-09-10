@@ -48,7 +48,6 @@ import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCusto
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
 import kotlinx.coroutines.launch
-import kotlin.reflect.KSuspendFunction0
 
 @Composable
 fun CityWeatherScreen(
@@ -59,7 +58,7 @@ fun CityWeatherScreen(
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
         state = state,
-        getLocation = viewModel::getCurrentLocationStarted,
+        getLocation = { viewModel.getCurrentLocationStarted() },
         hideGPSDialog = viewModel::gpsDialogHid,
         showRationaleDialog = viewModel::rationaleDialogShowed,
         hideRationaleDialog = viewModel::rationaleDialogHid,
@@ -71,11 +70,25 @@ fun CityWeatherScreen(
 
 }
 
+/**
+ * Composable function that displays the city weather information and handles location permissions.
+ *
+ * @param state The current UI state from the [CityWeatherViewModel].
+ * @param getLocation A suspend function to trigger the location update process.
+ * @param hideGPSDialog A function to hide the GPS dialog.
+ * @param showRationaleDialog A function to show the location permission rationale dialog.
+ * @param hideRationaleDialog A function to hide the location permission rationale dialog.
+ * @param dismissLogOutDialogAction A function to dismiss the logout confirmation dialog.
+ * @param logOutAction A function to perform the logout action.
+ * @param goToLoginAction A function to navigate to the login screen.
+ * @param setFabVisibility A function to control the visibility of the Floating Action Button
+ *                         in the parent Composable (HomeScreen).
+ */
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CityWeatherContent(
     state: State<CityWeatherViewModel.UiState>,
-    getLocation: KSuspendFunction0<Unit>,
+    getLocation: suspend () -> Unit,
     hideGPSDialog: () -> Unit,
     showRationaleDialog: () -> Unit,
     hideRationaleDialog: () -> Unit,
@@ -85,13 +98,16 @@ fun CityWeatherContent(
     setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
 
-    val context = LocalContext.current
+    // Get the current context, UI state, and coroutine scope
+    val currentContext = LocalContext.current
+    val currentState = state.value
     val coroutineScope = rememberCoroutineScope()
 
     val locationPermissions = rememberMultiplePermissionsState(
+        // Define the location permissions to request
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
 
@@ -106,9 +122,11 @@ fun CityWeatherContent(
         // setFabVisibility in CityWeatherContent is called.
         // This updates the isFabVisible state in the parent (HomeScreen).
         // Because isFabVisible is a state variable, Scaffold (and its floatingActionButton slot) will recompose.
-        setFabVisibility(state.value.showFab)
+        // LaunchedEffect to update FAB visibility when currentState.showFab changes
+        LaunchedEffect(currentState.showFab) { setFabVisibility(currentState.showFab) }
 
-        if (state.value.logOut)
+        if (currentState.logOut)
+        // Show logout confirmation dialog if logOut state is true
             AlertDialogCustom(
                 title = R.string.logout_title,
                 content = R.string.logout_explanation,
@@ -121,8 +139,9 @@ fun CityWeatherContent(
                     goToLoginAction()
                 })
 
-        if (state.value.locationChecked && state.value.showRationale) {
+        if (currentState.locationChecked && currentState.showRationale) {
 
+            // Show rationale dialog if location is checked and rationale should be shown
             AlertDialogCustom(
                 title = R.string.location_rationale_title,
                 content = R.string.location_rationale_explanation,
@@ -130,40 +149,49 @@ fun CityWeatherContent(
                 dismissText = R.string.location_rationale_cancel,
                 onDismissAction = hideRationaleDialog,
                 onConfirmAction = {
-                    context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                    // Open location settings when rationale is confirmed
+                    currentContext.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
                     hideRationaleDialog()
                 })
         }
 
-        if (state.value.locationChecked && !state.value.permissionsGranted) {
+        if (currentState.locationChecked && !currentState.permissionsGranted) {
 
+            // If location is checked but permissions are not granted
             if (!locationPermissions.shouldShowRationale) {
-                LaunchedEffect(key1 = state.value.permissionsGranted) {
+                // If rationale should not be shown, launch permission request
+                LaunchedEffect(key1 = currentState.permissionsGranted) {
                     locationPermissions.launchMultiplePermissionRequest()
                 }
-            } else showRationaleDialog()
+            } else {
+                // Otherwise, show the rationale dialog
+                showRationaleDialog()
+            }
 
         } else {
 
-            if (state.value.locationChecked && state.value.showGPSDialog) {
-
+            if (currentState.locationChecked && currentState.showGPSDialog) {
+                // If location is checked and GPS dialog should be shown
                 AlertDialogCustom(
                     title = R.string.location_request_title,
                     content = R.string.location_request_explanation,
                     actionText = R.string.location_request_action,
                     dismissText = R.string.location_request_cancel,
                     onDismissAction = hideGPSDialog,
+                    // Open location settings when GPS dialog is confirmed
                     onConfirmAction = {
-                        context.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                        currentContext.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
                         hideGPSDialog()
                     })
 
             }
         }
 
-        if (state.value.loadedForecast) {
+        if (currentState.loadedForecast) {
+            // If forecast data is loaded
 
-            if (state.value.errorLocation != null || state.value.errorForecast != null) {
+            if (currentState.errorLocation != null || currentState.errorForecast != null) {
+                // If there's an error in location or forecast
 
                 CityTextView(
                     contentFix = stringResource(R.string.city_forecast_error),
@@ -173,12 +201,14 @@ fun CityWeatherContent(
 
             } else {
 
-                state.value.coordinates.fold({}) {
+                // If there are no errors, display weather information
+                currentState.coordinates.fold({}) {
 
-                    state.value.city?.name?.let { cityName ->
+                    currentState.city?.name?.let { cityName ->
 
                         CityTextView(
                             contentFix = cityName,
+                            // Display city name
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -186,9 +216,10 @@ fun CityWeatherContent(
                         Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
                     }
 
+                    // Display weather icon
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(state.value.city?.weatherIcon).crossfade(true).build(),
+                        model = ImageRequest.Builder(currentContext)
+                            .data(currentState.city?.weatherIcon).crossfade(true).build(),
                         contentDescription = "El temps que fa",
                         modifier = Modifier
                             .height(dimensionResource(R.dimen.weather_icon_size))
@@ -198,8 +229,9 @@ fun CityWeatherContent(
                         contentScale = ContentScale.Crop
                     )
 
-                    state.value.city?.weatherDescription?.let { weatherDescription ->
+                    currentState.city?.weatherDescription?.let { weatherDescription ->
 
+                        // Display weather description
                         CityTextView(
                             contentFix = weatherDescription,
                             fontWeight = FontWeight.Bold
@@ -207,37 +239,44 @@ fun CityWeatherContent(
                     }
 
                     CityTextView(
+                        // Display current temperature
                         contentFix = stringResource(R.string.city_current_temperature),
-                        contentDynamic = state.value.city?.temperature.toString()
+                        contentDynamic = currentState.city?.temperature.toString()
                     )
 
                     CityTextView(
+                        // Display maximum temperature
                         contentFix = stringResource(R.string.city_max_temperature),
-                        contentDynamic = state.value.city?.temperatureMax.toString(),
+                        contentDynamic = currentState.city?.temperatureMax.toString(),
                         colorDynamic = Color.Red
                     )
 
                     CityTextView(
+                        // Display minimum temperature
                         contentFix = stringResource(R.string.city_min_temperature),
-                        contentDynamic = state.value.city?.temperatureMin.toString(),
+                        contentDynamic = currentState.city?.temperatureMin.toString(),
                         colorDynamic = Color.Blue
                     )
 
                     CityTextView(
+                        // Display pressure
                         contentFix = stringResource(R.string.city_pressure),
-                        contentDynamic = state.value.city?.pressure.toString()
+                        contentDynamic = currentState.city?.pressure.toString()
                     )
 
                     CityTextView(
+                        // Display rain information
                         contentFix = stringResource(R.string.city_rain),
-                        contentDynamic = state.value.city?.rain.toString(),
+                        contentDynamic = currentState.city?.rain.toString(),
                         colorDynamic = Color.Blue
                     )
 
                 }
-
             }
 
+        } else {
+            // If forecast is not loaded, show a placeholder or loading indicator
+            // (Currently, this block is empty, consider adding a placeholder if needed)
         }
 
         Button(onClick = {
@@ -254,7 +293,8 @@ fun CityWeatherContent(
 
     }
 
-    if (state.value.loading) CircularProgressIndicatorCustom()
+    // Show loading indicator if loading state is true
+    if (currentState.loading) CircularProgressIndicatorCustom()
 
 }
 
