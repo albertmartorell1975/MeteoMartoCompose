@@ -69,6 +69,7 @@ fun HomeNavGraph(
                 }
 
                 CityWeatherScreen(
+                    modifier = modifier,
                     viewModel = viewModel,
                     goToLogin = {
                         navController.navigate(SubGraphs.Auth) {
