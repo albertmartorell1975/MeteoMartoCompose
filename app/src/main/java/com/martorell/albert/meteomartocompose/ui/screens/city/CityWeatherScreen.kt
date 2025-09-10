@@ -51,12 +51,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CityWeatherScreen(
+    modifier: Modifier = Modifier,
     viewModel: CityWeatherViewModel,
     goToLogin: () -> Unit,
     setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     CityWeatherContent(
+        modifier = modifier,
         state = state,
         getLocation = { viewModel.getCurrentLocationStarted() },
         hideGPSDialog = viewModel::gpsDialogHid,
@@ -87,6 +89,7 @@ fun CityWeatherScreen(
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CityWeatherContent(
+    modifier: Modifier = Modifier,
     state: State<CityWeatherViewModel.UiState>,
     getLocation: suspend () -> Unit,
     hideGPSDialog: () -> Unit,
@@ -112,7 +115,7 @@ fun CityWeatherContent(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
@@ -290,6 +293,8 @@ fun CityWeatherContent(
             Text(text = stringResource(R.string.update_forecast))
 
         }
+
+        Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
 
     }
 

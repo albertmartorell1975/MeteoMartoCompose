@@ -41,7 +41,7 @@ fun HomeScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 TopAppBarCustom(
-                    navController,
+                    navController = navController,
                     scrollBehavior = scrollBehavior
                 )
             },
