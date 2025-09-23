@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
 
 /**
  * Entity that allow us checking if a permission is granted

@@ -1,6 +1,6 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationLocalDataSource
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationLocalDataSource
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
 import kotlinx.coroutines.Dispatchers

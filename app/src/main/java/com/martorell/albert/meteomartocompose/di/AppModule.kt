@@ -5,9 +5,9 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.server.APIKeyInterceptor
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase

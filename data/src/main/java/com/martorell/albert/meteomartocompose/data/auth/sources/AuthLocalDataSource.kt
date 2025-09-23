@@ -1,4 +1,4 @@
-package com.martorell.albert.meteomartocompose.data.auth.sources.auth
+package com.martorell.albert.meteomartocompose.data.auth.sources
 
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 

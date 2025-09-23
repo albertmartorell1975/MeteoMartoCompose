@@ -1,4 +1,4 @@
-package com.martorell.albert.meteomartocompose.data.auth.sources.cityweather
+package com.martorell.albert.meteomartocompose.data.city.sources
 
 interface LocationLocalDataSource {
 
