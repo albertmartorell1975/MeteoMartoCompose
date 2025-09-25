@@ -1,4 +1,4 @@
-package com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather
+package com.martorell.albert.meteomartocompose.data.city.repositories
 
 import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
 import com.martorell.albert.meteomartocompose.data.ResultResponse

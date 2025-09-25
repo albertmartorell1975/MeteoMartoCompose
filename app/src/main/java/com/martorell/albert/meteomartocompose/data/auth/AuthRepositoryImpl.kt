@@ -1,8 +1,9 @@
-package com.martorell.albert.meteomartocompose.data.auth.repositories.auth
+package com.martorell.albert.meteomartocompose.data.auth
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AuthLocalDataSource
+import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
+import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import javax.inject.Inject
 

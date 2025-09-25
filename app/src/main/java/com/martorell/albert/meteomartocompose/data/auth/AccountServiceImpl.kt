@@ -4,7 +4,7 @@ import arrow.core.right
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain

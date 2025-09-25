@@ -1,12 +1,12 @@
 package com.martorell.albert.meteomartocompose.di.cityweather
 
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.LocationRepository
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationLocalDataSource
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
+import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
+import com.martorell.albert.meteomartocompose.data.city.repositories.LocationRepository
+import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocalDataSource
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationLocalDataSource
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.cityweather.CityRoomDataSource
 import com.martorell.albert.meteomartocompose.data.cityweather.CityWeatherRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.cityweather.LocationRepositoryImpl

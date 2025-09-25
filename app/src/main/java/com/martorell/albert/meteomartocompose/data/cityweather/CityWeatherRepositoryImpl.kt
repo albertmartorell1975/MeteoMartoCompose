@@ -2,9 +2,9 @@ package com.martorell.albert.meteomartocompose.data.cityweather
 
 import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.CityWeatherLocalDataSource
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
+import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
+import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocalDataSource
 import com.martorell.albert.meteomartocompose.data.customFlowTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import kotlinx.coroutines.flow.Flow

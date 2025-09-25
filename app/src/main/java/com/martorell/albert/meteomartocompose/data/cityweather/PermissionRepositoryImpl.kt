@@ -1,7 +1,7 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
 
 class PermissionRepositoryImpl(private val permissionChecker: PermissionChecker) :
     PermissionRepository {

@@ -6,7 +6,7 @@ import arrow.core.right
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationServerDataSource
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain

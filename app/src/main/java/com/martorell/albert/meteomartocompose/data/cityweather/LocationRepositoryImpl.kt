@@ -1,9 +1,9 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.LocationRepository
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationLocalDataSource
-import com.martorell.albert.meteomartocompose.data.auth.sources.cityweather.LocationServerDataSource
+import com.martorell.albert.meteomartocompose.data.city.repositories.LocationRepository
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationLocalDataSource
+import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import jakarta.inject.Inject
 
