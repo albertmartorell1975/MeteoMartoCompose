@@ -11,9 +11,8 @@ This feature implements a background monitoring system using **WorkManager**. It
 ## 3. Implementation Workflow
 
 ### Stage 1: Domain Layer (:domain)
-- [] Define `RemoteConfigRepository` interface with `getTemperatureThreshold(): Flow<Double>`.
-- [] Define `NotificationService` interface for system notifications.
-- [ ] Define `ThresholdExceededException` (optional) or Result types.
+- [x] Define `RemoteConfigRepository` interface with `getTemperatureThreshold(): Flow<Double>`.
+- [x] Define `NotificationService` interface for system notifications.
 
 ### Stage 2: Data Layer - Infrastructure (:data)
 - [ ] Implement `FirebaseRemoteConfigDataSource` using Firebase SDK.
