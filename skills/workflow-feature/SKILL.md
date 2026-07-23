@@ -29,6 +29,7 @@ As a Skill, `workflow-feature` provides:
 3. **Task Orchestration**: Generates an actionable and ordered implementation checklist (Domain -> Data -> UseCase -> UI).
 4. **Context Awareness**: Analyzes existing project modules and patterns to ensure new features integrate seamlessly.
 5. **Testing Analysis**: Systematically evaluates whether a feature requires Unit Tests based on logic complexity.
+6. **Automatic Build Synchronization**: Enforces a mandatory `gradle_sync` task in the checklist whenever `build.gradle.kts` or `libs.versions.toml` are modified. The agent must execute the `gradle_sync` tool directly.
 
 ## Workflow Patterns
 

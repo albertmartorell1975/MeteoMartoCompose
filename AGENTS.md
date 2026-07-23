@@ -76,18 +76,15 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 
 ## General Quality & Verification Rules (All Agents)
 
-To ensure maximum code health and architectural stability, all agents must adhere to the following **Definition of Done** before considering a task completed:
+To maintain maximum code health, all agents must adhere to the following rules:
 
-1.  **Verification Flow**: After modifying or creating code, the agent **MUST** execute the following checks in order:
-    - **Lint & Analysis**: Run `analyze_file` on every updated or created file. Resolve all `ERROR` and `WARNING` level issues.
-    - **Compilation**: Run `./gradlew compileDebugKotlin` to ensure no syntax or type errors were introduced.
-    - **Project Integrity**: Run `./gradlew assembleDebug` to verify that the changes haven't broken the overall build or dependency graph.
-    - **Deployment & Runtime**: Use the **Android CLI** (`android emulator`, `android run`) to launch an emulator if needed and deploy the application. Verify that the app launches successfully and the new feature behaves as expected in a real environment.
-    - **UI Verification**: For UI tasks, use `android layout` or `android screenshot` to verify the visual state of the application.
-2.  **Code Health Standards**:
-    - **Zero Warnings Policy**: No new warnings should be introduced. Existing warnings in the modified scope should be addressed if possible.
-    - **Resource Validation**: If Android resources (XML) are touched, verify their IDs and references.
-3.  **Final Validation**: Before notifying the user of task completion, the agent must summarize the verification steps taken (e.g., "Files analyzed: X, Y. Build successful.").
+1.  **Notification Protocol (MANDATORY)**: Before making ANY change to the **governance files** (any `.md` file at the root or inside the `skills/` directory), the agent **MUST notify the user**, explain the intended action, and wait for explicit approval. Changes to the codebase (Kotlin, XML, configurations) can be performed autonomously, but the agent **MUST NOT commit any changes**. Commits must be performed manually by the user after reviewing the work.
+
+2.  **Definition of Done**: A task is considered completed only after:
+    - Mandatory Verification via the **`compiler` skill** (Linting, Compilation, and Deployment).
+    - Full compliance with established naming and architectural patterns.
+
+3.  **Final Validation**: Agents must summarize the `compiler` skill output in their final response to the user.
 
 ---
 

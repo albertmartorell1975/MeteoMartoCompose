@@ -46,9 +46,9 @@ Agents must identify the correct parent branch based on the task type and the cu
    - Example: `feat(data): [MM-123] implement firebase remote config source`.
    - Include the Task ID in every commit message.
 
-4. **Push & Merge Restriction**:
-   - **PROHIBITED**: Agents are NOT allowed to `git push` or `git merge` autonomously.
-   - The agent must stop after the final commit and wait for the user to review the local branch state.
+4. **Push, Merge & Commit Restriction**:
+   - **PROHIBITED**: Agents are NOT allowed to `git commit`, `git push`, or `git merge` autonomously.
+   - **Review Protocol**: The agent must prepare the changes, notify the user, and **wait for the user to perform the commit manually** through the IDE or terminal. This ensures the user can review every file modification before it is recorded in the history.
 
 ## Workflow Patterns
 
