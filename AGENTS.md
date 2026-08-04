@@ -66,6 +66,16 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 
 ---
 
+## Mandatory Planning Protocol (GATEWAY)
+
+To prevent architectural drift and technical debt, all agents must follow this sequence before generating code or workflows:
+
+1.  **Gateway Diagnosis**: Every new feature or significant change MUST start with the **Diagnosis & Clarification phase** defined in `rules.md`. 
+2.  **Workflow Activation**: Only after the user confirms the optimized prompt and assumptions, the agent can trigger the `workflow-feature` skill to generate the implementation checklist.
+3.  **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file without having presented the diagnosis questions to the user first.
+
+---
+
 ## General Quality & Verification Rules (All Agents)
 
 To maintain maximum code health, all agents must adhere to the following rules:

@@ -34,3 +34,4 @@ To be executed in order BEFORE finalizing any task:
 - Agents MUST invoke this skill before finalizing any task.
 - A task is NOT complete if any command in this skill fails.
 - All Android resources (XML) must have their IDs and references verified through this skill.
+- **Governance Verification**: When modifying `.md` files, agents MUST verify that all internal links and file references are valid, resolvable, and case-sensitive according to the filesystem.
