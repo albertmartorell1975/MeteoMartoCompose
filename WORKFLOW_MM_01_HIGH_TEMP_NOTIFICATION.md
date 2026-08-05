@@ -14,11 +14,15 @@ This feature implements a background monitoring system using **WorkManager**. It
 - [x] Define `RemoteConfigRepository` interface with `getTemperatureThreshold(): Flow<Double>`.
 - [x] Define `NotificationService` interface for system notifications.
 
-### Stage 2: Data Layer - Infrastructure (:data)
-- [ ] Implement `FirebaseRemoteConfigDataSource` using Firebase SDK.
-- [ ] Implement `NotificationServiceImpl` using Android `NotificationManager`.
-- [ ] Implement `RemoteConfigRepositoryImpl` (Mapping Firebase values to Domain).
-- [ ] **Unit Test**: Validate `RemoteConfigMapper` handles nulls or invalid strings.
+### Stage 2: Data Layer - Infrastructure (:app/framework)
+- [ ] Add Firebase Remote Config dependency to `libs.versions.toml`.
+- [ ] Add Google Services plugin to `app/build.gradle.kts` (if missing).
+- [ ] Execute **Gradle Sync**.
+- [ ] Create `res/xml/remote_config_defaults.xml` with `temperature_threshold = 30.0`.
+- [ ] Implement `FirebaseRemoteConfigDataSource` in `:app/framework/remoteconfig`.
+- [ ] Implement `NotificationServiceImpl` in `:app/framework/notification` (Priority: HIGH).
+- [ ] Implement `RemoteConfigRepositoryImpl` in `:app/data/remoteconfig` (Bridge between interface and DataSource).
+- [ ] **Unit Test**: `RemoteConfigMapper` for boundary values.
 
 ### Stage 3: Use Cases & Logic (:usecases)
 - [ ] Create `CheckTemperatureThresholdUseCase`:

@@ -45,10 +45,13 @@ Agents must identify the correct parent branch based on the task type and the cu
    - Sequential commits should follow the development flow: Domain -> Data -> UseCases -> UI.
    - Example: `feat(data): [MM-123] implement firebase remote config source`.
    - Include the Task ID in every commit message.
+   - **Automated Staging**: Agents **MUST** perform `git add [file]` immediately after creating or modifying any file.
 
-4. **Push, Merge & Commit Restriction**:
+4. **Staging Verification**:
+   - Before completing any task or stage, the agent **MUST execute `git status`** to verify that no new or modified files remain unstaged.
+
+5. **Push, Merge & Commit Restriction**:
    - **PROHIBITED**: Agents are NOT allowed to `git commit`, `git push`, or `git merge` autonomously.
-   - **Automated Staging**: Agents **MUST** perform `git add [file]` immediately after creating or modifying any file to ensure changes are visible in the IDE's "Staged Changes" area.
    - **Review Protocol**: The agent must prepare the changes, notify the user, and **wait for the user to perform the commit manually** through the IDE or terminal. This ensures the user can review every file modification before it is recorded in the history.
 
 ## Workflow Patterns
