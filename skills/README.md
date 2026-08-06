@@ -9,6 +9,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for implementing new features with granular checklists.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
+- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
 
 ## 2. Android CLI & System Skills
 Expert guides downloaded via the Android CLI for system-level optimizations, tools, and best practices.
