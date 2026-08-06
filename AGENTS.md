@@ -70,7 +70,7 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 
 To prevent architectural drift and technical debt, all agents must follow this sequence before generating code or workflows:
 
-1. Gateway Diagnosis (STRICT): Every new feature or significant change MUST start with the Diagnosis & Clarification phase defined in rules.md. If any part of the request is ambiguous or lacks technical detail, the agent MUST stop and ask the user instead of making assumptions.
+1. Gateway Diagnosis (STRICT): Every new feature or significant change MUST start with the Diagnosis & Clarification phase defined in [rules.md](rules.md). If any part of the request is ambiguous or lacks technical detail, the agent MUST stop and ask the user instead of making assumptions.
 2. Skill-Based Knowledge Retrieval (MANDATORY):
     - Before proposing any solution, the agent MUST search and read relevant files inside the `skills/` directory.
     - **Smart Filtering**: To optimize context usage, the agent must first read the **YAML frontmatter** (the block between `---`) to identify the skill's `name`, `description`, and `keywords`.
@@ -92,6 +92,8 @@ To maintain maximum code health, all agents must adhere to the following rules:
     - Full compliance with established naming and architectural patterns.
 
 3.  **Final Validation**: Agents must summarize the `compiler` skill output in their final response to the user.
+
+4.  **Documentation Sync (MANDATORY)**: Any addition, removal, or update of a Skill must be immediately reflected in the `skills/README.md` file. The agent is responsible for keeping this index organized into the 3 defined groups (DNA, Android CLI, External Experts) to ensure expert knowledge traceability.
 
 ---
 
