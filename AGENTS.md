@@ -95,6 +95,11 @@ To maintain maximum code health, all agents must adhere to the following rules:
 
 4.  **Documentation Sync (MANDATORY)**: Any addition, removal, or update of a Skill must be immediately reflected in the `skills/README.md` file. The agent is responsible for keeping this index organized into the 3 defined groups (DNA, Android CLI, External Experts) to ensure expert knowledge traceability.
 
+5.  **Code Style & Conventions (MANDATORY)**: 
+    - **Language**: All code comments, documentation (KDoc), and technical notes within the source code MUST be in **English**.
+    - **Kotlin Standards**: All Kotlin code MUST strictly adhere to the [Official Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html).
+    - **Robustness over Speed**: As defined in the Planning Protocol, code quality and architectural integrity take precedence over delivery time.
+
 ---
 
 ## Collaboration Protocol
