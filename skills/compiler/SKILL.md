@@ -22,13 +22,15 @@ As a Skill, `compiler` provides both standalone actions and a complete verificat
 ### 1. Standalone Actions (Immediate Execution)
 - **Static Analysis**: To be executed on specific files during development.
   - **Command**: `analyze_file [file_path]`
+- **Code Cleanliness**: Agents MUST remove all unused imports and redundant code detected during the analysis phase.
 
 ### 2. Full Verification Suite (Final "Definition of Done")
 To be executed in order BEFORE finalizing any task:
 1. **Lint & Analysis**: Run `analyze_file` on all modified files.
-2. **Compilation**: Run `./gradlew compileDebugKotlin`.
-3. **Project Integrity**: Run `./gradlew assembleDebug`.
-4. **Deployment**: `android run` and visual verification.
+2. **Cleanliness**: Ensure no unused imports remain in any modified file.
+3. **Compilation**: Run `./gradlew compileDebugKotlin`.
+4. **Project Integrity**: Run `./gradlew assembleDebug`.
+5. **Deployment**: `android run` and visual verification.
 
 ## Operational Rules
 - Agents MUST invoke this skill before finalizing any task.

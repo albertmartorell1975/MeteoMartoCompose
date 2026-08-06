@@ -70,9 +70,14 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 
 To prevent architectural drift and technical debt, all agents must follow this sequence before generating code or workflows:
 
-1.  **Gateway Diagnosis**: Every new feature or significant change MUST start with the **Diagnosis & Clarification phase** defined in `rules.md`. 
-2.  **Workflow Activation**: Only after the user confirms the optimized prompt and assumptions, the agent can trigger the `workflow-feature` skill to generate the implementation checklist.
-3.  **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file without having presented the diagnosis questions to the user first.
+1. Gateway Diagnosis (STRICT): Every new feature or significant change MUST start with the Diagnosis & Clarification phase defined in rules.md. If any part of the request is ambiguous or lacks technical detail, the agent MUST stop and ask the user instead of making assumptions.
+2. Skill-Based Knowledge Retrieval (MANDATORY):
+    - Before proposing any solution, the agent MUST search and read relevant files inside the `skills/` directory.
+    - **Smart Filtering**: To optimize context usage, the agent must first read the **YAML frontmatter** (the block between `---`) to identify the skill's `name`, `description`, and `keywords`.
+    - The full skill content should only be loaded if its metadata indicates relevance to the current task. Ignorance of an existing relevant skill or blind loading of irrelevant ones is considered a protocol violation.
+3. Robustness Over Speed (MANDATORY): Agents must prioritize robust, scalable solutions that follow SOLID principles and industry standards. A "quick fix" that compromises the established architecture is considered a failure. "Haste makes waste": rushing to solve a problem leads to technical debt and more time lost in the long run.
+4. Workflow Activation: Only after the user confirms the optimized prompt and assumptions can the agent trigger the workflow-feature skill to generate the implementation checklist.
+5. Strict Pre-requisite: No agent is allowed to create a WORKFLOW_FEATURE.md file without having presented the diagnosis questions to the user first.
 
 ---
 
@@ -80,10 +85,10 @@ To prevent architectural drift and technical debt, all agents must follow this s
 
 To maintain maximum code health, all agents must adhere to the following rules:
 
-1.  **Notification Protocol (MANDATORY)**: Before making ANY change to the **governance files** (any `.md` file at the root or inside the `AI/` or `skills/` directory), the agent **MUST notify the user**, explain the intended action, and wait for explicit approval. Changes to the codebase (Kotlin, XML, configurations) can be performed autonomously, but the agent **MUST NOT commit any changes**. Commits must be performed manually by the user after reviewing the work.
+1.  **Notification Protocol (MANDATORY)**: Before making ANY change to the **governance files** (any `.md` file at the root or inside the `AI/` or `skills/` directory), the agent **MUST notify the user**, explain the intended action, and wait for explicit approval. Changes to the codebase (Kotlin, XML, configurations) can be performed autonomously, but the agent **MUST NOT commit any changes unless explicitly commanded by the user in the chat**.
 
 2.  **Definition of Done**: A task is considered completed only after:
-    - Mandatory Verification via the **`compiler` skill** (Linting, Compilation, and Deployment).
+    - Mandatory Verification via the **`compiler` skill** (Linting, Cleanliness, Compilation, and Deployment).
     - Full compliance with established naming and architectural patterns.
 
 3.  **Final Validation**: Agents must summarize the `compiler` skill output in their final response to the user.
