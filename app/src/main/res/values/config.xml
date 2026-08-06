@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_temp_threshold">30.0</string>
+    <string name="min_temp_limit">-100.0</string>
+    <string name="max_temp_limit">100.0</string>
+</resources>

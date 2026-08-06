@@ -25,12 +25,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
 
-    companion object {
-        private const val ROOM_DATABASE = "MeteoMartoDatabase"
-        private const val BASE_URL = "https://api.openweathermap.org/"
-    }
+    private const val ROOM_DATABASE = "MeteoMartoDatabase"
+    private const val BASE_URL = "https://api.openweathermap.org/"
 
     @Provides
     @Singleton

@@ -13,16 +13,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class NotificationServiceImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val notificationManager: NotificationManager,
 ) : NotificationService {
 
     companion object {
         private const val CHANNEL_ID = "high_temp_channel"
         private const val NOTIFICATION_ID = 1001
     }
-
-    private val notificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
         createNotificationChannel()
@@ -31,7 +29,7 @@ class NotificationServiceImpl @Inject constructor(
     override fun showHighTemperatureNotification(temperature: Double) {
         if (ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission not granted, we can't show the notification
@@ -53,7 +51,6 @@ class NotificationServiceImpl @Inject constructor(
     }
 
     private fun createNotificationChannel() {
-        // minSdk is 30, so no need for SDK_INT check for O (API 26)
         val name = context.getString(R.string.high_temp_notif_channel_name)
         val descriptionText = context.getString(R.string.high_temp_notif_channel_description)
         val importance = NotificationManager.IMPORTANCE_HIGH

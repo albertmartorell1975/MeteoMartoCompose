@@ -50,4 +50,10 @@
     <string name="favorite_top_bar_title">List of Favorites</string>
     <string name="city_top_bar_title">Meteo Marto</string>
 
+    <!-- High Temperature Notification -->
+    <string name="high_temp_notif_channel_name">MeteoMarto Warnings</string>
+    <string name="high_temp_notif_channel_description">Notifications for high temperature warnings</string>
+    <string name="high_temp_notif_title">High Temperature Alert!</string>
+    <string name="high_temp_notif_content">Current temperature is %.1f°C, exceeding the threshold.</string>
+
 </resources>

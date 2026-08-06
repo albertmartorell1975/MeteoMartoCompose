@@ -1,16 +1,31 @@
 package com.martorell.albert.meteomartocompose.di
 
+import android.app.NotificationManager
+import android.content.Context
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
 import com.martorell.albert.meteomartocompose.framework.notification.NotificationServiceImpl
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class NotificationModule {
+object NotificationProvideModule {
+
+    @Provides
+    @Singleton
+    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager {
+        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class NotificationBindingModule {
 
     @Binds
     @Singleton

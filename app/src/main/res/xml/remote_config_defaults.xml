@@ -2,6 +2,14 @@
 <defaultsMap>
     <entry>
         <key>temperature_threshold</key>
-        <value>30.0</value>
+        <value>@string/default_temp_threshold</value>
+    </entry>
+    <entry>
+        <key>min_temperature_limit</key>
+        <value>@string/min_temp_limit</value>
+    </entry>
+    <entry>
+        <key>max_temperature_limit</key>
+        <value>@string/max_temp_limit</value>
     </entry>
 </defaultsMap>
