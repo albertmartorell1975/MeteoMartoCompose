@@ -41,6 +41,13 @@ android {
     }
 }
 
+/**
+ * To improve your build time by telling Dagger not to format the generated code
+ */
+ksp {
+    arg("dagger.formatGeneratedSource", "disabled")
+}
+
 // Add or modify this block
 kotlin {
     jvmToolchain(11) // Set your desired JVM target version here

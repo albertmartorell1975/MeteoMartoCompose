@@ -2,8 +2,9 @@ package com.martorell.albert.meteomartocompose.data.cityweather
 
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
+import javax.inject.Inject
 
-class PermissionRepositoryImpl(private val permissionChecker: PermissionChecker) :
+class PermissionRepositoryImpl @Inject constructor(private val permissionChecker: PermissionChecker) :
     PermissionRepository {
 
     override suspend fun checkLocationPermissions(): Boolean {

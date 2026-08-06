@@ -5,13 +5,9 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
-import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.server.APIKeyInterceptor
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
-import com.martorell.albert.meteomartocompose.utils.AndroidPermissionChecker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +21,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object AppProvideModule {
 
     private const val ROOM_DATABASE = "MeteoMartoDatabase"
     private const val BASE_URL = "https://api.openweathermap.org/"
@@ -37,34 +33,24 @@ object AppModule {
         MeteoMartoDatabase::class.java,
         ROOM_DATABASE
     ).fallbackToDestructiveMigration(true)
-        .build() //fallbackToDestructiveMigration: each time there is an increase version we enable a destructive migration (database is cleared)
+        .build()
 
     @Provides
-    fun providesPermissionRepository(
-        permissionChecker: PermissionChecker
-    ): PermissionRepository {
-        return PermissionRepositoryImpl(permissionChecker)
-    }
-
-    @Provides
-    fun providesPermissionChecker(app: Application): PermissionChecker =
-        AndroidPermissionChecker(app)
-
-    @Provides
+    @Singleton
     fun provideFusedLocationProviderClient(
         @ApplicationContext context: Context
     ): FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
     @Singleton
     @Provides
-    fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor()
+    fun providesHttpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
         .apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
     @Singleton
     @Provides
-    fun providesApiKeyInterceptor() = APIKeyInterceptor()
+    fun providesApiKeyInterceptor(): APIKeyInterceptor = APIKeyInterceptor()
 
     @Singleton
     @Provides
@@ -90,5 +76,4 @@ object AppModule {
     @Provides
     fun providesCityWeatherServerDataSource(retrofit: Retrofit): CityWeatherServerDataSource =
         retrofit.create(CityWeatherServerDataSource::class.java)
-
 }

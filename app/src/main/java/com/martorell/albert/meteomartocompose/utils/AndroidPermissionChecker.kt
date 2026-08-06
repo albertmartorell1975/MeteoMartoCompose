@@ -8,18 +8,18 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
+import javax.inject.Inject
 
 /**
  * Entity that allow us checking if a permission is granted
  */
 
-class AndroidPermissionChecker(private val application: Application) :
+class AndroidPermissionChecker @Inject constructor(private val application: Application) :
     PermissionChecker {
 
     override suspend fun check(permission: PermissionChecker.Permission): Boolean =
         ContextCompat.checkSelfPermission(
-            application,
-            permission.toAndroidId()
+            application, permission.toAndroidId()
         ) == PackageManager.PERMISSION_GRANTED
 
 
@@ -28,8 +28,9 @@ class AndroidPermissionChecker(private val application: Application) :
         val locationManager =
             application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        return locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        return locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.GPS_PROVIDER
+        )
 
     }
 

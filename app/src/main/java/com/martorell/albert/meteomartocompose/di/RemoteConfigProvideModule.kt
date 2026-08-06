@@ -4,12 +4,7 @@ import android.content.Context
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
-import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.remoteconfig.mappers.RemoteConfigMapper
-import com.martorell.albert.meteomartocompose.data.remoteconfig.sources.RemoteConfigDataSource
-import com.martorell.albert.meteomartocompose.framework.remoteconfig.FirebaseRemoteConfigDataSourceImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,21 +38,4 @@ object RemoteConfigProvideModule {
         remoteConfig.fetchAndActivate()
         return remoteConfig
     }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RemoteConfigBindingModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindRemoteConfigDataSource(
-        firebaseRemoteConfigDataSourceImpl: FirebaseRemoteConfigDataSourceImpl
-    ): RemoteConfigDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindRemoteConfigRepository(
-        remoteConfigRepositoryImpl: RemoteConfigRepositoryImpl
-    ): RemoteConfigRepository
 }
