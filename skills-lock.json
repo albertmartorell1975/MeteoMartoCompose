@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_readme": "This file ensures the integrity and synchronization of EXTERNAL expert instructions (Chris Banes Skills). It stores security hashes and source paths for automated updates via CLI tools. For a complete overview of all project skills, see skills/README.md. IMPORTANT: This file MUST remain at the root directory for compatibility with the 'npx skills' CLI tool.",
+  "_readme": "This file ensures the integrity and synchronization of EXTERNAL expert instructions (Chris Banes Skills, Firebase Skills, ...). It stores security hashes and source paths for automated updates via CLI tools. For a complete overview of all project skills, see skills/README.md. IMPORTANT: This file MUST remain at the root directory for compatibility with the 'npx skills' CLI tool.",
   "skills": {
     "compose-animations": {
       "source": "chrisbanes/skills",
@@ -67,6 +67,24 @@
       "sourceType": "github",
       "skillPath": "skills/compose-ui-testing-patterns/SKILL.md",
       "computedHash": "eaeb1524dfa939ea561782909dab5df0575e984c6b1676197421d4f580e7d04f"
+    },
+    "firebase-auth-basics": {
+      "source": "firebase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/firebase-auth-basics/SKILL.md",
+      "computedHash": "25070123c29d59098ac817dee0eee36a73b4a822e6bb925a0ebccab0c78cf1e9"
+    },
+    "firebase-basics": {
+      "source": "firebase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/firebase-basics/SKILL.md",
+      "computedHash": "3a41bf302bfce4dac272575c51a02d0fc1bdac8dcb6cb5496103301b68ffbb67"
+    },
+    "firebase-remote-config-basics": {
+      "source": "firebase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/firebase-remote-config-basics/SKILL.md",
+      "computedHash": "4477c4ed83c5ee33df3d41f7831e7f9254aa436763f20d0c1a62c5c41f1a4564"
     },
     "kotlin-control-flow": {
       "source": "chrisbanes/skills",

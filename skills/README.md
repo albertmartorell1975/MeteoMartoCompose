@@ -37,6 +37,9 @@ Expert guides downloaded via the Android CLI for system-level optimizations, too
 Expert patterns for Compose and Kotlin, managed via `npx skills` and tracked in `skills-lock.json`. These presently include skills from sources like **Chris Banes**.
 
 - **kotlin-functions**: Choosing the best Kotlin function type (top-level, extension, factory) for any receiver.
+- **firebase-basics**: Foundational Firebase CLI setup, project creation, and app configuration management.
+- **firebase-auth-basics**: Expert patterns for setting up and managing Firebase Authentication (users, providers, tokens).
+- **firebase-remote-config-basics**: Managing feature flags, loading strategies, and real-time updates via Firebase Remote Config.
 - **compose-animations**: Expert guidance on Motion and Animations in Compose (AnimatedVisibility, animate*AsState).
 - **kotlin-flow-state-event-modeling**: Professional UI state and event management using StateFlow, SharedFlow, and Channels.
 - **compose-side-effects**: Safe management of side effects (LaunchedEffect, snapshotFlow, navigation) in Compose.

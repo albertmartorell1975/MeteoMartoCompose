@@ -24,12 +24,22 @@ This feature implements a background monitoring system using **WorkManager**. It
 - [x] Implement `RemoteConfigRepositoryImpl` in `:app/data/remoteconfig` (Bridge between interface and DataSource).
 - [x] **Unit Test**: `RemoteConfigMapper` for boundary values.
 
-### Stage 3: Use Cases & Logic (:usecases)
-- [ ] Create `CheckTemperatureThresholdUseCase`:
+### Stage 3: Use Cases & Fullscreen Alert UI (:usecases & :app)
+- [] Create `CheckTemperatureThresholdUseCase`:
     - Fetch current temp from existing `CityWeatherRepository`.
     - Fetch threshold from `RemoteConfigRepository`.
-    - Compare and trigger `NotificationService`.
-- [ ] **Unit Test**: `CheckTemperatureThresholdUseCase` (Verify notification triggers only when `current > threshold`).
+    - Compare and return a result indicating if alert should be shown.
+- [] **Unit Test**: `CheckTemperatureThresholdUseCase` (Verify logic triggers correctly).
+- [] **UI Screen**: Implement `HighTemperatureAlertScreen` (Compose):
+    - Fullscreen overlay.
+    - Close icon (X) at top-right.
+    - Title: `high_temp_notif_title`.
+    - Body: `high_temp_notif_content` with dynamic temperature.
+    - Footer button: `accept_warning`.
+- [] **Navigation Logic**:
+    - Define `HighTemperatureAlert` route in `NavigationUtils.kt`.
+    - Add to `HomeNavGraph.kt` as a dialog or fullscreen destination.
+    - Trigger check in `CityWeatherViewModel` on launch.
 
 ### Stage 4: Application & Background (:app)
 - [ ] Create `TemperatureCheckWorker` using WorkManager.
