@@ -30,6 +30,7 @@ As a Skill, `workflow-feature` provides:
 4. **Context Awareness**: Analyzes existing project modules and patterns to ensure new features integrate seamlessly.
 5. **Testing Analysis**: Systematically evaluates whether a feature requires Unit Tests based on logic complexity.
 6. **Automatic Build Synchronization**: Enforces a mandatory `gradle_sync` task in the checklist whenever `build.gradle.kts` or `libs.versions.toml` are modified. The agent must execute the `gradle_sync` tool directly.
+7. **Expert Knowledge Sync**: Strictly enforces the "Documentation Sync" rule from `AGENTS.md`. Every time a skill is added, modified, or removed, the agent MUST detect it via `git status skills/` and update `skills/README.md` accordingly.
 
 ## Workflow Patterns
 
@@ -103,6 +104,7 @@ Your final response MUST follow this exact structure and be saved as a new file 
 - [ ] **Database / Models:** ...
 - [ ] [Steps based on Clean Architecture flow: Domain -> Data -> UseCase -> UI]
 - [ ] **Testing & Integration:** [Include specific unit tests for identified components]
+- [ ] **Documentation Sync (MANDATORY):** Run `git status skills/` and update `skills/README.md` if there are any changes in the expert skills directory.
 
 ## Documentation & References
 For more details on how to interact with the system or define journeys, refer to:

@@ -7,7 +7,7 @@ Custom skills created to define this project's unique architecture and governanc
 
 - **compiler**: Centralized project verification and compilation engine. Handles Gradle Sync, Lint, Compilation, and Deployment.
 - **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
-- **workflow-feature**: Analyzes the project and builds a standardized workflow for implementing new features with granular checklists.
+- **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
 - **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
 
