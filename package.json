@@ -1,5 +1,5 @@
 {
-  "name": "@albertmartorell/workflow-ai-seed-foundation",
+  "name": "@albertmartorell/android-ai-workflow-foundation",
   "version": "1.0.0",
   "description": "Foundational AI-Assisted Workflow Seed for Android and KMP. Provides Clean Architecture governance, standardized Git Flow, and automated feature implementation checklists.",
   "agent-skills": {
