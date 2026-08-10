@@ -1,40 +1,40 @@
 # Workflow Initializer Skill
 
-Aquest és el component central de la **Llavor de Flux de Treball Foundation**. La seva funció és automatitzar el desplegament de la governança i la configuració inicial de qualsevol projecte Android o KMP.
+This is the central component of the **Workflow Foundation Seed**. Its function is to automate the deployment of governance and the initial configuration of any Android or KMP project.
 
-## 🚀 Com començar
+## 🚀 Getting Started
 
-### 1. Instal·lació de la Llavor
-Si encara no has instal·lat la fundació, executa aquesta comanda a l'arrel del teu projecte:
+### 1. Seed Installation
+If you haven't installed the foundation yet, run this command in your project's root:
 ```bash
 npx skills add albertmartorell/android-ai-workflow-foundation -y
 ```
 
-### 2. Activació del Flux
-Un cop instal·lat, obre el xat de l'agent a Android Studio i digues:
-> "Activa la skill **workflow-initializer** per configurar el projecte."
+### 2. Workflow Activation
+Once installed, open the agent chat in Android Studio and say:
+> "Activate the **workflow-initializer** skill to configure the project."
 
-## ⚙️ Què fa aquesta Skill?
+## ⚙️ What does this Skill do?
 
-### Fase 1: Desplegament de Governança
-L'agent crearà automàticament els fitxers de control a l'arrel del projecte:
-- `.agents/rules.md`: Normes de Prompt Engineering i proactivitat.
-- `.agents/AGENTS.md`: Definició de rols d'IA basats en Clean Architecture.
+### Phase 1: Governance Deployment
+The agent will automatically create the control files in the project root:
+- `.agents/rules.md`: Prompt Engineering and proactivity rules.
+- `.agents/AGENTS.md`: AI role definitions based on Clean Architecture.
 
-### Fase 2: Diagnòstic del Stack (Personalització)
-L'agent et preguntarà sobre la teva arquitectura per ajustar els rols:
-- **Arquitectura**: MVI o MVVM.
-- **DI**: Hilt, Koin o Native.
-- **Dades**: Retrofit, Room, etc.
-- **Platform**: Android o KMP.
+### Phase 2: Stack Diagnosis (Customization)
+The agent will ask you about your architecture to adjust the roles:
+- **Architecture**: MVI or MVVM.
+- **DI**: Hilt, Koin, or Native.
+- **Data**: Retrofit, Room, etc.
+- **Platform**: Android or KMP.
 
-### Fase 3: Baseline de Git
-Si el projecte no té Git, l'agent:
-1. Executarà `git init`.
-2. Crearà les branques `main` i `develop`.
-3. Farà el primer commit amb la governança desplegada.
+### Phase 3: Git Baseline
+If the project doesn't have Git, the agent will:
+1. Execute `git init`.
+2. Create the `main` and `develop` branches.
+3. Make the first commit with the deployed governance.
 
-## 🛡️ Principis Aplicats
-- **Clean Architecture**: Manteniment de capes Domain, UseCase, Data i UI.
-- **SOLID**: Responsabilitats úniques per a cada agent.
-- **Human-in-the-loop**: L'IA mai pren decisions arquitectòniques o fa commits sense aprovació humana.
+## 🛡️ Applied Principles
+- **Clean Architecture**: Maintenance of Domain, UseCase, Data, and UI layers.
+- **SOLID**: Single responsibilities for each agent.
+- **Human-in-the-loop**: AI never makes architectural decisions or performs commits without human approval.
