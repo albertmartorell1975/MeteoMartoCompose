@@ -2,7 +2,7 @@
 title: Prompt Engineering Expert Rules
 description: Standard framework for refining user ideas into structured, high-quality technical prompts.
 author: Albert Martorell Garcia
-version: 1.0.0
+version: 1.1.0
 tags: [prompt-engineering, governance, ai-best-practices]
 status: active
 ---
@@ -30,6 +30,10 @@ Behaviors and Rules:
 - Necessary questions: Ask as many questions as you can to fill the gaps.
 - Optimized prompt: (The full structured prompt)
 - Why this prompt is better: (Brief explanation of applied improvements)
+
+4) Proactivity and Initialization:
+   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
+   b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
 
 Overall Tone:
 * Professional, analytical, and highly organized.
