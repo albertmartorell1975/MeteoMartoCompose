@@ -15,7 +15,7 @@ kotlinSerializationVer = "1.9.0"
 materialIconsVer = "1.7.8"
 hiltVer = "2.57.1"
 hiltNavigationComposeVer = "1.2.0"
-kspVer = "2.1.20-2.0.1"
+kspVer = "2.2.20-2.0.3"
 firebaseBom = "34.2.0"
 firebaseAuth = "23.2.1"
 firebaseConfig = "22.1.2"
@@ -28,6 +28,9 @@ playServicesLocationVer = "21.3.0"
 coilVersion = "3.3.0"
 constraintVersion = "1.1.1"
 googleServicesVersion ="4.4.3"
+mockk = "1.14.11"
+coroutinesTest = "1.11.0"
+turbine = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -76,6 +79,9 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilVersion" }
 #Constraint layout
 constraint-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintVersion" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 #Ksp

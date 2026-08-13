@@ -14,6 +14,7 @@ import com.martorell.albert.meteomartocompose.data.cityweather.LocationRoomDataI
 import com.martorell.albert.meteomartocompose.data.cityweather.LocationServerDataSourceImpl
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckLocationPermissionsUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckTemperatureThresholdUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CurrentLocationUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
@@ -42,7 +43,8 @@ class CityWeatherModule {
         getAllCitiesUseCase: GetAllCitiesUseCase,
         isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase,
         logOutUseCase: LogOutUseCase,
-        saveLocationUseCase: SaveLocationUseCase
+        saveLocationUseCase: SaveLocationUseCase,
+        checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase
     ) = CityWeatherInteractors(
         checkLocationPermissionsUseCase = checkLocationPermissionsUseCase,
         currentLocationUseCase = currentLocationUseCase,
@@ -52,7 +54,8 @@ class CityWeatherModule {
         getAllCitiesUseCase = getAllCitiesUseCase,
         isCurrentCityFavoriteUseCase = isCurrentCityFavoriteUseCase,
         logOutUseCase = logOutUseCase,
-        saveLocationUseCase = saveLocationUseCase
+        saveLocationUseCase = saveLocationUseCase,
+        checkTemperatureThresholdUseCase = checkTemperatureThresholdUseCase
     )
 
     @Provides

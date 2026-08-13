@@ -25,18 +25,18 @@ This feature implements a background monitoring system using **WorkManager**. It
 - [x] **Unit Test**: `RemoteConfigMapper` for boundary values.
 
 ### Stage 3: Use Cases & Fullscreen Alert UI (:usecases & :app)
-- [] Create `CheckTemperatureThresholdUseCase`:
+- [x] Create `CheckTemperatureThresholdUseCase`:
     - Fetch current temp from existing `CityWeatherRepository`.
     - Fetch threshold from `RemoteConfigRepository`.
     - Compare and return a result indicating if alert should be shown.
-- [] **Unit Test**: `CheckTemperatureThresholdUseCase` (Verify logic triggers correctly).
-- [] **UI Screen**: Implement `HighTemperatureAlertScreen` (Compose):
+- [x] **Unit Test**: `CheckTemperatureThresholdUseCase` (Verify logic triggers correctly).
+- [x] **UI Screen**: Implement `HighTemperatureAlertScreen` (Compose):
     - Fullscreen overlay.
     - Close icon (X) at top-right.
     - Title: `high_temp_notif_title`.
     - Body: `high_temp_notif_content` with dynamic temperature.
     - Footer button: `accept_warning`.
-- [] **Navigation Logic**:
+- [x] **Navigation Logic**:
     - Define `HighTemperatureAlert` route in `NavigationUtils.kt`.
     - Add to `HomeNavGraph.kt` as a dialog or fullscreen destination.
     - Trigger check in `CityWeatherViewModel` on launch.
