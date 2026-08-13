@@ -18,4 +18,9 @@ dependencies {
     implementation(libs.javax.inject.v1)
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }
