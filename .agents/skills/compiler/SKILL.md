@@ -26,11 +26,9 @@ As a Skill, `compiler` provides both standalone actions and a complete verificat
 
 ### 2. Full Verification Suite (Final "Definition of Done")
 To be executed in order BEFORE finalizing any task:
-1. **Lint & Analysis**: Run `analyze_file` on all modified files.
-2. **Cleanliness**: Ensure no unused imports, variables, or functions remain in any modified file.
-3. **Compilation**: Run `./gradlew compileDebugKotlin`.
-4. **Project Integrity**: Run `./gradlew assembleDebug`.
-5. **Deployment**: `android run` and visual verification.
+1. **Lint & Analysis**: Run `analyze_file` on all modified files and clean up unused code (imports, variables).
+2. **Logic Verification**: Run Unit Tests for all modified modules (e.g., `./gradlew :usecases:test`).
+3. **Deployment & Final Build**: Run `android run` (or visual verification with `render_compose_preview`). This command automatically compiles, assembles, and installs the app, saving redundant build cycles.
 
 ## Operational Rules
 - Agents MUST invoke this skill before finalizing any task.

@@ -3,9 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hiltAndroid)
-    alias(libs.plugins.kotlinAndroidKsp)
-    alias(libs.plugins.googleServices)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -60,47 +60,49 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.bundles.compose)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    //navigation
-    implementation(libs.navigation.compose)
+    
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    //Extended icons
-    implementation(libs.material.icons.extended)
-    //Hilt
+    
+    // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
-    //Firebase
+    
+    // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.config)
-    //Either
-    implementation(libs.arrow.core)
-    implementation(libs.arrow.fx.coroutines)
-    //Room (the below order is mandatory)
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
-    //Location
-    implementation(libs.accompanist.permissions)
-    implementation(libs.play.services.location)
-    //Retrofit
-    implementation(libs.retofit)
-    implementation(libs.converter.gson)
-    implementation(libs.logging.interceptor)
-    //Coil
+    implementation(libs.bundles.firebase)
+    
+    // Arrow
+    implementation(libs.bundles.arrow)
+    
+    // Room (the below order is mandatory)
+    implementation(libs.bundles.room)
+    ksp(libs.androidx.room.compiler)
+    
+    // Location
+    implementation(libs.google.accompanist.permissions)
+    implementation(libs.google.play.services.location)
+    
+    // Retrofit
+    implementation(libs.bundles.retrofit)
+    
+    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    //Constraint layout
-    implementation(libs.constraint.compose)
+    
+    // Constraint layout
+    implementation(libs.androidx.constraintlayout.compose)
 }
