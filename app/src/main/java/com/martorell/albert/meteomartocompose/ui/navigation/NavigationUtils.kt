@@ -40,6 +40,9 @@ sealed class DashboardScreens {
     @Serializable
     data object Favorites : DashboardScreens()
 
+    @Serializable
+    data class HighTemperatureAlert(val temperature: Double) : DashboardScreens()
+
 }
 
 sealed class FavoritesScreens {

@@ -1,5 +1,6 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -9,11 +10,15 @@ import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.toCustomErrorFlow
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
+import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +30,9 @@ class CityWeatherViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<TemperatureAlertResult>(Channel.BUFFERED)
+    val events: Flow<TemperatureAlertResult> = _events.receiveAsFlow()
 
     data class UiState(
         val loading: Boolean = false,
@@ -47,6 +55,19 @@ class CityWeatherViewModel @Inject constructor(
 
             getCurrentLocationStarted()
 
+        }
+
+        viewModelScope.launch {
+            cityWeatherInteractors.checkTemperatureThresholdUseCase()
+                .collect { result ->
+                    Log.d(
+                        "TempAlert",
+                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C"
+                    )
+                    if (result.showAlert) {
+                        _events.send(result)
+                    }
+                }
         }
 
     }

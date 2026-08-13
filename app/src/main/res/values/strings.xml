@@ -55,5 +55,6 @@
     <string name="high_temp_notif_channel_description">Notifications for high temperature warnings</string>
     <string name="high_temp_notif_title">High Temperature Alert!</string>
     <string name="high_temp_notif_content">Current temperature is %.1f°C, exceeding the threshold.</string>
+    <string name="accept_warning">Understood</string>
 
 </resources>

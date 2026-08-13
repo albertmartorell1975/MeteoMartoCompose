@@ -11,13 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarAction
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarTitle
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
+import com.martorell.albert.meteomartocompose.ui.screens.city.HighTemperatureAlertScreen
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
 @Composable
@@ -79,6 +83,9 @@ fun HomeNavGraph(
                             }
                         }
                     },
+                    goToHighTempAlert = { temperature ->
+                        navController.navigate(DashboardScreens.HighTemperatureAlert(temperature))
+                    },
                     setFabVisibility)
             }
 
@@ -102,6 +109,21 @@ fun HomeNavGraph(
                         navController.navigate(SubGraphs.FavoritesGraph(cityName = it?.name))
                     })
 
+            }
+
+            dialog<DashboardScreens.HighTemperatureAlert>(
+                dialogProperties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = false
+                )
+            ) { backStackEntry ->
+                val route = backStackEntry.toRoute<DashboardScreens.HighTemperatureAlert>()
+                HighTemperatureAlertScreen(
+                    temperature = route.temperature,
+                    onDismiss = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
         }

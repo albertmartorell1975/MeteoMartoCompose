@@ -54,9 +54,17 @@ fun CityWeatherScreen(
     modifier: Modifier = Modifier,
     viewModel: CityWeatherViewModel,
     goToLogin: () -> Unit,
+    goToHighTempAlert: (Double) -> Unit,
     setFabVisibility: (isVisible: Boolean) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { alert ->
+            goToHighTempAlert(alert.currentTemperature)
+        }
+    }
+
     CityWeatherContent(
         modifier = modifier,
         state = state,
