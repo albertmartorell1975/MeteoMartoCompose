@@ -80,6 +80,7 @@ To prevent architectural drift and technical debt, all agents must follow this s
 3. **Robustness Over Speed (MANDATORY)**: Agents must prioritize robust, scalable solutions that follow SOLID principles and industry standards. A "quick fix" that compromises the established architecture is considered a failure.
 4. **Workflow Activation**: Only after the user confirms the optimized prompt and assumptions can the agent trigger the `workflow-feature` skill to generate the implementation checklist.
 5. **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file without having presented the diagnosis questions to the user first.
+6. **Technical Accuracy & Documentation (STRICT)**: Always consult the official Android documentation via `android-cli` or `search_android_docs` when implementing or refactoring Android framework APIs (e.g., WorkManager, Insets, In-app updates) to ensure compliance with the latest SDK standards and background execution limits.
 
 ---
 
@@ -98,6 +99,13 @@ To maintain maximum code health, all agents must adhere to the following rules:
 4.  **Code Style & Conventions (MANDATORY)**: 
     - **Language**: All code comments and technical notes MUST be in **English**.
     - **Kotlin Standards**: All Kotlin code MUST strictly adhere to the [Official Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html).
+
+5.  **Engineering Principles (STRICT)**: All agents must apply the following patterns to ensure maintainability:
+    - **DRY (Don't Repeat Yourself)**: Avoid duplication of logic. Centralize common behaviors.
+    - **KISS (Keep It Simple, Stupid)**: Prefer simple, readable solutions over complex architectures.
+    - **SOLID**: Maintain Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion.
+    - **YAGNI (You Ain't Gonna Need It)**: Do not implement functionality until it is actually needed.
+    - **Reference**: Consult [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [Android Architecture Guidelines](https://developer.android.com/topic/architecture).
 
 ---
 
