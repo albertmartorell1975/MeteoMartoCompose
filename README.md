@@ -60,7 +60,7 @@ The application itself is independent of this experiment. The AI workflow is bei
 
 ### Current experiment
 
-The first experiment is the development of a **high-temperature push notification** feature.
+TThe current experiment is the developmen of a **high-temperature push notification** feature.
 
 This work is currently being developed in:
 
