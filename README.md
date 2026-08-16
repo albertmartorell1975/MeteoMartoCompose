@@ -72,7 +72,6 @@ The feature is intended to notify users when the temperature exceeds a configura
 
 This branch is being used to evaluate the AI-assisted workflow through a complete development cycle, including planning, implementation, validation, testing and review.
 
-The workflow itself is still evolving as the experiment progresses.
 
 ---
 
