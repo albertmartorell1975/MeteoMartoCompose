@@ -1,9 +1,86 @@
-MeteoMartoCompose is an Android app built in Kotlin, which not only follows clean architecture principles but also uses Jetpack Compose as a UI development toolkit.
-Its goal is the display the weather of your current location. Besides, it allows you to make your current location as a favorite in order to know the weather forecast of your favorites cities.
-To enjoy of MeteoMartoCompose you must create an accout, which is stored into the Firebase Auth service. If you do not want to sign up, you can log in by using the default user:
+# 🌤️ MeteoMartoCompose
 
-user: meteomarto@gmail.com
+MeteoMartoCompose is a modern Android weather application built with Kotlin and Jetpack Compose.
 
-password: 123456
+The project was originally created as a playground to experiment with modern Android development practices, architecture and libraries.
 
-Thanks!
+The app retrieves weather information for a selected location and allows users to save favorite cities to check their forecasts.
+
+---
+
+## 🏗️ Architecture & Tech Stack
+
+The project follows Clean Architecture and SOLID principles, with a focus on separation of concerns, maintainability and testability.
+
+### Android
+
+- Kotlin
+- Jetpack Compose
+- Android Jetpack
+- Coroutines & Flow
+
+### Architecture
+
+- Clean Architecture
+- MVVM
+- SOLID
+- Repository pattern
+- Dependency Injection
+
+### Libraries & Services
+
+- Hilt
+- Room
+- Retrofit
+- Firebase
+- OpenWeather API
+
+---
+
+## 🔐 Demo Access
+
+To try MeteoMartoCompose, you can create a new account using Firebase Authentication.
+
+If you prefer not to register, a default demo account is available:
+
+**Email:** `meteomarto@gmail.com`  
+**Password:** `123456`
+
+This account is intended for demonstration purposes and allows you to explore the application without creating a new account.
+
+---
+
+## 🤖 AI-assisted Development Experiment
+
+MeteoMartoCompose is also being used as a real Android project to experiment with an **AI-assisted development workflow**.
+
+The workflow is based on the [Android AI Workflow Foundation](https://github.com/albertmartorell1975/android-ai-workflow-foundation), an evolving foundation for structuring and supervising AI-assisted development within an existing IDE.
+
+The application itself is independent of this experiment. The AI workflow is being evaluated through the development of new features on top of the existing codebase.
+
+### Current experiment
+
+The first experiment is the development of a **high-temperature push notification** feature.
+
+This work is currently being developed in:
+
+**[`feature/MM-01-high-temp-notification`](https://github.com/albertmartorell1975/MeteoMartoCompose/tree/feature/MM-01-high-temp-notification)**
+
+> ⚠️ **This feature is currently under development and has not been merged into `develop`.**
+
+The feature is intended to notify users when the temperature exceeds a configurable threshold.
+
+This branch is being used to evaluate the AI-assisted workflow through a complete development cycle, including planning, implementation, validation, testing and review.
+
+The workflow itself is still evolving as the experiment progresses.
+
+---
+
+## 📍 Repository Status
+
+- `develop` → current development version of the Android application.
+- `feature/MM-01-high-temp-notification` → experimental feature and current AI-assisted development workflow evaluation.
+
+The application and the AI workflow are intentionally kept separate:
+
+**MeteoMartoCompose is the Android project; the Android AI Workflow Foundation is the development process being experimented with.**
