@@ -68,7 +68,6 @@ This work is currently being developed in:
 
 > ⚠️ **This feature is currently under development and has not been merged into `develop`.**
 
-The feature is intended to notify users when the temperature exceeds a configurable threshold.
 
 This branch is being used to evaluate the AI-assisted workflow through a complete development cycle, including planning, implementation, validation, testing and review.
 
