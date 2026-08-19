@@ -6,7 +6,6 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 
 class CheckTemperatureThresholdUseCase @Inject constructor(
@@ -15,11 +14,11 @@ class CheckTemperatureThresholdUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<TemperatureAlertResult> =
         cityWeatherRepository.listOfCities
-            .mapNotNull { cities -> cities.firstOrNull { it.justAdded } }
-            .combine(remoteConfigRepository.getTemperatureThreshold()) { city, threshold ->
+            .combine(remoteConfigRepository.getTemperatureThreshold()) { cities, threshold ->
+                val city = cities.firstOrNull { it.justAdded }
                 TemperatureAlertResult(
-                    showAlert = city.temperature > threshold,
-                    currentTemperature = city.temperature,
+                    showAlert = city?.let { it.temperature > threshold } ?: false,
+                    currentTemperature = city?.temperature ?: 0.0,
                     threshold = threshold
                 )
             }

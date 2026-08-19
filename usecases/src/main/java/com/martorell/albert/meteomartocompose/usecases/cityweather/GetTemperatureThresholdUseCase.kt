@@ -7,5 +7,5 @@ import javax.inject.Inject
 class GetTemperatureThresholdUseCase @Inject constructor(
     private val remoteConfigRepository: RemoteConfigRepository
 ) {
-    fun invoke(): Flow<Double> = remoteConfigRepository.getTemperatureThreshold()
+    operator fun invoke(): Flow<Double> = remoteConfigRepository.getTemperatureThreshold()
 }
