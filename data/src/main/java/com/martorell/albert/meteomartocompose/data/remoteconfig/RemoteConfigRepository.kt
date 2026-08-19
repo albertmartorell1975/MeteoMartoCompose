@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface RemoteConfigRepository {
     fun getTemperatureThreshold(): Flow<Double>
+    fun getWeatherCheckInterval(): Flow<Long>
 }
