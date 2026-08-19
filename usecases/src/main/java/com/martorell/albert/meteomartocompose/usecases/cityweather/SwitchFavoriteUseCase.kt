@@ -6,12 +6,8 @@ import javax.inject.Inject
 
 class SwitchFavoriteUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
-    suspend fun invoke(
-        city: CityWeatherDomain
-    ) {
-
+    operator suspend fun invoke(city: CityWeatherDomain) {
         cityWeatherRepository.switchFavorite(city)
-
     }
 
 }

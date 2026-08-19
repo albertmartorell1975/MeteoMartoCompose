@@ -5,8 +5,7 @@ import javax.inject.Inject
 
 class IsGPSEnableUseCase @Inject constructor(private val permissionRepository: PermissionRepository) {
 
-    suspend fun invoke(
-    ): Boolean =
+    operator suspend fun invoke(): Boolean =
         permissionRepository.isGPSEnabled()
 
 }

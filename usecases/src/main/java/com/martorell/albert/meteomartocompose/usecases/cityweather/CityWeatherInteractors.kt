@@ -1,6 +1,8 @@
 package com.martorell.albert.meteomartocompose.usecases.cityweather
 
-data class CityWeatherInteractors(
+import javax.inject.Inject
+
+class CityWeatherInteractors @Inject constructor(
     val checkLocationPermissionsUseCase: CheckLocationPermissionsUseCase,
     val currentLocationUseCase: CurrentLocationUseCase,
     val isGPSEnableUseCase: IsGPSEnableUseCase,

@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class GetAllCitiesUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
-    fun invoke(): Flow<List<CityWeatherDomain>> =
+    operator fun invoke(): Flow<List<CityWeatherDomain>> =
         cityWeatherRepository.listOfCities
 
 }
