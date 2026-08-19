@@ -42,9 +42,11 @@ This feature implements a background monitoring system using **WorkManager**. It
     - Trigger check in `CityWeatherViewModel` on launch.
 
 ### Stage 4: Application & Background (:app)
-- [ ] Create `TemperatureCheckWorker` using WorkManager.
-- [ ] Provide Hilt bindings for `RemoteConfigRepository` and `NotificationService` in `AppModule`.
-- [ ] Schedule `PeriodicWorkRequest` in `Application` class (1-hour interval).
+- [x] Create `TemperatureCheckWorker` using WorkManager.
+- [x] Provide Hilt bindings for `RemoteConfigRepository` and `NotificationService` in specialized modules.
+- [x] Schedule `PeriodicWorkRequest` in `Application` class with dynamic interval from Remote Config.
+- [x] Refactor Worker to orchestrate atomic UseCases instead of a God UseCase.
+- [x] Implement robust error handling with fallback values in Remote Config.
 
 ## 4. Verification Checklist
 - [ ] Run `./gradlew :usecases:test` to verify threshold logic.

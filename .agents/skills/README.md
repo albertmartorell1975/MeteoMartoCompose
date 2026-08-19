@@ -10,6 +10,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
 - **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
+- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting).
 - **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
 
 ## 2. Android CLI & System Skills
