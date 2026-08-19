@@ -12,4 +12,8 @@
         <key>max_temperature_limit</key>
         <value>@string/max_temp_limit</value>
     </entry>
+    <entry>
+        <key>weather_check_interval_minutes</key>
+        <value>@string/default_weather_check_interval</value>
+    </entry>
 </defaultsMap>

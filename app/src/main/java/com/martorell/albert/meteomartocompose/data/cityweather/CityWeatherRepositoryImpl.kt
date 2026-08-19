@@ -8,8 +8,9 @@ import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSou
 import com.martorell.albert.meteomartocompose.data.customFlowTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class CityWeatherRepositoryImpl(
+class CityWeatherRepositoryImpl @Inject constructor(
     private val cityWeatherServerDataSource: CityWeatherServerDataSource,
     private val cityWeatherLocalDataSource: CityWeatherLocalDataSource
 ) :

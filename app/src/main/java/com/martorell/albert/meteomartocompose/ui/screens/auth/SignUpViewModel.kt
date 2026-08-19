@@ -26,8 +26,6 @@ class SignUpViewModel @Inject constructor(private val signUpInteractors: SignUpI
         val showError: Boolean = false,
         val validUser: Boolean = false,
         val error: CustomError? = null,
-        //val newUser: ResultResponse<String> = Either.Right("")
-        //val newUser: ResultResponse<List<String>> = Either.Right(emptyList())
     )
 
     fun buttonEnabled(): Boolean =

@@ -2,16 +2,31 @@ package com.martorell.albert.meteomartocompose.data.auth
 
 import arrow.core.right
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AccountServiceImpl @Inject constructor() : AccountService {
+
+    override val authState: Flow<Boolean> = callbackFlow {
+        val auth = Firebase.auth
+        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            trySend(firebaseAuth.currentUser != null)
+        }
+        auth.addAuthStateListener(listener)
+        awaitClose {
+            auth.removeAuthStateListener(listener)
+        }
+    }
 
     override suspend fun hasUser(): Boolean =
         Firebase.auth.currentUser != null
@@ -23,7 +38,7 @@ class AccountServiceImpl @Inject constructor() : AccountService {
 
             val result = Firebase.auth.createUserWithEmailAndPassword(
                 email,
-                password
+                password,
             ).await()
 
             return result.user?.toDomain().right()
@@ -36,7 +51,7 @@ class AccountServiceImpl @Inject constructor() : AccountService {
 
             val result = Firebase.auth.signInWithEmailAndPassword(
                 email,
-                password
+                password,
             ).await()
 
             return result.user?.toDomain().right()

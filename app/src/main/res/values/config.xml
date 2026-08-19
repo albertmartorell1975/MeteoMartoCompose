@@ -3,4 +3,6 @@
     <string name="default_temp_threshold">30.0</string>
     <string name="min_temp_limit">-100.0</string>
     <string name="max_temp_limit">100.0</string>
+    <string name="default_weather_check_interval">60</string>
+    <string name="min_weather_check_interval">15</string>
 </resources>

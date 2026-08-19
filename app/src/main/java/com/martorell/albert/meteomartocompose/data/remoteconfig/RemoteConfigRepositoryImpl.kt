@@ -11,8 +11,14 @@ class RemoteConfigRepositoryImpl @Inject constructor(
     private val mapper: RemoteConfigMapper,
 ) : RemoteConfigRepository {
     override fun getTemperatureThreshold(): Flow<Double> {
-        return remoteConfigDataSource.getTemperatureThreshold().map {
-            mapper.mapToThreshold(it)
+        return remoteConfigDataSource.getTemperatureThreshold().map { result ->
+            mapper.mapToThreshold(result.getOrNull())
+        }
+    }
+
+    override fun getWeatherCheckInterval(): Flow<Long> {
+        return remoteConfigDataSource.getWeatherCheckInterval().map { result ->
+            mapper.mapToInterval(result.getOrNull())
         }
     }
 }

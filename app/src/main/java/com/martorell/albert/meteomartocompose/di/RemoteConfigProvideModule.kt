@@ -16,13 +16,22 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RemoteConfigProvideModule {
 
+    private const val DEBUG_MINIMUM_FETCH_INTERVAL = 0L
+
     @Provides
     @Singleton
     fun provideRemoteConfigMapper(@ApplicationContext context: Context): RemoteConfigMapper {
         return RemoteConfigMapper(
-            defaultThreshold = context.getString(R.string.default_temp_threshold).toDoubleOrNull() ?: 30.0,
-            minLimit = context.getString(R.string.min_temp_limit).toDoubleOrNull() ?: -100.0,
-            maxLimit = context.getString(R.string.max_temp_limit).toDoubleOrNull() ?: 100.0
+            defaultThreshold = context.getString(R.string.default_temp_threshold).toDoubleOrNull()
+                ?: RemoteConfigMapper.DEFAULT_THRESHOLD,
+            minLimit = context.getString(R.string.min_temp_limit).toDoubleOrNull()
+                ?: RemoteConfigMapper.MIN_TEMP_LIMIT,
+            maxLimit = context.getString(R.string.max_temp_limit).toDoubleOrNull()
+                ?: RemoteConfigMapper.MAX_TEMP_LIMIT,
+            defaultInterval = context.getString(R.string.default_weather_check_interval).toLongOrNull()
+                ?: RemoteConfigMapper.DEFAULT_INTERVAL,
+            minInterval = context.getString(R.string.min_weather_check_interval).toLongOrNull()
+                ?: RemoteConfigMapper.MIN_INTERVAL
         )
     }
 
@@ -31,7 +40,7 @@ object RemoteConfigProvideModule {
     fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
         val remoteConfig = FirebaseRemoteConfig.getInstance()
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 0
+            minimumFetchIntervalInSeconds = DEBUG_MINIMUM_FETCH_INTERVAL
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)

@@ -8,7 +8,9 @@ class RemoteConfigMapperTest {
     private val mapper = RemoteConfigMapper(
         defaultThreshold = 30.0,
         minLimit = -100.0,
-        maxLimit = 100.0
+        maxLimit = 100.0,
+        defaultInterval = 60L,
+        minInterval = 15L
     )
 
     @Test
@@ -33,5 +35,28 @@ class RemoteConfigMapperTest {
         val expected = 30.0
         val result = mapper.mapToThreshold(input)
         assertEquals(expected, result, 0.0)
+    }
+
+    @Test
+    fun `mapToInterval should return same value when above minimum`() {
+        val input = 30L
+        val expected = 30L
+        val result = mapper.mapToInterval(input)
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `mapToInterval should return default when value is too low`() {
+        val input = 5L
+        val expected = 60L
+        val result = mapper.mapToInterval(input)
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `mapToInterval should return default when value is null`() {
+        val expected = 60L
+        val result = mapper.mapToInterval(null)
+        assertEquals(expected, result)
     }
 }

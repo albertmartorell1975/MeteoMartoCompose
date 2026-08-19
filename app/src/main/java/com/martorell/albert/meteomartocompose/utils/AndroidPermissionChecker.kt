@@ -2,6 +2,7 @@ package com.martorell.albert.meteomartocompose.utils
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
@@ -40,5 +41,6 @@ private fun PermissionChecker.Permission.toAndroidId() = when (this) {
 
     PermissionChecker.Permission.COARSE_LOCATION -> ACCESS_COARSE_LOCATION
     PermissionChecker.Permission.FINE_LOCATION -> ACCESS_FINE_LOCATION
+    PermissionChecker.Permission.POST_NOTIFICATIONS -> POST_NOTIFICATIONS
 
 }

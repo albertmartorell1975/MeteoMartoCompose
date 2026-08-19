@@ -13,8 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CityRoomDataSource(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
+class CityRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
 
     private val cityDao = db.cityDao()
 
