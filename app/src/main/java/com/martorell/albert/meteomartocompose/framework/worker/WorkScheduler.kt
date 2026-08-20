@@ -76,7 +76,7 @@ class WorkScheduler @Inject constructor(
                     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                         TemperatureCheckWorker.WORK_NAME,
                         ExistingPeriodicWorkPolicy.UPDATE,
-                        workRequest
+                        workRequest,
                     )
                 }
         }

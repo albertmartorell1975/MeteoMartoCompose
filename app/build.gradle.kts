@@ -54,60 +54,66 @@ kotlin {
 }
 
 dependencies {
-    implementation((project(":usecases")))
-    implementation((project(":data")))
-    implementation((project(":domain")))
+    // Project dependencies
+    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":usecases"))
+
+    // Core AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.constraintlayout.compose)
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-    
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    
-    // Hilt
+
+    // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.work)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
 
-    // WorkManager
+    // Background Work
     implementation(libs.androidx.work)
-    
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
-    
-    // Arrow
+
+    // Data Handling & Networking
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.arrow)
-    
-    // Room (the below order is mandatory)
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
-    
-    // Location
-    implementation(libs.google.accompanist.permissions)
-    implementation(libs.google.play.services.location)
-    
-    // Retrofit
     implementation(libs.bundles.retrofit)
-    
-    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    
-    // Constraint layout
-    implementation(libs.androidx.constraintlayout.compose)
+
+    // Local Storage (Room)
+    implementation(libs.bundles.room)
+    ksp(libs.androidx.room.compiler)
+
+    // Location & Permissions
+    implementation(libs.google.accompanist.permissions)
+    implementation(libs.google.play.services.location)
+
+    // Local Unit Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
+
+    // Instrumented Tests
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debugging Tools
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
