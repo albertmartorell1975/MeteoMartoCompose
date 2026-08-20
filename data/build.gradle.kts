@@ -21,4 +21,9 @@ dependencies {
     
     // Retrofit
     implementation(libs.bundles.retrofit)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

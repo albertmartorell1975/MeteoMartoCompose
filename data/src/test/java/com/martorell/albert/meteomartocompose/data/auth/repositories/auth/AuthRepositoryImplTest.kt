@@ -1,6 +1,6 @@
 package com.martorell.albert.meteomartocompose.data.auth.repositories.auth
 
-import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
 import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AuthLocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
@@ -19,7 +19,7 @@ class AuthRepositoryImplTest {
     private val authLocalDataSource: AuthLocalDataSource = mockk(relaxed = true)
     private val repository = AuthRepositoryImpl(accountService, authLocalDataSource)
 
-    private val user = UserDomain(id = "1", email = "test@test.com")
+    private val user = UserDomain(uid = "1", email = "test@test.com", name = "Test User")
 
     @Test
     fun `logIn should save user to local data source when successful`() = runTest {
@@ -41,7 +41,7 @@ class AuthRepositoryImplTest {
         // Given
         val email = "test@test.com"
         val password = "password"
-        val error = Exception("Login failed")
+        val error = CustomError.Unknown("Login failed")
         coEvery { accountService.logIn(email, password) } returns error.left()
 
         // When
@@ -72,7 +72,7 @@ class AuthRepositoryImplTest {
         // Given
         val email = "test@test.com"
         val password = "password"
-        val error = Exception("Signup failed")
+        val error = CustomError.Unknown("Signup failed")
         coEvery { accountService.singUp(email, password) } returns error.left()
 
         // When
