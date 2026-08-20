@@ -96,6 +96,7 @@ To maintain maximum code health, all agents must adhere to the following rules:
     - **Static Health (Instant)**: Run `analyze_file` on modified files. Fix all syntax errors and remove unused imports/variables.
     - **Logic Safety (Fast)**: Execute Unit Tests only for the impacted modules (e.g., `./gradlew :usecases:test`).
     - **Unified Build & Deploy (Single Step)**: Use `android run`. Do NOT run `assembleDebug` separately as `android run` already triggers it.
+    - **Foundation Sync (AUTOMATIC)**: Any change to a Skill MUST be immediately synchronized with the `android-ai-workflow-foundation` repository via the `foundation-evolve` skill before final staging.
     - **Visual Check**: Perform visual verification only if the task involves UI, Navigation, or System Notifications.
     - **Architectural Compliance**: Full compliance with naming and architectural patterns defined in this document.
 
