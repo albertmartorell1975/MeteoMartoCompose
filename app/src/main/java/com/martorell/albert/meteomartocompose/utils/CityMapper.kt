@@ -17,7 +17,8 @@ fun CityWeatherResponse.toRoom(): CityWeather =
         rain = if (this.rain != null) this.rain?.quantity else 0.0,
         pressure = this.main.pressure,
         latitude = this.coord.lat,
-        longitude = this.coord.lon
+        longitude = this.coord.lon,
+        isAlertNotified = false,
     )
 
 
@@ -34,7 +35,8 @@ fun CityWeather.toDomain(): CityWeatherDomain =
         pressure = this.pressure,
         favorite = this.favorite,
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        isAlertNotified = this.isAlertNotified,
     )
 
 fun CityWeatherDomain.toRoom(): CityWeather =
@@ -51,7 +53,8 @@ fun CityWeatherDomain.toRoom(): CityWeather =
         pressure = this.pressure,
         favorite = this.favorite,
         latitude = this.latitude,
-        longitude = this.longitude
+        longitude = this.longitude,
+        isAlertNotified = this.isAlertNotified,
     )
 
 fun List<CityWeather>.listToDomain(): List<CityWeatherDomain> {
@@ -71,7 +74,8 @@ fun List<CityWeather>.listToDomain(): List<CityWeatherDomain> {
             pressure = city.pressure,
             favorite = city.favorite,
             latitude = city.latitude,
-            longitude = city.longitude
+            longitude = city.longitude,
+            isAlertNotified = city.isAlertNotified,
         )
 
         myList.add(cityDomain)

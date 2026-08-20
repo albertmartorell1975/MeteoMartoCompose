@@ -12,6 +12,8 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAler
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckTemperatureThresholdUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.MarkCityAlertNotifiedUseCase
+import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -31,8 +33,10 @@ class TemperatureCheckWorkerTest {
     private val getAllCitiesUseCase: GetAllCitiesUseCase = mockk()
     private val loadCityWeatherByCoordinatesUseCase: LoadCityWeatherByCoordinatesUseCase = mockk(relaxed = true)
     private val checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase = mockk()
+    private val markCityAlertNotifiedUseCase: MarkCityAlertNotifiedUseCase = mockk()
     private val notificationService: NotificationService = mockk(relaxed = true)
     private val permissionChecker: PermissionChecker = mockk()
+    private val appLifecycleObserver: AppLifecycleObserver = mockk()
 
     @Before
     fun setup() {
@@ -54,7 +58,8 @@ class TemperatureCheckWorkerTest {
                     return TemperatureCheckWorker(
                         appContext, workerParameters,
                         getAllCitiesUseCase, loadCityWeatherByCoordinatesUseCase,
-                        checkTemperatureThresholdUseCase, notificationService, permissionChecker
+                        checkTemperatureThresholdUseCase, markCityAlertNotifiedUseCase,
+                        notificationService, permissionChecker, appLifecycleObserver
                     )
                 }
             })
@@ -69,44 +74,14 @@ class TemperatureCheckWorkerTest {
     }
 
     @Test
-    fun `when no city is justAdded, worker returns success and does nothing`() = runTest {
+    fun `when temperature exceeds threshold and app is in background, notification is shown`() = runTest {
         // Given
-        coEvery { permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS) } returns true
-        every { getAllCitiesUseCase() } returns flowOf(listOf(
-            CityWeatherDomain(name = "City1", temperature = 25.0, justAdded = false, pressure = 1013, temperatureMin = 20.0, temperatureMax = 30.0)
-        ))
-
-        val worker = TestListenableWorkerBuilder<TemperatureCheckWorker>(context)
-            .setWorkerFactory(object : androidx.work.WorkerFactory() {
-                override fun createWorker(
-                    appContext: Context,
-                    workerClassName: String,
-                    workerParameters: WorkerParameters
-                ): ListenableWorker {
-                    return TemperatureCheckWorker(
-                        appContext, workerParameters,
-                        getAllCitiesUseCase, loadCityWeatherByCoordinatesUseCase,
-                        checkTemperatureThresholdUseCase, notificationService, permissionChecker
-                    )
-                }
-            })
-            .build()
-
-        // When
-        val result = worker.doWork()
-
-        // Then
-        assertEquals(ListenableWorker.Result.success(), result)
-        coVerify(exactly = 0) { loadCityWeatherByCoordinatesUseCase(any(), any()) }
-    }
-
-    @Test
-    fun `when temperature exceeds threshold, notification is shown`() = runTest {
-        // Given
-        val city = CityWeatherDomain(name = "Hot City", temperature = 35.0, justAdded = true, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0, latitude = 1.0, longitude = 2.0)
+        val city = CityWeatherDomain(name = "Hot City", temperature = 35.0, justAdded = true, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0, latitude = 1.0, longitude = 2.0, isAlertNotified = false)
         coEvery { permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS) } returns true
         every { getAllCitiesUseCase() } returns flowOf(listOf(city))
-        every { checkTemperatureThresholdUseCase() } returns flowOf(TemperatureAlertResult(showAlert = true, currentTemperature = 35.0, threshold = 30.0))
+        every { checkTemperatureThresholdUseCase() } returns flowOf(TemperatureAlertResult(cityName = "Hot City", showAlert = true, isPersistentAlertActive = true, currentTemperature = 35.0, threshold = 30.0))
+        coEvery { markCityAlertNotifiedUseCase("Hot City", true) } returns Unit
+        every { appLifecycleObserver.isAppInForeground() } returns false
 
         val worker = TestListenableWorkerBuilder<TemperatureCheckWorker>(context)
             .setWorkerFactory(object : androidx.work.WorkerFactory() {
@@ -118,7 +93,8 @@ class TemperatureCheckWorkerTest {
                     return TemperatureCheckWorker(
                         appContext, workerParameters,
                         getAllCitiesUseCase, loadCityWeatherByCoordinatesUseCase,
-                        checkTemperatureThresholdUseCase, notificationService, permissionChecker
+                        checkTemperatureThresholdUseCase, markCityAlertNotifiedUseCase,
+                        notificationService, permissionChecker, appLifecycleObserver
                     )
                 }
             })
@@ -130,5 +106,40 @@ class TemperatureCheckWorkerTest {
         // Then
         assertEquals(ListenableWorker.Result.success(), result)
         coVerify { notificationService.showHighTemperatureNotification(35.0) }
+        coVerify { markCityAlertNotifiedUseCase("Hot City", true) }
+    }
+
+    @Test
+    fun `when temperature exceeds threshold but app is in foreground, notification is NOT shown`() = runTest {
+        // Given
+        val city = CityWeatherDomain(name = "Hot City", temperature = 35.0, justAdded = true, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0, latitude = 1.0, longitude = 2.0, isAlertNotified = false)
+        coEvery { permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS) } returns true
+        every { getAllCitiesUseCase() } returns flowOf(listOf(city))
+        every { checkTemperatureThresholdUseCase() } returns flowOf(TemperatureAlertResult(cityName = "Hot City", showAlert = true, isPersistentAlertActive = true, currentTemperature = 35.0, threshold = 30.0))
+        every { appLifecycleObserver.isAppInForeground() } returns true
+
+        val worker = TestListenableWorkerBuilder<TemperatureCheckWorker>(context)
+            .setWorkerFactory(object : androidx.work.WorkerFactory() {
+                override fun createWorker(
+                    appContext: Context,
+                    workerClassName: String,
+                    workerParameters: WorkerParameters
+                ): ListenableWorker {
+                    return TemperatureCheckWorker(
+                        appContext, workerParameters,
+                        getAllCitiesUseCase, loadCityWeatherByCoordinatesUseCase,
+                        checkTemperatureThresholdUseCase, markCityAlertNotifiedUseCase,
+                        notificationService, permissionChecker, appLifecycleObserver
+                    )
+                }
+            })
+            .build()
+
+        // When
+        val result = worker.doWork()
+
+        // Then
+        assertEquals(ListenableWorker.Result.success(), result)
+        coVerify(exactly = 0) { notificationService.showHighTemperatureNotification(any()) }
     }
 }

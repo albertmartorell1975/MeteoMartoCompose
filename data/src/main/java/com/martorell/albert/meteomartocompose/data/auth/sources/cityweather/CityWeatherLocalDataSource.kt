@@ -16,7 +16,7 @@ interface CityWeatherLocalDataSource {
         pressure: Int,
         temperatureMax: Double,
         temperatureMin: Double,
-        temperature: Double
+        temperature: Double,
     )
 
     suspend fun loadCity(name: String): ResultResponse<CityWeatherDomain>
@@ -25,5 +25,6 @@ interface CityWeatherLocalDataSource {
     fun getAll(): Flow<List<CityWeatherDomain>>
     suspend fun isCurrentCityFavorite(): Boolean
     suspend fun removeCityAsFavorite(cityName: String)
+    suspend fun updateAlertStatus(name: String, isNotified: Boolean)
 
 }

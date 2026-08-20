@@ -10,10 +10,12 @@ import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
 import com.martorell.albert.meteomartocompose.framework.db.model.User
 
 @Database(
-    entities = [User::class,
+    entities = [
+        User::class,
         CityWeather::class,
-        LocationLocal::class],
-    version = 1,
+        LocationLocal::class,
+    ],
+    version = 2,
     exportSchema = false
 )
 abstract class MeteoMartoDatabase : RoomDatabase() {

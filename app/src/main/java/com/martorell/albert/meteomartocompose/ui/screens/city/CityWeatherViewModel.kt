@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CityWeatherViewModel @Inject constructor(
-    private val cityWeatherInteractors: CityWeatherInteractors
+    private val cityWeatherInteractors: CityWeatherInteractors,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -46,7 +46,8 @@ class CityWeatherViewModel @Inject constructor(
         val city: CityWeatherDomain? = null,
         val loadedForecast: Boolean = false,
         val logOut: Boolean = false,
-        val showFab: Boolean = false
+        val showFab: Boolean = false,
+        val isHighTempAlertActive: Boolean = false,
     )
 
     init {
@@ -62,10 +63,16 @@ class CityWeatherViewModel @Inject constructor(
                 .collect { result ->
                     Log.d(
                         "TempAlert",
-                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C"
+                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
                     )
+                    
+                    _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
+
                     if (result.showAlert) {
                         _events.send(result)
+                        cityWeatherInteractors.markCityAlertNotifiedUseCase(result.cityName, true)
+                    } else if (!result.isPersistentAlertActive) {
+                        cityWeatherInteractors.markCityAlertNotifiedUseCase(result.cityName, false)
                     }
                 }
         }

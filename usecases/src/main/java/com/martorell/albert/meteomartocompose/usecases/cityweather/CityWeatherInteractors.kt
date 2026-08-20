@@ -12,5 +12,6 @@ class CityWeatherInteractors @Inject constructor(
     val isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase,
     val logOutUseCase: LogOutUseCase,
     val saveLocationUseCase: SaveLocationUseCase,
-    val checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase
+    val checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase,
+    val markCityAlertNotifiedUseCase: MarkCityAlertNotifiedUseCase,
 )

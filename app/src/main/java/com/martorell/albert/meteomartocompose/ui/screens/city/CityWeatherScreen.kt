@@ -6,19 +6,23 @@ import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,7 +59,7 @@ fun CityWeatherScreen(
     viewModel: CityWeatherViewModel,
     goToLogin: () -> Unit,
     goToHighTempAlert: (Double) -> Unit,
-    setFabVisibility: (isVisible: Boolean) -> Unit
+    setFabVisibility: (isVisible: Boolean) -> Unit,
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -231,7 +235,7 @@ fun CityWeatherContent(
                     AsyncImage(
                         model = ImageRequest.Builder(currentContext)
                             .data(currentState.city?.weatherIcon).crossfade(true).build(),
-                        contentDescription = "El temps que fa",
+                        contentDescription = stringResource(R.string.weather_icon_description),
                         modifier = Modifier
                             .height(dimensionResource(R.dimen.weather_icon_size))
                             .width(
@@ -249,11 +253,25 @@ fun CityWeatherContent(
                         )
                     }
 
-                    CityTextView(
-                        // Display current temperature
-                        contentFix = stringResource(R.string.city_current_temperature),
-                        contentDynamic = currentState.city?.temperature.toString()
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CityTextView(
+                            // Display current temperature
+                            contentFix = stringResource(R.string.city_current_temperature),
+                            contentDynamic = currentState.city?.temperature.toString()
+                        )
+                        if (currentState.isHighTempAlertActive) {
+                            Spacer(Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = stringResource(R.string.high_temp_alert_icon_description),
+                                tint = Color.Red,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
 
                     CityTextView(
                         // Display maximum temperature

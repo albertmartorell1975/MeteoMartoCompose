@@ -49,4 +49,7 @@ interface CityDao {
     @Query("UPDATE CityWeather SET favorite = false WHERE name =:name ")
     suspend fun removeCityAsFavorite(name: String)
 
+    @Query("UPDATE CityWeather SET isAlertNotified = :isNotified WHERE name = :name")
+    suspend fun updateAlertStatus(name: String, isNotified: Boolean)
+
 }

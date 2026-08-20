@@ -47,7 +47,7 @@ class CityRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : CityWeath
                 pressure = pressure,
                 temperatureMax = temperatureMax,
                 temperatureMin = temperatureMin,
-                temperature = temperature
+                temperature = temperature,
             )
         }
     }
@@ -103,6 +103,12 @@ class CityRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : CityWeath
 
         }
 
+    }
+
+    override suspend fun updateAlertStatus(name: String, isNotified: Boolean) {
+        withContext(Dispatchers.IO) {
+            cityDao.updateAlertStatus(name, isNotified)
+        }
     }
 
 }

@@ -4,6 +4,8 @@ import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather
 import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.utils.AndroidPermissionChecker
+import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
+import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserverImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,12 +19,18 @@ abstract class AppBindingModule {
     @Binds
     @Singleton
     abstract fun bindPermissionRepository(
-        impl: PermissionRepositoryImpl
+        impl: PermissionRepositoryImpl,
     ): PermissionRepository
 
     @Binds
     @Singleton
     abstract fun bindPermissionChecker(
-        impl: AndroidPermissionChecker
+        impl: AndroidPermissionChecker,
     ): PermissionChecker
+
+    @Binds
+    @Singleton
+    abstract fun bindAppLifecycleObserver(
+        impl: AppLifecycleObserverImpl,
+    ): AppLifecycleObserver
 }

@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class CityWeatherRepositoryImpl @Inject constructor(
     private val cityWeatherServerDataSource: CityWeatherServerDataSource,
-    private val cityWeatherLocalDataSource: CityWeatherLocalDataSource
+    private val cityWeatherLocalDataSource: CityWeatherLocalDataSource,
 ) :
     CityWeatherRepository {
 
@@ -80,5 +80,9 @@ class CityWeatherRepositoryImpl @Inject constructor(
 
     override suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain> =
         cityWeatherLocalDataSource.loadCity(cityName)
+
+    override suspend fun updateAlertStatus(name: String, isNotified: Boolean) {
+        cityWeatherLocalDataSource.updateAlertStatus(name, isNotified)
+    }
 
 }

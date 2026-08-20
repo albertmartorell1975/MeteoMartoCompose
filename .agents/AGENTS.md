@@ -37,6 +37,7 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 
 - **Module Ownership**: `:data` (Interfaces) and `:app` (specifically `framework/` or `data/` implementation packages).
 - **Primary Responsibility**: Manage the flow of data. Define repository interfaces in `:data` and implement them in the infrastructure layer using specific technologies.
+- **SSOT and Schema Governance**: Maintain the Single Source of Truth (SSOT). Responsible for Room database schema evolution, including version increments and migration strategy following the `room-schema-governance` skill.
 - **Architectural Constraints**:
     - **Single Source of Truth (SSOT) Policy**: Define the source of truth for the UI (usually a local database or specific cache).
     - Responsible for **Mappers**: Mapping Infrastructure Models (DTOs/Entities) to Domain Models.
@@ -97,6 +98,7 @@ To maintain maximum code health, all agents must adhere to the following rules:
     - **Logic Safety (Fast)**: Execute Unit Tests only for the impacted modules (e.g., `./gradlew :usecases:test`).
     - **Unified Build & Deploy (Single Step)**: Use `android run`. Do NOT run `assembleDebug` separately as `android run` already triggers it.
     - **Foundation Sync (AUTOMATIC)**: Any change to a Skill MUST be immediately synchronized with the `android-ai-workflow-foundation` repository via the `foundation-evolve` skill before final staging.
+    - **Skill Integrity (STRICT)**: All skill modifications MUST be reflected in `skills-lock.json` with updated SHA-256 hashes to ensure repository integrity.
     - **Visual Check**: Perform visual verification only if the task involves UI, Navigation, or System Notifications.
     - **Architectural Compliance**: Full compliance with naming and architectural patterns defined in this document.
 

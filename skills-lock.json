@@ -41,7 +41,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/compiler/SKILL.md",
-      "computedHash": "78576e09b6682188a0f181ff7d834bce4446d35c6f7041e2aed97c70b5a22aea"
+      "computedHash": "d68ace5e038daf9662ce74f49e093c0331579356a96c8da15b1cf2a1c90f17d3"
     },
     "compose-animations": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -109,6 +109,12 @@
       "skillPath": ".agents/skills/compose-ui-testing-patterns/SKILL.md",
       "computedHash": "eaeb1524dfa939ea561782909dab5df0575e984c6b1676197421d4f580e7d04f"
     },
+    "dependency-manager": {
+      "source": "albertmartorell1975/android-ai-workflow-foundation",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/dependency-manager/SKILL.md",
+      "computedHash": "8a998899956edc8919f75b6a20bc46af0402ef4568e94b40696963fbfb26c2c8"
+    },
     "display-glasses-with-jetpack-compose-glimmer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
@@ -149,7 +155,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/foundation-evolve/SKILL.md",
-      "computedHash": "c2801c75e9919710168f2b8b6ca95f0880af85ab7691d47fc987e0ce5c63c641"
+      "computedHash": "0a6c2af4b8c9f25afcca5bb7b5447aa12c8780330a2a18549abaeabdfeeb8b97"
     },
     "git-governance": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -161,7 +167,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/hilt/SKILL.md",
-      "computedHash": "e1d11ec7f4762e965abb115b445d8c406b1866f6f23f42619a45edf39c6b0b83"
+      "computedHash": "5a732cdb277c7f512ea965ec8c0bbe66be3e0ee6978708abfd52c60e0aef55dc"
     },
     "kotlin-control-flow": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -240,6 +246,12 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/r8-analyzer/SKILL.md",
       "computedHash": "9d0aae2891e38a0ac9f6912b92a526bfcc487df5f50c6301b329e2c42d81095e"
+    },
+    "room-schema-governance": {
+      "source": "albertmartorell1975/android-ai-workflow-foundation",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/room-schema-governance/SKILL.md",
+      "computedHash": "b14d9ffec319ad15055fcb8bfc3b1601fb4edde222d95775af5bd6703f2d6fdb"
     },
     "styles": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",

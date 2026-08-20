@@ -12,5 +12,6 @@ data class CityWeatherDomain(
     val pressure: Int,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val favorite: Boolean = false
+    val favorite: Boolean = false,
+    val isAlertNotified: Boolean = false,
 )
