@@ -25,10 +25,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class WorkScheduler @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val authRepository: AuthRepository,
-    @ApplicationScope private val scope: CoroutineScope
+    @param:ApplicationScope private val scope: CoroutineScope,
 ) {
     
     /**
@@ -68,7 +68,7 @@ class WorkScheduler @Inject constructor(
 
                     // PeriodicWorkRequestBuilder ensures that the check is repeated over time.
                     val workRequest = PeriodicWorkRequestBuilder<TemperatureCheckWorker>(
-                        intervalMinutes, TimeUnit.MINUTES
+                        intervalMinutes, TimeUnit.MINUTES,
                     ).setConstraints(constraints)
                         .build()
 
