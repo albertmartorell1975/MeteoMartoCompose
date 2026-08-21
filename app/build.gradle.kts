@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
 }
-
+apply(from = "../flavors.gradle")
 android {
     namespace = "com.martorell.albert.meteomartocompose"
     compileSdk = 36
@@ -38,6 +38,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

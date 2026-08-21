@@ -254,10 +254,13 @@ fun CityWeatherContent(
                     }
 
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         CityTextView(
+                            modifier = Modifier,
+                            showSpacer = false,
                             // Display current temperature
                             contentFix = stringResource(R.string.city_current_temperature),
                             contentDynamic = currentState.city?.temperature.toString()

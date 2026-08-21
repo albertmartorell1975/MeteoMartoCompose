@@ -1,76 +1,22 @@
 android {
     flavorDimensions "version"
-
     productFlavors {
-
         pre {
             dimension "version"
-            resValue "string", "app_name", "Activa DKV PRE"
-            applicationIdSuffix ".pre"
-            buildConfigField "String", "APIM_WB_BASE", '"https://apim-pre.dkvseguros.com"'
-            buildConfigField "String", "OKTA_WB_BASE", '"https://login.dkv.es"'
-            buildConfigField "String", "WB_NOTIFICATION_URL", '"https://apim-pre.dkvseguros.com/sts/muro/api/callback/"'
-            buildConfigField "String", "KEY_SERVICE", '"1234qwer"'
-            buildConfigField "String", "CLIENT_ID_VALUE", '"APPDKV_PRE"'
-            buildConfigField "String", "OCP_APIM_VALUE", '"6b87dff44c3b4c43af7c139633847464"'
-            buildConfigField "String", "USER_ID", '"APPDKV"'
-            buildConfigField "String", "CUSTOMER_TYPE", '"CLIENTE"'
-            buildConfigField "String", "SOLICITANTE_TYPE", '"CLIENTE"'
-            buildConfigField "String", "X_BC_ACCESS_USER", '"test"'
-            buildConfigField "String", "X_BC_DISABLEBUS", '"false"'
-            buildConfigField "String", "OCP_APIM_TRACE", '"true"'
-            buildConfigField "String", "CLIENT_ID_SERVICE", '"3961633861633765393532343265633035373933366633396638346565373861"'
-            // clientidservicios
-            buildConfigField "String", "OCP_APIM_SUBSC_KEY_SERVICIOS", '"f2f0d7e0122f4ebbb4431d84df27b01d;product=App DKV Servicios"'
-            buildConfigField "String", "OCP_APIM_SUBSC_KEY", '"f2f0d7e0122f4ebbb4431d84df27b01d;product=App DKV"'
-            buildConfigField "String", "CLIENT_ID_ANDROID", '"0oari68wqwZehXDrB416"'
-            buildConfigField "String", "API_KEY", '"00j0UpMKafpm7J-bj6fRzwe8wnNcUbtLACuuSmDbjO"'
-            buildConfigField "String", "APP_ID_TARJETA_SDK", '"22"'
-            buildConfigField "String", "CLIENT_OMNICANALIDAD", '"OMNICANALIDAD_PRE"'
-            buildConfigField "String", "WALL_FIREBASE_USER", '"muro@dkvseguros.es"'
-            buildConfigField "String", "WALL_FIREBASE_PASSWORD", '"*ql!GY*Y%Pt0"'
-            buildConfigField "String", "AZURE_HUB_LISTEN_CONNECTION", '"Endpoint=sb://communicationshub-uat-ntfns.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=uRsD7EuVeqR4YFHupjaQwQClWQczEhapxFC1aRqJL+A="'
-            buildConfigField "String", "AZURE_HUB_NAME", '"communicationshub-uat-ntf"'
-            buildConfigField "String", "CANDIDATOS", '"1"'
-            buildConfigField "String", "POLICY_NUMBER_ENCRYPTION_SECRET_KEY", '"ybDG5jutPYfpk3BC"'
-            buildConfigField "String", "AUTHORIZATION_URL", '"https://adc-uat-autorizaciones-app.azurewebsites.net/autorizaciones/solicitar/producto?p="'
-            buildConfigField "String", "INSURANCE_DOC_ID_ORIGEN", '"22"'
-            buildConfigField "String", "CLIENT_ID_SAN", '"SAN_APP_PRE"'
-            buildConfigField "String", "MEDICOS_CLIENT_ID_VALUE", '"ACTIVA_CM"'
+            resValue "string", "app_name", "MeteoMartoCompose PRE"
+            buildConfigField "String", "APP_ID_PARAM", '"appid"'
+            buildConfigField "String", "API_KEY_VALUE", '"a32162b65432dca541a0e24d41cc4c7a"'
+            buildConfigField "String", "API_WB_BASE", '"https://api.openweathermap.org/"'
+            buildConfigField "String", "OPEN_WEATHER_ICON_URL", '"https://openweathermap.org/img/wn/"'
+
         }
         pro {
             dimension "version"
-            resValue "string", "app_name", "Activa DKV"
-            buildConfigField "String", "APIM_WB_BASE", '"https://apim-pro.dkvseguros.com"'
-            buildConfigField "String", "OKTA_WB_BASE", '"https://login.dkv.es"'
-            buildConfigField "String", "WB_NOTIFICATION_URL", '"https://apim-pro.dkvseguros.com/sts/muro/api/callback/"'
-            buildConfigField "String", "KEY_SERVICE", '"NDojZ4ti"'
-            buildConfigField "String", "CLIENT_ID_VALUE", '"APPDKV_PRO"'
-            buildConfigField "String", "OCP_APIM_VALUE", '"7b4901f4d7554c74baa9daa0fab9cd4b"'
-            buildConfigField "String", "USER_ID", '"APPDKV"'
-            buildConfigField "String", "CUSTOMER_TYPE", '"CLIENTE"'
-            buildConfigField "String", "SOLICITANTE_TYPE", '"CLIENTE"'
-            buildConfigField "String", "X_BC_ACCESS_USER", '"test"'
-            buildConfigField "String", "X_BC_DISABLEBUS", '"false"'
-            buildConfigField "String", "OCP_APIM_TRACE", '"true"'
-            buildConfigField "String", "CLIENT_ID_SERVICE", '"3961633861633765393532343265633035373933366633396638346565373861"'
-            // clientidservicios
-            buildConfigField "String", "OCP_APIM_SUBSC_KEY_SERVICIOS", '"4f9b0e815b2b4f539c20d2734dbe8d9d;product=App DKV Servicios"'
-            buildConfigField "String", "OCP_APIM_SUBSC_KEY", '"4f9b0e815b2b4f539c20d2734dbe8d9d;product=App DKV"'
-            buildConfigField "String", "CLIENT_ID_ANDROID", '"0oari82x5F3Lmjvnp416"'
-            buildConfigField "String", "API_KEY", '"00j0UpMKafpm7J-bj6fRzwe8wnNcUbtLACuuSmDbjO"'
-            buildConfigField "String", "APP_ID_TARJETA_SDK", '"16"'
-            buildConfigField "String", "CLIENT_OMNICANALIDAD", '"OMNICANALIDAD_PRO"'
-            buildConfigField "String", "WALL_FIREBASE_USER", '"muro@dkvseguros.es"'
-            buildConfigField "String", "WALL_FIREBASE_PASSWORD", '"*ql!GY*Y%Pt0"'
-            buildConfigField "String", "AZURE_HUB_LISTEN_CONNECTION", '"Endpoint=sb://communicationshub-pro-ntfns.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=qDAOgxrz7Acbg1rIl+kP5eR45oeO0m+1UNstKEwcKYo="'
-            buildConfigField "String", "AZURE_HUB_NAME", '"communicationshub-pro-ntf"'
-            buildConfigField "String", "CANDIDATOS", '"1"'
-            buildConfigField "String", "POLICY_NUMBER_ENCRYPTION_SECRET_KEY", '"ybDG5jutPYfpk3BC"'
-            buildConfigField "String", "AUTHORIZATION_URL", '"https://adc-pro-autorizaciones-app.azurewebsites.net/autorizaciones/solicitar/producto?p="'
-            buildConfigField "String", "INSURANCE_DOC_ID_ORIGEN", '"23"'
-            buildConfigField "String", "CLIENT_ID_SAN", '"SAN_APP_PRO"'
-            buildConfigField "String", "MEDICOS_CLIENT_ID_VALUE", '"ACTIVA_CM"'
+            resValue "string", "app_name", "MeteoMartoCompose"
+            buildConfigField "String", "APP_ID_PARAM", '"appid"'
+            buildConfigField "String", "API_KEY_VALUE", '"a32162b65432dca541a0e24d41cc4c7a"'
+            buildConfigField "String", "API_WB_BASE", '"https://api.openweathermap.org/"'
+            buildConfigField "String", "OPEN_WEATHER_ICON_URL", '"https://openweathermap.org/img/wn/"'
         }
     }
 }
