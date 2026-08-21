@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.martorell.albert.meteomartocompose.BuildConfig
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
 import com.martorell.albert.meteomartocompose.data.server.APIKeyInterceptor
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
@@ -32,7 +33,6 @@ annotation class ApplicationScope
 object AppProvideModule {
 
     private const val ROOM_DATABASE = "MeteoMartoDatabase"
-    private const val BASE_URL = "https://api.openweathermap.org/"
 
     @Provides
     @Singleton
@@ -76,7 +76,7 @@ object AppProvideModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BASE_URL)
+        .baseUrl(BuildConfig.API_WB_BASE)
         .client(okHttpClient)
         .build()
 
