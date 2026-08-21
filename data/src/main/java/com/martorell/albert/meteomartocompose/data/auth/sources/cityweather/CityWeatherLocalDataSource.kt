@@ -9,6 +9,7 @@ interface CityWeatherLocalDataSource {
 
     suspend fun isEmpty(): Boolean
     suspend fun addCity(cityServer: CityWeatherResponse)
+    suspend fun refreshCity(cityServer: CityWeatherResponse)
     suspend fun updateCity(
         cityName: String,
         weatherDescription: String?,
