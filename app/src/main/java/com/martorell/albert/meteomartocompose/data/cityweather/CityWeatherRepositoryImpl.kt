@@ -30,36 +30,7 @@ class CityWeatherRepositoryImpl @Inject constructor(
             lon = longitude
         )
 
-        if (cityWeatherLocalDataSource.isEmpty()) {
-
-            cityWeatherLocalDataSource.addCity(cityServer)
-
-        } else {
-
-            cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
-            val city = cityWeatherLocalDataSource.loadCity(cityServer.name)
-            city.fold({
-
-                // It means that the city does not exist yet, and we must add it
-                cityWeatherLocalDataSource.addCity(cityServer)
-
-            }) { cityInfo ->
-
-                // It means the city was already stored on the local database, and we must edit it
-                cityWeatherLocalDataSource.updateCity(
-                    cityName = cityInfo.name,
-                    weatherDescription = cityInfo.weatherDescription,
-                    weatherIcon = cityInfo.weatherIcon,
-                    pressure = cityInfo.pressure,
-                    temperatureMax = cityInfo.temperatureMax,
-                    temperatureMin = cityInfo.temperatureMin,
-                    temperature = cityInfo.temperature
-                )
-
-            }
-
-        }
-
+        cityWeatherLocalDataSource.refreshCity(cityServer)
     }
 
     override suspend fun switchFavorite(city: CityWeatherDomain) {

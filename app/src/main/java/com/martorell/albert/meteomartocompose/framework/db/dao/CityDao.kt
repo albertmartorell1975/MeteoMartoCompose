@@ -17,7 +17,7 @@ interface CityDao {
     suspend fun insert(city: CityWeather)
 
     @Query(value = "SELECT * FROM CityWeather WHERE name = :name")
-    suspend fun getCityByName(name: String): CityWeather
+    suspend fun getCityByName(name: String): CityWeather?
 
     @Query("SELECT * FROM CityWeather")
     fun getAll(): Flow<List<CityWeather>>

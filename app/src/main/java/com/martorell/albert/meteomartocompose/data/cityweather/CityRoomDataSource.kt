@@ -9,13 +9,16 @@ import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.utils.listToDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain
 import com.martorell.albert.meteomartocompose.utils.toRoom
+import com.martorell.albert.meteomartocompose.utils.openWeatherConverter
+import androidx.room.withTransaction
+import com.martorell.albert.meteomartocompose.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class CityRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
+class CityRoomDataSource @Inject constructor(private val db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
 
     private val cityDao = db.cityDao()
 
@@ -28,6 +31,32 @@ class CityRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : CityWeath
 
         }
 
+    }
+
+    override suspend fun refreshCity(cityServer: CityWeatherResponse) {
+        withContext(Dispatchers.IO) {
+            db.withTransaction {
+                if (isEmpty()) {
+                    cityDao.insert(cityServer.toRoom())
+                } else {
+                    cityDao.allCitiesAsNotJustAdded()
+                    val cityInfo = cityDao.getCityByName(cityServer.name)
+                    if (cityInfo == null) {
+                        cityDao.insert(cityServer.toRoom())
+                    } else {
+                        cityDao.update(
+                            name = cityServer.name,
+                            weatherDescription = if (cityServer.weather.isNotEmpty()) cityServer.weather[0].description else "",
+                            weatherIcon = if (cityServer.weather.isNotEmpty()) "${BuildConfig.OPEN_WEATHER_ICON_URL}${cityServer.weather[0].icon}@2x.png" else "",
+                            pressure = cityServer.main.pressure,
+                            temperatureMax = cityServer.main.temp_max.openWeatherConverter(),
+                            temperatureMin = cityServer.main.temp_min.openWeatherConverter(),
+                            temperature = cityServer.main.temp.openWeatherConverter(),
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override suspend fun updateCity(
