@@ -62,6 +62,26 @@ class CheckTemperatureThresholdUseCaseTest {
     }
 
     @Test
+    fun `when temperature is exactly equal to threshold, showAlert should be true`() = runTest {
+        // Given
+        val threshold = 30.0
+        val currentTemp = 30.0
+        val cities = listOf(
+            CityWeatherDomain(name = "City1", temperature = currentTemp, justAdded = true, isAlertNotified = false, pressure = 1013, temperatureMin = 30.0, temperatureMax = 30.0)
+        )
+        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
+        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
+
+        // When & Then
+        useCase().test {
+            val result = awaitItem()
+            assertTrue(result.showAlert)
+            assertTrue(result.isPersistentAlertActive)
+            awaitComplete()
+        }
+    }
+
+    @Test
     fun `when temperature is below threshold, showAlert and persistent alert should be false`() = runTest {
         // Given
         val threshold = 30.0

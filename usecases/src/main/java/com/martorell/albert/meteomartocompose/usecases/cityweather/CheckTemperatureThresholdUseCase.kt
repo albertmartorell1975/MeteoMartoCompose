@@ -15,14 +15,16 @@ class CheckTemperatureThresholdUseCase @Inject constructor(
     operator fun invoke(): Flow<TemperatureAlertResult> =
         cityWeatherRepository.listOfCities
             .combine(remoteConfigRepository.getTemperatureThreshold()) { cities, threshold ->
-                val city = cities.firstOrNull { it.justAdded }
-                val isAboveThreshold = city?.let { it.temperature > threshold } ?: false
-                
+                // If there is no city marked as 'justAdded', return the empty object 
+                // and stop the execution of this specific emission of the combine block.
+                val city = cities.firstOrNull { it.justAdded } ?: return@combine TemperatureAlertResult.EMPTY
+                val isAboveThreshold = city.temperature >= threshold
+
                 TemperatureAlertResult(
-                    cityName = city?.name ?: "",
+                    cityName = city.name,
                     showAlert = isAboveThreshold && !city.isAlertNotified,
                     isPersistentAlertActive = isAboveThreshold,
-                    currentTemperature = city?.temperature ?: 0.0,
+                    currentTemperature = city.temperature,
                     threshold = threshold,
                 )
             }
