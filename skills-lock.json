@@ -187,6 +187,12 @@
       "skillPath": ".agents/skills/kotlin-flow-state-event-modeling/SKILL.md",
       "computedHash": "70fe387ba9cd725cbb4c904b593301aec6e183d90bd02baad24ad133664b6267"
     },
+    "kotlin-style": {
+      "source": "albertmartorell1975/android-ai-workflow-foundation",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/kotlin-style/SKILL.md",
+      "computedHash": "81a1f68a6393f2ea905d47f84aaf524492c7c12f65516dd129e5fae1c5e47082"
+    },
     "kotlin-functions": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",

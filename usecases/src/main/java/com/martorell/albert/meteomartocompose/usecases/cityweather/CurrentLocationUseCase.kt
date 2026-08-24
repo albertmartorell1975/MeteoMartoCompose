@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class CurrentLocationUseCase @Inject constructor(private val locationRepository: LocationRepository) {
 
-    operator suspend fun invoke(): ResultResponse<CurrentLocationDomain> =
+    suspend operator fun invoke(): ResultResponse<CurrentLocationDomain> =
         locationRepository.loadCurrentLocation()
 
 }

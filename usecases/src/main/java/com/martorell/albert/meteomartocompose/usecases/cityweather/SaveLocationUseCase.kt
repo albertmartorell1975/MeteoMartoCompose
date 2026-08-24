@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class SaveLocationUseCase @Inject constructor(private val locationRepository: LocationRepository) {
 
-    operator suspend fun invoke(latitude: Double?, longitude: Double?) {
+    suspend operator fun invoke(latitude: Double?, longitude: Double?) {
         locationRepository.saveLocation(
             latitude = latitude,
             longitude = longitude

@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class UserLoggedUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
-    operator suspend fun invoke(): Boolean =
+    suspend operator fun invoke(): Boolean =
         authRepository.userLogged()
 
 }
