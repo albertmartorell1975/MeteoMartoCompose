@@ -3,6 +3,7 @@ package com.martorell.albert.meteomartocompose.data.auth.repositories.cityweathe
 interface PermissionRepository {
 
     suspend fun checkLocationPermissions(): Boolean
+    suspend fun checkNotificationPermission(): Boolean
     suspend fun isGPSEnabled(): Boolean
 
 }

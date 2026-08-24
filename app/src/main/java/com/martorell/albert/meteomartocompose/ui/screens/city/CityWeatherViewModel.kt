@@ -122,11 +122,18 @@ class CityWeatherViewModel @Inject constructor(
             it.copy(
                 loading = true,
                 errorLocation = null,
-                locationChecked = false
+                locationChecked = false,
+                showGPSDialog = false,
+                showRationale = false
             )
         }
 
-        if (cityWeatherInteractors.checkLocationPermissionsUseCase.invoke()) {
+        val locationGranted = cityWeatherInteractors.checkLocationPermissionsUseCase.invoke()
+        val notificationsGranted =
+            cityWeatherInteractors.checkNotificationPermissionUseCase.invoke()
+        val allPermissionsGranted = locationGranted && notificationsGranted
+
+        if (allPermissionsGranted) {
 
             if (cityWeatherInteractors.isGPSEnableUseCase.invoke()) {
 
@@ -140,7 +147,8 @@ class CityWeatherViewModel @Inject constructor(
                             loading = false,
                             showGPSDialog = true,
                             errorLocation = it,
-                            locationChecked = true
+                            locationChecked = true,
+                            permissionsGranted = true,
                         )
                     }
 
@@ -158,7 +166,8 @@ class CityWeatherViewModel @Inject constructor(
                             showGPSDialog = false,
                             errorLocation = null,
                             errorForecast = null,
-                            locationChecked = true
+                            locationChecked = true,
+                            permissionsGranted = true,
                         )
                     }
 
@@ -198,14 +207,6 @@ class CityWeatherViewModel @Inject constructor(
     }
 
     private suspend fun loadCityWeather() {
-
-        /*Coordenades de Terrassa
-                val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
-                    latitude = "41.56667",
-                    longitude = "2.01667"
-                )
-
-         */
 
         val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
             latitude = _state.value.coordinates.getOrNull()?.latitude.toString(),

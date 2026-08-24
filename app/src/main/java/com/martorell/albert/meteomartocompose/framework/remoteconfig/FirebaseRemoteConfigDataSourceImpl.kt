@@ -20,26 +20,30 @@ class FirebaseRemoteConfigDataSourceImpl @Inject constructor(
 ) : RemoteConfigDataSource {
 
     companion object {
-        private const val TAG = "RemoteConfigDataSource"
+        private const val TAG = "MeteoMartoDebug"
         private const val TEMPERATURE_THRESHOLD_KEY = "temperature_threshold"
         private const val WEATHER_CHECK_INTERVAL_KEY = "weather_check_interval_minutes"
     }
 
     override fun getTemperatureThreshold(): Flow<ResultResponse<Double>> = callbackFlow {
+        Log.d(TAG, "[RemoteConfig] Starting threshold flow...")
         // Send current value immediately
         trySend(customTryCatch { firebaseRemoteConfig.getDouble(TEMPERATURE_THRESHOLD_KEY) })
 
         val listener = object : ConfigUpdateListener {
             override fun onUpdate(configUpdate: ConfigUpdate) {
+                Log.d(TAG, "[RemoteConfig] Update detected! Keys: ${configUpdate.updatedKeys}")
                 if (configUpdate.updatedKeys.contains(TEMPERATURE_THRESHOLD_KEY)) {
                     firebaseRemoteConfig.activate().addOnCompleteListener {
-                        trySend(customTryCatch { firebaseRemoteConfig.getDouble(TEMPERATURE_THRESHOLD_KEY) })
+                        val newValue = firebaseRemoteConfig.getDouble(TEMPERATURE_THRESHOLD_KEY)
+                        Log.d(TAG, "[RemoteConfig] New Threshold activated: $newValue")
+                        trySend(customTryCatch { newValue })
                     }
                 }
             }
 
             override fun onError(error: FirebaseRemoteConfigException) {
-                Log.e(TAG, "ConfigUpdateListener error (Threshold)", error)
+                Log.e(TAG, "[RemoteConfig] Error in listener", error)
                 trySend(error.toCustomError().left())
             }
         }
@@ -47,6 +51,7 @@ class FirebaseRemoteConfigDataSourceImpl @Inject constructor(
         val registration = firebaseRemoteConfig.addOnConfigUpdateListener(listener)
 
         awaitClose {
+            Log.d(TAG, "Closing getTemperatureThreshold flow and removing listener")
             registration.remove()
         }
     }

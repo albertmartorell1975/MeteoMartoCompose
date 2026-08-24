@@ -18,6 +18,9 @@ class PermissionRepositoryImpl @Inject constructor(private val permissionChecker
 
     }
 
+    override suspend fun checkNotificationPermission(): Boolean =
+        permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS)
+
     override suspend fun isGPSEnabled(): Boolean = permissionChecker.isGPSEnabled()
 
 }

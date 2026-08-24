@@ -2,6 +2,8 @@ package com.martorell.albert.meteomartocompose.ui.screens.city
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,6 +53,8 @@ import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
+import androidx.work.WorkManager
+import com.martorell.albert.meteomartocompose.framework.worker.TemperatureCheckWorker
 import kotlinx.coroutines.launch
 
 @Composable
@@ -119,10 +123,11 @@ fun CityWeatherContent(
     val coroutineScope = rememberCoroutineScope()
 
     val locationPermissions = rememberMultiplePermissionsState(
-        // Define the location permissions to request
+        // Define the location and notification permissions to request
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.POST_NOTIFICATIONS,
         )
     )
 
@@ -156,26 +161,53 @@ fun CityWeatherContent(
 
         if (currentState.locationChecked && currentState.showRationale) {
 
+            val locationRationale = locationPermissions.permissions.any {
+                (it.permission == Manifest.permission.ACCESS_FINE_LOCATION ||
+                        it.permission == Manifest.permission.ACCESS_COARSE_LOCATION) && 
+                        (it.status as? com.google.accompanist.permissions.PermissionStatus.Denied)?.shouldShowRationale == true
+            }
+            val notificationRationale = locationPermissions.permissions.any {
+                it.permission == Manifest.permission.POST_NOTIFICATIONS && 
+                        (it.status as? com.google.accompanist.permissions.PermissionStatus.Denied)?.shouldShowRationale == true
+            }
+
+            val titleRes = when {
+                locationRationale && notificationRationale -> R.string.generic_rationale_title
+                locationRationale -> R.string.location_rationale_title
+                notificationRationale -> R.string.notification_rationale_title
+                else -> R.string.generic_rationale_title
+            }
+
+            val contentRes = when {
+                locationRationale && notificationRationale -> R.string.generic_rationale_explanation
+                locationRationale -> R.string.location_rationale_explanation
+                notificationRationale -> R.string.notification_rationale_explanation
+                else -> R.string.generic_rationale_explanation
+            }
+
             // Show rationale dialog if location is checked and rationale should be shown
             AlertDialogCustom(
-                title = R.string.location_rationale_title,
-                content = R.string.location_rationale_explanation,
-                actionText = R.string.location_rationale_action,
+                title = titleRes,
+                content = contentRes,
+                actionText = R.string.permissions_rationale_action,
                 dismissText = R.string.location_rationale_cancel,
                 onDismissAction = hideRationaleDialog,
                 onConfirmAction = {
-                    // Open location settings when rationale is confirmed
-                    currentContext.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+                    // Open application settings when rationale is confirmed
+                    val intent = Intent(ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", currentContext.packageName, null)
+                    }
+                    currentContext.startActivity(intent)
                     hideRationaleDialog()
                 })
         }
 
-        if (currentState.locationChecked && !currentState.permissionsGranted) {
+        if (currentState.locationChecked && !locationPermissions.allPermissionsGranted) {
 
             // If location is checked but permissions are not granted
             if (!locationPermissions.shouldShowRationale) {
                 // If rationale should not be shown, launch permission request
-                LaunchedEffect(key1 = currentState.permissionsGranted) {
+                LaunchedEffect(key1 = locationPermissions.allPermissionsGranted) {
                     locationPermissions.launchMultiplePermissionRequest()
                 }
             } else {

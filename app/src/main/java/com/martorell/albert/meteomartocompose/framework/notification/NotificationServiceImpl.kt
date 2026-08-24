@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.martorell.albert.meteomartocompose.MainActivity
@@ -27,12 +28,14 @@ class NotificationServiceImpl @Inject constructor(
     }
 
     override fun showHighTemperatureNotification(temperature: Double) {
+        Log.d(TAG, "Attempting to show high temperature notification for $temperature°C")
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission not granted, we can't show the notification
+            Log.e(TAG, "Notification failed: POST_NOTIFICATIONS permission NOT granted at runtime")
             return
         }
 
@@ -67,6 +70,7 @@ class NotificationServiceImpl @Inject constructor(
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
+        Log.i(TAG, "Notification successfully sent to system tray")
     }
 
     private fun createNotificationChannel() {
@@ -80,6 +84,7 @@ class NotificationServiceImpl @Inject constructor(
     }
 
     companion object {
+        private const val TAG = "NotificationService"
         private const val CHANNEL_ID = "high_temp_channel"
         private const val NOTIFICATION_ID = 1001
         private const val DEEP_LINK_BASE = "meteomarto://alert/high-temperature"

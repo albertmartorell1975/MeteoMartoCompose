@@ -30,16 +30,23 @@ class TemperatureCheckWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+        Log.d(TAG, "TemperatureCheckWorker started")
         return try {
             // 1. Check if we have notification permission (Android 13+)
             if (!permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS)) {
+                Log.w(TAG, "Aborting worker: POST_NOTIFICATIONS permission not granted")
                 return Result.success()
             }
 
             // 2. Get the city currently being monitored (justAdded = true)
             val cities = getAllCitiesUseCase().firstOrNull() ?: emptyList()
             val currentCity = cities.find { it.justAdded }
-                ?: return Result.success()
+                ?: run {
+                    Log.d(TAG, "Aborting worker: No city marked as 'justAdded' found")
+                    return Result.success()
+                }
+
+            Log.d(TAG, "Checking temperature for city: ${currentCity.name}")
 
             // 3. Force refresh weather from network to have latest data
             loadCityWeatherByCoordinatesUseCase(
@@ -52,15 +59,20 @@ class TemperatureCheckWorker @AssistedInject constructor(
 
             // 5. Trigger notification if conditions are met
             alertResult?.let {
+                Log.d(TAG, "Alert check result: showAlert=${it.showAlert}, isPersistentAlertActive=${it.isPersistentAlertActive}, temp=${it.currentTemperature}, threshold=${it.threshold}")
+                
                 if (it.showAlert) {
-                    // Check if app is in background to show system notification
+                    // Only show push notification if app is in background or closed
                     if (!appLifecycleObserver.isAppInForeground()) {
+                        Log.i(TAG, "Showing high temperature notification for ${it.cityName}")
                         notificationService.showHighTemperatureNotification(it.currentTemperature)
-                        // Mark as notified in DB to avoid spam
+                        // Mark as notified to avoid repeated alerts for the same hot spell
                         markCityAlertNotifiedUseCase(cityName = it.cityName, notified = true)
+                    } else {
+                        Log.d(TAG, "Skipping push notification: App is in foreground")
                     }
                 } else if (!it.isPersistentAlertActive) {
-                    // Reset notified status if temperature is back to normal
+                    // Reset notified status if temperature is back to normal, allowing for future alerts
                     markCityAlertNotifiedUseCase(cityName = it.cityName, notified = false)
                 }
             }
@@ -73,7 +85,7 @@ class TemperatureCheckWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val TAG = "TemperatureCheckWorker"
+        private const val TAG = "MeteoMartoDebug"
         const val WORK_NAME = "TemperatureCheckWork"
     }
 }

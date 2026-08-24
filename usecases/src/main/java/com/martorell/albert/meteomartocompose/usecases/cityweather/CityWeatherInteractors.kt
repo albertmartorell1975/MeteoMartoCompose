@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 class CityWeatherInteractors @Inject constructor(
     val checkLocationPermissionsUseCase: CheckLocationPermissionsUseCase,
+    val checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
     val currentLocationUseCase: CurrentLocationUseCase,
     val isGPSEnableUseCase: IsGPSEnableUseCase,
     val loadCityWeatherByCoordinatesUseCase: LoadCityWeatherByCoordinatesUseCase,

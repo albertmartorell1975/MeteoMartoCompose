@@ -1,9 +1,10 @@
-package com.martorell.albert.meteomartocompose.ui.screens.splash
+package com.martorell.albert.meteomartocompose.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.martorell.albert.meteomartocompose.usecases.splash.SplashInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,36 +12,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(val splashInteractors: SplashInteractors) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val splashInteractors: SplashInteractors,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
 
     data class UiState(
-        val userLogged: Boolean = false
+        val isLoading: Boolean = true,
+        val isLoggedIn: Boolean = false
     )
 
-    init {
-
+    fun checkAuthStatus(skipDelay: Boolean = false) {
         viewModelScope.launch {
-            isUserLogged()
-        }
-
-    }
-
-    private suspend fun isUserLogged() {
-
-        val result = splashInteractors.userLoggedUseCase.invoke()
-
-        _state.update {
-            it.copy(
-                userLogged = result
-            )
+            val loggedIn = splashInteractors.userLoggedUseCase()
+            if (!skipDelay) {
+                delay(timeMillis = 2000)
+            }
+            _state.update { it.copy(isLoading = false, isLoggedIn = loggedIn) }
         }
     }
-
-    override fun onCleared() {
-        super.onCleared()
-    }
-
 }

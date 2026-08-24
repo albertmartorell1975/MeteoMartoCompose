@@ -7,7 +7,6 @@ import androidx.navigation.navigation
 import com.martorell.albert.meteomartocompose.ui.screens.auth.LoginScreen
 import com.martorell.albert.meteomartocompose.ui.screens.auth.SignUpScreen
 import com.martorell.albert.meteomartocompose.ui.screens.auth.TermsScreen
-import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashScreen
 
 fun NavGraphBuilder.authSubGraph(
     navController: NavHostController,
@@ -15,41 +14,25 @@ fun NavGraphBuilder.authSubGraph(
 ) {
 
     navigation<SubGraphs.Auth>(
-        startDestination = if (logOut)
-            AuthScreens.Login
-        else
-            AuthScreens.Splash
+        startDestination = AuthScreens.Login
     ) {
-
-        composable<AuthScreens.Splash> {
-
-            SplashScreen(
-                goToLogin = {
-                    navController.popBackStack()
-                    navController.navigate(AuthScreens.Login)
-                    { popUpTo(SubGraphs.Auth) }
-                },
-                goToDashboard = {
-                    navController.navigate(SubGraphs.Dashboard)
-                    { popUpTo(SubGraphs.Auth) }
-                })
-
-        }
 
         composable<AuthScreens.Login>() {
             LoginScreen(
                 goToTerms = { navController.navigate(AuthScreens.Terms) },
                 goToDashboard = {
-                    navController.navigate(SubGraphs.Dashboard)
-                    { popUpTo(SubGraphs.Auth) }
+                    navController.navigate(SubGraphs.Dashboard) {
+                        popUpTo(SubGraphs.Auth) { inclusive = true }
+                    }
                 },
                 goToSignUp = { navController.navigate(AuthScreens.SignUp) })
 
         }
         composable<AuthScreens.SignUp> {
             SignUpScreen(goToDashboard = {
-                navController.navigate(SubGraphs.Dashboard)
-                { popUpTo(SubGraphs.Auth) }
+                navController.navigate(SubGraphs.Dashboard) {
+                    popUpTo(SubGraphs.Auth) { inclusive = true }
+                }
             })
         }
         composable<AuthScreens.Terms> {
