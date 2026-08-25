@@ -23,4 +23,6 @@ class PermissionRepositoryImpl @Inject constructor(private val permissionChecker
 
     override suspend fun isGPSEnabled(): Boolean = permissionChecker.isGPSEnabled()
 
+    override fun getWeatherPermissions(): List<String> = permissionChecker.getWeatherPermissions()
+
 }

@@ -292,4 +292,6 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
+    fun getRequiredPermissions(): List<String> = cityWeatherInteractors.getWeatherPermissionsUseCase()
+
 }

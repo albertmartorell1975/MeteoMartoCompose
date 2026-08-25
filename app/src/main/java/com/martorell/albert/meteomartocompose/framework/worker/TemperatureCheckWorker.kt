@@ -12,7 +12,6 @@ import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesU
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.MarkCityAlertNotifiedUseCase
 import com.martorell.albert.meteomartocompose.utils.AppConstants
-import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.firstOrNull
@@ -27,7 +26,6 @@ class TemperatureCheckWorker @AssistedInject constructor(
     private val markCityAlertNotifiedUseCase: MarkCityAlertNotifiedUseCase,
     private val notificationService: NotificationService,
     private val permissionChecker: PermissionChecker,
-    private val appLifecycleObserver: AppLifecycleObserver,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -63,17 +61,11 @@ class TemperatureCheckWorker @AssistedInject constructor(
                 Log.d(TAG, "Alert check result: showAlert=${it.showAlert}, isPersistentAlertActive=${it.isPersistentAlertActive}, temp=${it.currentTemperature}, threshold=${it.threshold}")
                 
                 if (it.showAlert) {
-                    // Only show push notification if app is in background or closed
-                    if (!appLifecycleObserver.isAppInForeground()) {
-                        Log.i(TAG, "Showing high temperature notification for ${it.cityName}")
-                        notificationService.showHighTemperatureNotification(it.currentTemperature)
-                        // Mark as notified to avoid repeated alerts for the same hot spell
-                        markCityAlertNotifiedUseCase(cityName = it.cityName, notified = true)
-                    } else {
-                        Log.d(TAG, "Skipping push notification: App is in foreground")
-                    }
+                    notificationService.showHighTemperatureNotification(it.currentTemperature)
+                    // Mark as notified in DB to avoid spam (Periodic Worker check)
+                    markCityAlertNotifiedUseCase(cityName = it.cityName, notified = true)
                 } else if (!it.isPersistentAlertActive) {
-                    // Reset notified status if temperature is back to normal, allowing for future alerts
+                    // Reset notified status if temperature is back to normal
                     markCityAlertNotifiedUseCase(cityName = it.cityName, notified = false)
                 }
             }

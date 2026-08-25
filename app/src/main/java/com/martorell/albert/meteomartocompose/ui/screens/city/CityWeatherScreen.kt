@@ -1,6 +1,5 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -82,13 +81,8 @@ fun CityWeatherScreen(
     }
 
     // 3. Handle Permissions (Hoisted from UI to Screen)
-    val permissionState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-    )
+    val permissionsToRequest = remember { viewModel.getRequiredPermissions() }
+    val permissionState = rememberMultiplePermissionsState(permissions = permissionsToRequest)
 
     // Sync permission state with ViewModel
     LaunchedEffect(permissionState.allPermissionsGranted) {
@@ -102,12 +96,12 @@ fun CityWeatherScreen(
         state = uiState,
         allPermissionsGranted = permissionState.allPermissionsGranted,
         locationRationale = permissionState.permissions.any {
-            (it.permission == Manifest.permission.ACCESS_FINE_LOCATION ||
-                    it.permission == Manifest.permission.ACCESS_COARSE_LOCATION) &&
+            (it.permission == AppConstants.PERMISSION_FINE_LOCATION ||
+                    it.permission == AppConstants.PERMISSION_COARSE_LOCATION) &&
                     (it.status as? PermissionStatus.Denied)?.shouldShowRationale == true
         },
         notificationRationale = permissionState.permissions.any {
-            it.permission == Manifest.permission.POST_NOTIFICATIONS &&
+            it.permission == AppConstants.PERMISSION_POST_NOTIFICATIONS &&
                     (it.status as? PermissionStatus.Denied)?.shouldShowRationale == true
         },
         onPermissionAction = {

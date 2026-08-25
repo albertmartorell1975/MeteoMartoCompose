@@ -1,42 +1,47 @@
 package com.martorell.albert.meteomartocompose.framework.notification
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.martorell.albert.meteomartocompose.MainActivity
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
 import com.martorell.albert.meteomartocompose.utils.AppConstants
+import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class NotificationServiceImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val notificationManager: NotificationManager,
+    private val permissionChecker: PermissionChecker,
+    private val appLifecycleObserver: AppLifecycleObserver,
 ) : NotificationService {
 
     init {
         createNotificationChannel()
     }
 
-    override fun showHighTemperatureNotification(temperature: Double) {
+    override suspend fun showHighTemperatureNotification(temperature: Double) {
         Log.d(TAG, "Attempting to show high temperature notification for $temperature°C")
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS,
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission not granted, we can't show the notification
-            Log.e(TAG, "Notification failed: POST_NOTIFICATIONS permission NOT granted at runtime")
+
+        // 1. Only show push notification if app is in background or closed
+        if (appLifecycleObserver.isAppInForeground()) {
+            Log.d(TAG, "Skipping push notification: App is already in foreground")
+            return
+        }
+
+        // 2. Verify runtime permissions
+        val hasPermission = permissionChecker.check(PermissionChecker.Permission.POST_NOTIFICATIONS)
+        if (!hasPermission) {
+            Log.e(TAG, "Notification failed: POST_NOTIFICATIONS permission NOT granted")
             return
         }
 

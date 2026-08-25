@@ -6,5 +6,6 @@ interface PermissionChecker {
 
     suspend fun check(permission: Permission): Boolean
     suspend fun isGPSEnabled(): Boolean
+    fun getWeatherPermissions(): List<String>
 
 }

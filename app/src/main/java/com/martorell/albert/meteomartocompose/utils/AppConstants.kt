@@ -25,6 +25,14 @@ object AppConstants {
     const val NOTIFICATION_ID = 1001
 
     /**
+     * Android System Permissions.
+     * Centralized to avoid magic strings and ensure consistency between Checker and UI.
+     */
+    const val PERMISSION_FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION
+    const val PERMISSION_COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION
+    const val PERMISSION_POST_NOTIFICATIONS = android.Manifest.permission.POST_NOTIFICATIONS // Available from API 33
+
+    /**
      * Logging tags.
      */
     const val DEBUG_TAG = "MeteoMartoDebug"
