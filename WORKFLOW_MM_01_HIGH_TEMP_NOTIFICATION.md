@@ -48,8 +48,8 @@ This feature implements a background monitoring system using **WorkManager**. It
     - [x] Update `kotlin-style` skill to strictly forbid wildcard imports and magic literals.
 
 ## 4. Verification Checklist
-- [ ] Run `./gradlew :usecases:test` to verify threshold logic.
-- [ ] Run `./gradlew :data:test` to verify mappers.
+- [x] Run `./gradlew :usecases:test` to verify threshold logic.
+- [x] Run `./gradlew :data:test` to verify mappers.
 - [x] Deploy app to emulator/device: `android run`.
 - [x] Verify Permission Rationale adaptively (Location vs Notifications).
 - [x] Verify Real-time trigger: Change threshold in Firebase console and receive push in background.
@@ -59,3 +59,7 @@ This feature implements a background monitoring system using **WorkManager**. It
 ## 5. Git Strategy (MM-01)
 - **Branch**: `feature/MM-01-high-temp-notification`
 - **Latest Commit**: `refactor(ui): [MM-01] fix notification permissions and uncouple splash screen from navigation graph`
+
+---
+
+For a detailed technical summary of all changes, refactors, and architectural decisions, refer to the [Definitive Technical Record](docs/features/MM-01-High-Temp-Notifications.md).
