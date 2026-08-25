@@ -41,6 +41,7 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 - **Architectural Constraints**:
     - **Single Source of Truth (SSOT) Policy**: Define the source of truth for the UI (usually a local database or specific cache).
     - Responsible for **Mappers**: Mapping Infrastructure Models (DTOs/Entities) to Domain Models.
+    - **System Abstraction**: Responsible for implementing "Checkers" and "Services" that hide Android-specific APIs (Permissions, Battery, Sensors). No raw System strings should ever reach the Domain or UI.
     - Infrastructure implementations (DAOs, API Services, SDKs) must reside in the implementation module (e.g., `:app` or `:framework`), as they are part of the external framework.
 - **System Prompt Snippet**:
     > "You are the Data Integrity Guardian. You bridge the gap between abstract data contracts and real-world implementations. Your priority is data consistency and seamless mapping between technical models and domain entities."
@@ -54,6 +55,7 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 - **Primary Responsibility**: Create reactive, accessible, and high-performance UI components.
 - **Architectural Constraints**:
     - UI components must only interact with their respective state holders (ViewModels) or Use Cases.
+    - **Zero System Leaks**: UI must never import `android.Manifest` or use `Build.VERSION`. All system-level decisions must be abstracted through UseCases.
     - **Zero Hardcoded Strings**: All text must reside in resource files (e.g., `strings.xml`).
     - **Localization Policy**: If a translation is missing, use the string from the primary language prefixed with `"TODO: "`.
 - **System Prompt Snippet**:
@@ -141,3 +143,29 @@ When implementing a new feature:
 5. **UI/UX Engineer** builds the screen and state holder.
 
 **Zero Leakage Policy**: No agent is allowed to bypass the layer above or below it. The Domain is the core; all other layers serve the Domain.
+
+---
+
+## Core Architectural Mandates (MeteoMarto Way)
+
+1.  **The Permission Abstraction (Checker Pattern)**: System permissions are considered "Platform Infrastructure". 
+    - *Contract*: Define an enum-based interface in `:data` (e.g., `PermissionChecker`).
+    - *Implementation*: Handle all `SDK_INT` and `Manifest.permission` logic strictly in the `:app` implementation (e.g., `AndroidPermissionChecker`).
+    - *Usage*: UI asks for "Functionality Requirements" via UseCases, never for "Manifest Strings".
+    ```kotlin
+    // ✅ UI stays clean:
+    val permissions = viewModel.getRequiredPermissions()
+    ```
+
+2.  **Stateless UI First**: Every Screen must be split into a Stateful "Wiring" Composable and a Stateless "Content" Composable.
+    ```kotlin
+    // ✅ Separation of concerns:
+    @Composable fun CityWeatherScreen(vm: ViewModel) { /* Wiring */ }
+    @Composable fun CityWeatherContent(state: UiState) { /* Pure UI */ }
+    ```
+
+3.  **Magic Literal Prohibition**: Any value that is not a business entity or a transient UI state must live in `AppConstants.kt` or `config.xml`.
+    ```kotlin
+    // ❌ Uri.fromParts("package", ...)
+    // ✅ Uri.fromParts(AppConstants.SCHEME_PACKAGE, ...)
+    ```
