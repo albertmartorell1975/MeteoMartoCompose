@@ -2,10 +2,10 @@ package com.martorell.albert.meteomartocompose.di.auth
 
 import com.martorell.albert.meteomartocompose.data.auth.AccountServiceImpl
 import com.martorell.albert.meteomartocompose.data.auth.AuthRoomDataSource
-import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepository
-import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepositoryImpl
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AuthLocalDataSource
+import com.martorell.albert.meteomartocompose.data.auth.AuthRepositoryImpl
+import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
+import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -1,7 +1,7 @@
 package com.martorell.albert.meteomartocompose.di
 
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionRepository
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.utils.AndroidPermissionChecker
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver

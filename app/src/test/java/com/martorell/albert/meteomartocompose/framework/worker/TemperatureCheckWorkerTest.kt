@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult

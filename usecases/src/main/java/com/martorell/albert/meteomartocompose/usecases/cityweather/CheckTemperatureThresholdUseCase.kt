@@ -1,6 +1,6 @@
 package com.martorell.albert.meteomartocompose.usecases.cityweather
 
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
+import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
 import kotlinx.coroutines.flow.Flow

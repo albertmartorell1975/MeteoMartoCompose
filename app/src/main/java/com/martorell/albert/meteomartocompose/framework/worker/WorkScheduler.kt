@@ -9,7 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepository
+import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.di.ApplicationScope
 import com.martorell.albert.meteomartocompose.utils.AppConstants

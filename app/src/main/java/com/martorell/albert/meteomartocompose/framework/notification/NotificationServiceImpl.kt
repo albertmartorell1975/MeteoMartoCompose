@@ -11,7 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.martorell.albert.meteomartocompose.MainActivity
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
 import com.martorell.albert.meteomartocompose.utils.AppConstants
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver

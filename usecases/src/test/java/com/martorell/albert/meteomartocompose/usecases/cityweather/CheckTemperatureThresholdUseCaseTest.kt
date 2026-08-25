@@ -1,7 +1,7 @@
 package com.martorell.albert.meteomartocompose.usecases.cityweather
 
 import app.cash.turbine.test
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.CityWeatherRepository
+import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import io.mockk.every

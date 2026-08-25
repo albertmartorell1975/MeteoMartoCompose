@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.martorell.albert.meteomartocompose.data.auth.repositories.cityweather.PermissionChecker
+import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckTemperatureThresholdUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase

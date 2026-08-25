@@ -1,8 +1,10 @@
-package com.martorell.albert.meteomartocompose.data.auth.repositories.auth
+package com.martorell.albert.meteomartocompose.data.auth
+
+import com.martorell.albert.meteomartocompose.data.auth.AuthRepositoryImpl
 
 import com.martorell.albert.meteomartocompose.data.CustomError
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AccountService
-import com.martorell.albert.meteomartocompose.data.auth.sources.auth.AuthLocalDataSource
+import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
+import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import io.mockk.coEvery
 import io.mockk.coVerify
