@@ -8,10 +8,11 @@ import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocal
 import com.martorell.albert.meteomartocompose.data.customFlowTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class CityWeatherRepositoryImpl(
+class CityWeatherRepositoryImpl @Inject constructor(
     private val cityWeatherServerDataSource: CityWeatherServerDataSource,
-    private val cityWeatherLocalDataSource: CityWeatherLocalDataSource
+    private val cityWeatherLocalDataSource: CityWeatherLocalDataSource,
 ) :
     CityWeatherRepository {
 
@@ -29,36 +30,7 @@ class CityWeatherRepositoryImpl(
             lon = longitude
         )
 
-        if (cityWeatherLocalDataSource.isEmpty()) {
-
-            cityWeatherLocalDataSource.addCity(cityServer)
-
-        } else {
-
-            cityWeatherLocalDataSource.makeAllCitiesAsNotJustAdded()
-            val city = cityWeatherLocalDataSource.loadCity(cityServer.name)
-            city.fold({
-
-                // It means that the city does not exist yet, and we must add it
-                cityWeatherLocalDataSource.addCity(cityServer)
-
-            }) { cityInfo ->
-
-                // It means the city was already stored on the local database, and we must edit it
-                cityWeatherLocalDataSource.updateCity(
-                    cityName = cityInfo.name,
-                    weatherDescription = cityInfo.weatherDescription,
-                    weatherIcon = cityInfo.weatherIcon,
-                    pressure = cityInfo.pressure,
-                    temperatureMax = cityInfo.temperatureMax,
-                    temperatureMin = cityInfo.temperatureMin,
-                    temperature = cityInfo.temperature
-                )
-
-            }
-
-        }
-
+        cityWeatherLocalDataSource.refreshCity(cityServer)
     }
 
     override suspend fun switchFavorite(city: CityWeatherDomain) {
@@ -79,5 +51,9 @@ class CityWeatherRepositoryImpl(
 
     override suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain> =
         cityWeatherLocalDataSource.loadCity(cityName)
+
+    override suspend fun updateAlertStatus(name: String, isNotified: Boolean) {
+        cityWeatherLocalDataSource.updateAlertStatus(name, isNotified)
+    }
 
 }

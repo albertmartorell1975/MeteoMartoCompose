@@ -3,9 +3,9 @@ package com.martorell.albert.meteomartocompose.usecases.cityweather
 import com.martorell.albert.meteomartocompose.data.city.repositories.LocationRepository
 import javax.inject.Inject
 
-data class SaveLocationUseCase @Inject constructor(private val locationRepository: LocationRepository) {
+class SaveLocationUseCase @Inject constructor(private val locationRepository: LocationRepository) {
 
-    suspend fun invoke(latitude: Double?, longitude: Double?) {
+    suspend operator fun invoke(latitude: Double?, longitude: Double?) {
         locationRepository.saveLocation(
             latitude = latitude,
             longitude = longitude

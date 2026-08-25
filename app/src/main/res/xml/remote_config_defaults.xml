@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>temperature_threshold</key>
+        <value>@string/default_temp_threshold</value>
+    </entry>
+    <entry>
+        <key>min_temperature_limit</key>
+        <value>@string/min_temp_limit</value>
+    </entry>
+    <entry>
+        <key>max_temperature_limit</key>
+        <value>@string/max_temp_limit</value>
+    </entry>
+    <entry>
+        <key>weather_check_interval_minutes</key>
+        <value>@string/default_weather_check_interval</value>
+    </entry>
+</defaultsMap>

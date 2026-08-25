@@ -5,10 +5,8 @@ import javax.inject.Inject
 
 class RemoveCityAsFavoriteUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
-    suspend fun invoke(cityName: String) {
-
+    suspend operator fun invoke(cityName: String) {
         cityWeatherRepository.removeCityAsFavorite(cityName)
-
     }
 
 }

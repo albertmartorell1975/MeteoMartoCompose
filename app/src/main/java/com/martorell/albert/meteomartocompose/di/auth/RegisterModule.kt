@@ -20,29 +20,9 @@ class RegisterModule {
 
     @Provides
     fun signUpInteractorsProvider(
-        signUpUseCase: SignUpUseCase
+        signUpUseCase: SignUpUseCase,
     ) = SignUpInteractors(
         signUpUseCase = signUpUseCase
     )
-
-    @Provides
-    fun providesAccountService(): AccountService {
-        return AccountServiceImpl()
-    }
-
-    @Provides
-    fun providesAuthRepository(
-        accountService: AccountService,
-        authLocalDataSource: AuthLocalDataSource
-    ): AuthRepository {
-        return AuthRepositoryImpl(
-            accountService = accountService,
-            authLocalDataSource = authLocalDataSource
-        )
-    }
-
-    @Provides
-    fun providesAuthRoomDataSource(db: MeteoMartoDatabase): AuthLocalDataSource =
-        AuthRoomDataSource(db)
 
 }

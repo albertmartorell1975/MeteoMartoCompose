@@ -15,7 +15,13 @@ kotlin {
 dependencies {
     implementation((project (":data")))
     implementation((project (":domain")))
-    implementation(libs.javax.inject.v1)
-    implementation(libs.arrow.core)
-    implementation(libs.arrow.fx.coroutines)
+    implementation(libs.javax.inject)
+    
+    // Arrow
+    implementation(libs.bundles.arrow)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

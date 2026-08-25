@@ -64,38 +64,18 @@ class AppState(
 
     val showFavoriteButton: Boolean
         @Composable get() {
-
-            BOTTOM_NAV_OPTIONS.forEach { _ ->
-
-                val navBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry.value?.destination ?: return false
-                currentDestination.route?.let {
-                    return it.contains(stringResource(id = R.string.city_tab))
-                }
-
-            }
-
-            return false
-
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            return navBackStackEntry?.destination?.hasRoute(DashboardScreens.CityWeather::class) == true
         }
 
     val showBottomNavigation: Boolean
         @Composable get() {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination ?: return false
 
-            BOTTOM_NAV_OPTIONS.forEach { destination ->
-
-                val navBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry.value?.destination ?: return true
-
-                if (currentDestination.hierarchy.any {
-                        it.hasRoute(destination.route::class)
-                    } == true)
-                    return true
-
+            return BOTTOM_NAV_OPTIONS.any { destination ->
+                currentDestination.hierarchy.any { it.hasRoute(destination.route::class) }
             }
-
-            return false
-
         }
 
 

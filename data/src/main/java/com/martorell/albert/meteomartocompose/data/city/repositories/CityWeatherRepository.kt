@@ -11,7 +11,7 @@ interface CityWeatherRepository {
 
     suspend fun loadCityCurrentWeather(
         latitude: String,
-        longitude: String
+        longitude: String,
     ): CustomErrorFlow?
 
     suspend fun switchFavorite(city: CityWeatherDomain)
@@ -21,5 +21,7 @@ interface CityWeatherRepository {
     suspend fun removeCityAsFavorite(cityName: String)
 
     suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain>
+
+    suspend fun updateAlertStatus(name: String, isNotified: Boolean)
 
 }

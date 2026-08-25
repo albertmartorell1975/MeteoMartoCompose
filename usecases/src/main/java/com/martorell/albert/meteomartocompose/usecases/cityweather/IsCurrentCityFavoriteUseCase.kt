@@ -5,10 +5,7 @@ import javax.inject.Inject
 
 class IsCurrentCityFavoriteUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
-    suspend fun invoke():Boolean {
-
-        return cityWeatherRepository.isCurrentCityFavorite()
-
-    }
+    suspend operator fun invoke(): Boolean =
+        cityWeatherRepository.isCurrentCityFavorite()
 
 }

@@ -5,8 +5,9 @@ import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LocationRoomDataImpl(db: MeteoMartoDatabase) : LocationLocalDataSource {
+class LocationRoomDataImpl @Inject constructor(db: MeteoMartoDatabase) : LocationLocalDataSource {
 
     private val locationDao = db.locationDao()
 

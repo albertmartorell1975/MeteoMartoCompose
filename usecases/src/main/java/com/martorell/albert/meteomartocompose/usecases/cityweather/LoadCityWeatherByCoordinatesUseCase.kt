@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class LoadCityWeatherByCoordinatesUseCase @Inject constructor(private val cityWeatherRepository: CityWeatherRepository) {
 
-    suspend fun invoke(
+    suspend operator fun invoke(
         latitude: String,
         longitude: String
     ): CustomErrorFlow? =

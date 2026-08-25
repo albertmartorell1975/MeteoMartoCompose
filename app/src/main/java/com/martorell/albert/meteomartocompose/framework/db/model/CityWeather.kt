@@ -17,5 +17,6 @@ data class CityWeather(
     val rain: Double? = 0.0,
     val pressure: Int,
     val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val longitude: Double = 0.0,
+    val isAlertNotified: Boolean = false,
 )

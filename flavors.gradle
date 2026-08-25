@@ -1,0 +1,22 @@
+android {
+    flavorDimensions "version"
+    productFlavors {
+        pre {
+            dimension "version"
+            resValue "string", "app_name", "MeteoMartoCompose PRE"
+            buildConfigField "String", "APP_ID_PARAM", '"appid"'
+            buildConfigField "String", "API_KEY_VALUE", '"a32162b65432dca541a0e24d41cc4c7a"'
+            buildConfigField "String", "API_WB_BASE", '"https://api.openweathermap.org/"'
+            buildConfigField "String", "OPEN_WEATHER_ICON_URL", '"https://openweathermap.org/img/wn/"'
+
+        }
+        pro {
+            dimension "version"
+            resValue "string", "app_name", "MeteoMartoCompose"
+            buildConfigField "String", "APP_ID_PARAM", '"appid"'
+            buildConfigField "String", "API_KEY_VALUE", '"a32162b65432dca541a0e24d41cc4c7a"'
+            buildConfigField "String", "API_WB_BASE", '"https://api.openweathermap.org/"'
+            buildConfigField "String", "OPEN_WEATHER_ICON_URL", '"https://openweathermap.org/img/wn/"'
+        }
+    }
+}

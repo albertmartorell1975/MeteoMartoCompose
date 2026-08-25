@@ -10,7 +10,7 @@ import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDa
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

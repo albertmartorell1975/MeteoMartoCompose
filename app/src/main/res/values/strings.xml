@@ -24,7 +24,12 @@
     <string name="location_request_action">Accept</string>
     <string name="location_request_cancel">Cancel</string>
     <string name="location_rationale_title">Location Permission Required</string>
-    <string name="location_rationale_explanation">Location permission has been permanently denied. Please enable it in app settings to continue.</string>
+    <string name="location_rationale_explanation">Location permission is required to provide weather for your area. Please enable it in app settings.</string>
+    <string name="notification_rationale_title">Notification Permission Required</string>
+    <string name="notification_rationale_explanation">Notification permission is required to alert you about high temperatures. Please enable it in app settings.</string>
+    <string name="generic_rationale_title">Permissions Required</string>
+    <string name="generic_rationale_explanation">Location and Notification permissions are required for the app to function correctly. Please enable them in app settings.</string>
+    <string name="permissions_rationale_action">Open Settings</string>
     <string name="location_rationale_action">Accept</string>
     <string name="location_rationale_cancel">Cancel</string>
     <string name="city_current_temperature">"Temperature: "</string>
@@ -49,5 +54,14 @@
     <string name="city_weather_detail">City weather</string>
     <string name="favorite_top_bar_title">List of Favorites</string>
     <string name="city_top_bar_title">Meteo Marto</string>
+
+    <!-- High Temperature Notification -->
+    <string name="high_temp_notif_channel_name">MeteoMarto Warnings</string>
+    <string name="high_temp_notif_channel_description">Notifications for high temperature warnings</string>
+    <string name="high_temp_notif_title">High Temperature Alert!</string>
+    <string name="high_temp_notif_content">Current temperature is %.1f°C, exceeding the threshold.</string>
+    <string name="accept_warning">Understood</string>
+    <string name="high_temp_alert_icon_description">High temperature warning icon</string>
+    <string name="weather_icon_description">Weather condition icon</string>
 
 </resources>

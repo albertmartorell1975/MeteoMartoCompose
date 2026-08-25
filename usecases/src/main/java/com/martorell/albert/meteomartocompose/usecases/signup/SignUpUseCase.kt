@@ -7,14 +7,13 @@ import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
-    suspend fun invoke(
+    suspend operator fun invoke(
         email: String,
-        password: String
+        password: String,
     ): ResultResponse<UserDomain?> =
-
         authRepository.singUp(
             email = email,
-            password = password
+            password = password,
         )
 
 }

@@ -5,7 +5,7 @@ import com.martorell.albert.meteomartocompose.data.city.repositories.LocationRep
 import com.martorell.albert.meteomartocompose.data.city.sources.LocationLocalDataSource
 import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class LocationRepositoryImpl @Inject constructor(
     private val locationServerDataSource: LocationServerDataSource,

@@ -5,13 +5,17 @@ import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthReposit
 import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
 import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
-    private val authLocalDataSource: AuthLocalDataSource
+    private val authLocalDataSource: AuthLocalDataSource,
 ) :
     AuthRepository {
+
+    override val isUserLoggedIn: Flow<Boolean>
+        get() = accountService.authState
 
     override fun logOut() {
         accountService.signOut()
@@ -33,12 +37,9 @@ class AuthRepositoryImpl @Inject constructor(
         // Only if the result is correct, will be saved on the local database
         result.fold(
             { },
-            {
-                if (it != null) {
-                    authLocalDataSource.newUser(it)
-                }
-            }
-        )
+        ) { user ->
+            user?.let { authLocalDataSource.newUser(it) }
+        }
 
         return result
 
@@ -57,12 +58,9 @@ class AuthRepositoryImpl @Inject constructor(
         // Only if the result is correct, will be saved on the local database
         result.fold(
             {},
-            {
-                if (it != null) {
-                    authLocalDataSource.newUser(it)
-                }
-            }
-        )
+        ) { user ->
+            user?.let { authLocalDataSource.newUser(it) }
+        }
 
         return result
 

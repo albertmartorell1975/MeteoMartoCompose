@@ -2,8 +2,11 @@ package com.martorell.albert.meteomartocompose.data.auth.sources
 
 import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import kotlinx.coroutines.flow.Flow
 
 interface AccountService {
+
+    val authState: Flow<Boolean>
 
     suspend fun singUp(
         email: String,

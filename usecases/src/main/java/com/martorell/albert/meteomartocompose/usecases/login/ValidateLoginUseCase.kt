@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class ValidateLoginUseCase @Inject constructor(private val inputValdationHelper: InputValidationHelper) {
 
-    fun invoke(
+    operator fun invoke(
         email: String,
         password: String
     ): Boolean =

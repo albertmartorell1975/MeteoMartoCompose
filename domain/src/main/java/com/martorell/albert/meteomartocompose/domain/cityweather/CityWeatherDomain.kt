@@ -12,5 +12,15 @@ data class CityWeatherDomain(
     val pressure: Int,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val favorite: Boolean = false
-)
+    val favorite: Boolean = false,
+    val isAlertNotified: Boolean = false,
+) {
+    companion object {
+        val EMPTY = CityWeatherDomain(
+            temperature = 0.0,
+            temperatureMin = 0.0,
+            temperatureMax = 0.0,
+            pressure = 0
+        )
+    }
+}

@@ -1,41 +1,53 @@
 [versions]
 agp = "8.12.2"
-javaxInjectVersion = "1"
+javax-inject = "1"
 kotlin = "2.2.20"
-coreKtx = "1.17.0"
+androidx-core = "1.17.0"
 junit = "4.13.2"
-junitVersion = "1.3.0"
-lifecycleRuntimeKtx = "2.9.3"
-activityCompose = "1.10.1"
-composeBom = "2025.08.01"
-jetbrainsKotlinJvm = "2.2.20"
-navigationVer = "2.9.3"
-kotlinSerializationPluginVer = "2.2.20"
-kotlinSerializationVer = "1.9.0"
-materialIconsVer = "1.7.8"
-hiltVer = "2.57.1"
-hiltNavigationComposeVer = "1.2.0"
-kspVer = "2.1.20-2.0.1"
-firebaseBom = "34.2.0"
-firebaseAuth = "23.2.1"
-arrowVer = "2.1.2"
-retrofitVer = "3.0.0"
-okhttpVer = "5.1.0"
-roomVer = "2.7.2"
-accompanistPermissionsVer = "0.37.3"
-playServicesLocationVer = "21.3.0"
-coilVersion = "3.3.0"
-constraintVersion = "1.1.1"
-googleServicesVersion ="4.4.3"
+androidx-junit = "1.3.0"
+androidx-lifecycle = "2.9.3"
+androidx-activity = "1.10.1"
+androidx-compose-bom = "2025.08.01"
+jetbrains-kotlin = "2.2.20"
+androidx-navigation = "2.9.3"
+kotlin-serialization = "2.2.20"
+kotlinx-serialization = "1.9.0"
+androidx-compose-material-icons = "1.7.8"
+hilt = "2.57.1"
+androidx-hilt-navigation-compose = "1.2.0"
+ksp = "2.2.20-2.0.3"
+firebase-bom = "34.2.0"
+firebase-auth = "23.2.1"
+firebase-config = "22.1.2"
+arrow = "2.1.2"
+retrofit = "3.0.0"
+okhttp = "5.1.0"
+androidx-room = "2.7.2"
+androidx-work = "2.10.0"
+androidx-work-testing = "2.10.0"
+androidx-hilt = "1.2.0"
+google-accompanist-permissions = "0.37.3"
+google-play-services-location = "21.3.0"
+coil = "3.3.0"
+androidx-constraintlayout = "1.1.1"
+google-services = "4.4.3"
+mockk = "1.14.11"
+kotlinx-coroutines-test = "1.11.0"
+turbine = "1.2.1"
+# Robolectric is required to run Android-dependent tests (like Workers) on the JVM
+robolectric = "4.14.1"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-javax-inject-v1 = { module = "javax.inject:javax.inject", version.ref = "javaxInjectVersion" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
+# Required for ApplicationProvider in unit tests that need an Android Context
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-junit" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidx-lifecycle" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -43,49 +55,70 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-#navigation
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationVer" }
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerializationVer" }
-#icons
-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsVer" }
-#Hilt
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVer" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationComposeVer" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVer" }
-#Firebase
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuth" }
-#Either
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowVer" }
-arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowVer" }
-#Retrofit
-retofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVer" }
-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVer" }
-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpVer" }
-#Room
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVer" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVer" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVer" }
-#Location
-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissionsVer" }
-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocationVer" }
-#Coil
-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilVersion" }
-coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilVersion" }
-#Constraint layout
-constraint-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintVersion" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidx-compose-material-icons" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt-navigation-compose" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
+# Required for TestListenableWorkerBuilder to test WorkManager Workers
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidx-work-testing" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebase-config" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+google-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist-permissions" }
+google-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-play-services-location" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidx-constraintlayout" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+
+[bundles]
+compose = [
+    "androidx-ui",
+    "androidx-ui-graphics",
+    "androidx-ui-tooling-preview",
+    "androidx-material3",
+    "androidx-compose-material-icons-extended"
+]
+firebase = [
+    "firebase-auth",
+    "firebase-config"
+]
+retrofit = [
+    "retrofit",
+    "retrofit-converter-gson",
+    "okhttp-logging-interceptor"
+]
+room = [
+    "androidx-room-runtime",
+    "androidx-room-ktx"
+]
+arrow = [
+    "arrow-core",
+    "arrow-fx-coroutines"
+]
 
 [plugins]
-#Ksp
-kotlinAndroidKsp = { id = "com.google.devtools.ksp", version.ref = "kspVer" }
-#general
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
-# navigation
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerializationPluginVer" }
-#Hilt
-hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltVer" }
-#Firebase
-googleServices = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-serialization" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
