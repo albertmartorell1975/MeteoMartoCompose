@@ -11,6 +11,7 @@ import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckTemperat
 import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
 import com.martorell.albert.meteomartocompose.usecases.cityweather.MarkCityAlertNotifiedUseCase
+import com.martorell.albert.meteomartocompose.utils.AppConstants
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -85,7 +86,7 @@ class TemperatureCheckWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val TAG = "MeteoMartoDebug"
+        private const val TAG = AppConstants.DEBUG_TAG
         const val WORK_NAME = "TemperatureCheckWork"
     }
 }

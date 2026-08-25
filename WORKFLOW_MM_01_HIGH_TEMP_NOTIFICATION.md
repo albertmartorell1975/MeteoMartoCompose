@@ -43,6 +43,9 @@ This feature implements a background monitoring system using **WorkManager**. It
     - [x] Reactive observation of Firebase changes to trigger immediate checks.
     - [x] Periodic checking every 15 minutes (System limit).
 - [x] **Logging**: Unify all debug traces under the `MeteoMartoDebug` tag.
+- [x] **Refinement: Centralized Constants**:
+    - [x] Create `AppConstants.kt` to eliminate hardcoded strings (Magic Literals) like `"package"`, deep link URIs, and notification IDs.
+    - [x] Update `kotlin-style` skill to strictly forbid wildcard imports and magic literals.
 
 ## 4. Verification Checklist
 - [ ] Run `./gradlew :usecases:test` to verify threshold logic.

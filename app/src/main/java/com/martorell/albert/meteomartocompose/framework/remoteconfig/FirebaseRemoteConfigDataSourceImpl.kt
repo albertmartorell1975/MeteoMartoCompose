@@ -10,6 +10,7 @@ import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.data.remoteconfig.sources.RemoteConfigDataSource
 import com.martorell.albert.meteomartocompose.data.toCustomError
+import com.martorell.albert.meteomartocompose.utils.AppConstants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -20,7 +21,7 @@ class FirebaseRemoteConfigDataSourceImpl @Inject constructor(
 ) : RemoteConfigDataSource {
 
     companion object {
-        private const val TAG = "MeteoMartoDebug"
+        private const val TAG = AppConstants.DEBUG_TAG
         private const val TEMPERATURE_THRESHOLD_KEY = "temperature_threshold"
         private const val WEATHER_CHECK_INTERVAL_KEY = "weather_check_interval_minutes"
     }

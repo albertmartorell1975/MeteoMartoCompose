@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.martorell.albert.meteomartocompose.MainActivity
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.data.notification.NotificationService
+import com.martorell.albert.meteomartocompose.utils.AppConstants
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -43,7 +44,7 @@ class NotificationServiceImpl @Inject constructor(
         val content = context.getString(R.string.high_temp_notif_content, temperature)
 
         // Create the deep link intent
-        val deepLinkUri = Uri.parse("$DEEP_LINK_BASE/$temperature")
+        val deepLinkUri = Uri.parse("${AppConstants.DEEP_LINK_BASE}/$temperature")
         val deepLinkIntent = Intent(
             Intent.ACTION_VIEW,
             deepLinkUri,
@@ -60,7 +61,7 @@ class NotificationServiceImpl @Inject constructor(
             )
         }
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, AppConstants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(content)
@@ -69,7 +70,7 @@ class NotificationServiceImpl @Inject constructor(
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        notificationManager.notify(AppConstants.NOTIFICATION_ID, notification)
         Log.i(TAG, "Notification successfully sent to system tray")
     }
 
@@ -77,7 +78,7 @@ class NotificationServiceImpl @Inject constructor(
         val name = context.getString(R.string.high_temp_notif_channel_name)
         val descriptionText = context.getString(R.string.high_temp_notif_channel_description)
         val importance = NotificationManager.IMPORTANCE_HIGH
-        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+        val channel = NotificationChannel(AppConstants.NOTIFICATION_CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }
         notificationManager.createNotificationChannel(channel)
@@ -85,9 +86,6 @@ class NotificationServiceImpl @Inject constructor(
 
     companion object {
         private const val TAG = "NotificationService"
-        private const val CHANNEL_ID = "high_temp_channel"
-        private const val NOTIFICATION_ID = 1001
-        private const val DEEP_LINK_BASE = "meteomarto://alert/high-temperature"
     }
 
 }

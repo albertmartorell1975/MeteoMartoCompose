@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import com.martorell.albert.meteomartocompose.data.auth.repositories.auth.AuthRepository
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.di.ApplicationScope
+import com.martorell.albert.meteomartocompose.utils.AppConstants
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -35,7 +36,7 @@ class WorkScheduler @Inject constructor(
 ) {
 
     companion object {
-        private const val TAG = "MeteoMartoDebug"
+        private const val TAG = AppConstants.DEBUG_TAG
     }
 
     /**
