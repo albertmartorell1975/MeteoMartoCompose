@@ -1,3 +1,5 @@
+@file:OptIn(com.github.takahirom.roborazzi.ExperimentalRoborazziApi::class)
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,7 +8,10 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.roborazzi)
+    alias(libs.plugins.dokka)
 }
+
 apply(from = "../flavors.gradle")
 android {
     namespace = "com.martorell.albert.meteomartocompose"
@@ -22,6 +27,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -32,13 +43,22 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+roborazzi {
+    generateComposePreviewRobolectricTests {
+        // Temporarily disabled until all feature screens are refactored to be stateless.
+        // The scanner tries to instantiate @Preview components which fail if they depend on Firebase/Hilt.
+        enable = false
+        packages = listOf("${android.namespace}.ui")
     }
 }
 
@@ -51,7 +71,7 @@ ksp {
 
 // Add or modify this block
 kotlin {
-    jvmToolchain(11) // Set your desired JVM target version here
+    jvmToolchain(21) // Required for Roborazzi and Robolectric when targeting SDK 36+
 }
 
 dependencies {
@@ -101,6 +121,10 @@ dependencies {
     implementation(libs.google.accompanist.permissions)
     implementation(libs.google.play.services.location)
 
+    // Design System Infrastructure
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+
     // Local Unit Tests
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
@@ -110,10 +134,21 @@ dependencies {
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.robolectric)
 
+    // Screenshot Testing (Roborazzi)
+    testImplementation(libs.roborazzi.core)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.rule)
+    testImplementation(libs.roborazzi.scanner)
+    testImplementation(libs.roborazzi.composable.scanner)
+
     // Instrumented Tests
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Roborazzi also needs these in unit tests for Preview scanning
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.ui.test.junit4)
 
     // Debugging Tools
     debugImplementation(libs.androidx.ui.tooling)

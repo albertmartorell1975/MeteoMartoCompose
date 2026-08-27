@@ -62,4 +62,4 @@ This feature implements a background monitoring system using **WorkManager**. It
 
 ---
 
-For a detailed technical summary of all changes, refactors, and architectural decisions, refer to the [Definitive Technical Record](docs/features/MM-01-High-Temp-Notifications.md).
+For a detailed technical summary of all changes, refactors, and architectural decisions, refer to the [Definitive Technical Record](MM-01-High-Temp-Notifications.md).
