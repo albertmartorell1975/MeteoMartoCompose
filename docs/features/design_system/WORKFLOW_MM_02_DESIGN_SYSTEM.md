@@ -10,8 +10,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] Create `design-system-governance` skill.
 - [x] Initialize `MM-02-Design-System.md` Technical Record and ADRs.
 - [x] Gradle Sync and verification.
-- [ ] **MANDATORY**: Execute `compiler` skill verification suite.
-- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
+- [x] **MANDATORY**: Execute `compiler` skill verification suite.
+- [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 2: Foundation & Tokens (The "Truth")
 - [ ] **MANDATORY**: Consult `AGENTS.md` for style and logic standards.
