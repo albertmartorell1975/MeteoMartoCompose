@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class RemoteConfigRepositoryImpl @Inject constructor(
     private val remoteConfigDataSource: RemoteConfigDataSource,
     private val mapper: RemoteConfigMapper,
-    @ApplicationScope private val scope: CoroutineScope
+    @param:ApplicationScope private val scope: CoroutineScope
 ) : RemoteConfigRepository {
 
     // We use 'Eagerly' so the Firebase listener never closes,
