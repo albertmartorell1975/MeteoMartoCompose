@@ -21,6 +21,10 @@ This skill serves as the project's quality gateway. It ensures that any code cha
 As a Skill, `compiler` provides both standalone actions and a complete verification suite:
 
 ### 1. Standalone Actions (Immediate Execution)
+- **Environment Validation (MANDATORY)**: Before any compilation, the agent MUST verify that the local environment matches the project's requirements:
+  - Check that `java -version` matches the `jvmToolchain` defined in `build.gradle.kts`.
+  - Check that the IDE's Gradle JDK (from `.idea/gradle.xml`) is correctly aligned.
+  - If a mismatch is detected, the agent MUST stop and report the configuration error to the user before attempting any build.
 - **Static Analysis**: To be executed on specific files during development.
   - **Command**: `analyze_file [file_path]`
 - **Code Cleanliness**: Agents MUST remove all unused imports, variables, and functions detected during the analysis phase or identified through manual review.
