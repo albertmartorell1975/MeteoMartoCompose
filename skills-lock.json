@@ -115,6 +115,12 @@
       "skillPath": ".agents/skills/dependency-manager/SKILL.md",
       "computedHash": "8a998899956edc8919f75b6a20bc46af0402ef4568e94b40696963fbfb26c2c8"
     },
+    "design-system-governance": {
+      "source": "albertmartorell1975/android-ai-workflow-foundation",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/design-system-governance/SKILL.md",
+      "computedHash": "6fb620e247d7ff639972261a9590776cc2028f495399a8ff4238050193373e0d"
+    },
     "display-glasses-with-jetpack-compose-glimmer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
@@ -155,7 +161,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/foundation-evolve/SKILL.md",
-      "computedHash": "0a6c2af4b8c9f25afcca5bb7b5447aa12c8780330a2a18549abaeabdfeeb8b97"
+      "computedHash": "602f6fa315f0f4bd9b5a9ccf11ff748361aed3b91883a7fcf23bd40b9e50b79c"
     },
     "git-governance": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -163,7 +169,7 @@
       "skillPath": ".agents/skills/git-governance/SKILL.md",
       "computedHash": "ea08c13f3d7410d46548bd1e08ae4686c9333d4cfd72e5dda9b83ff353ade653"
     },
-    "hilt-dependency-injection": {
+    "hilt": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/hilt/SKILL.md",
@@ -299,13 +305,13 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-feature/SKILL.md",
-      "computedHash": "fdec6d9d8913908296dbbce637b9887a4ffe609013dee296b2935e4f7c0f8c93"
+      "computedHash": "4f447b9d61e89f28bbe6427eca5d40dff028543b1990ed8a9b0e0f1f1c10fbb3"
     },
     "workflow-initializer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-initializer/SKILL.md",
-      "computedHash": "fe8dd1712249acbc0c6c5d9dfebe1aa0477613545b93e8759533ba97ad83d058"
+      "computedHash": "d7f76ec2b0381755f7d830c9a2c3e67be574d674e8187b8b30417ab631597be6"
     }
   }
 }

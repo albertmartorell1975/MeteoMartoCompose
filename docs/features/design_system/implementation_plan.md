@@ -1,6 +1,6 @@
 # Implementation Plan — MM-02: Android Design System (Comprehensive Edition)
 
-Evolve the MeteoMartoCompose UI into a modular, **reusable, testable, and highly composable** Material 3 Design System. This plan adheres to **Senior/Principal Android Engineer standards (Roche/Design System team)**, strictly following **Google's Accessibility (A11y), Material 3 Expressive (Android 16 style), RTL, and Adaptive UI best practices**.
+Evolve the MeteoMartoCompose UI into a modular, **reusable, testable, and highly composable** Material 3 Design System. This plan adheres to **Senior/Principal Android Engineer standards**, strictly following **Google's Accessibility (A11y), Material 3 Expressive (Android 16 style), RTL, and Adaptive UI best practices**.
 
 ## User Review Required
 

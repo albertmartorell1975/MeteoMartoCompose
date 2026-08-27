@@ -135,8 +135,12 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 ## Mandatory Planning Protocol (GATEWAY)
 
 1. **Gateway Diagnosis (STRICT)**: Every new feature MUST start with the Diagnosis phase defined in `.agents/rules.md`.
-2. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing any solution, search and read relevant files inside `.agents/skills/`.
-3. **Workflow Activation**: Only after prompt confirmation can the agent trigger the `workflow-feature` skill.
+2. **Phase-Level Governance (MANDATORY)**: Every workflow phase MUST follow the "Check -> Execute -> Verify -> Commit" cycle:
+    - **Check**: Consult `AGENTS.md` before coding to ensure the specific constraints of each persona (Domain Architect, UI/UX Engineer, etc.) are respected.
+    - **Verify**: Execute the `compiler` skill verification suite after completing phase tasks.
+    - **Commit**: Ensure changes are pushed (Manual or `git-governance` skill) before starting the next phase.
+3. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing any solution, search and read relevant files inside `.agents/skills/`.
+4. **Workflow Activation**: Only after prompt confirmation can the agent trigger the `workflow-feature` skill.
 
 ---
 
@@ -160,7 +164,11 @@ Custom skills created to define this project's unique architecture and governanc
 - **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
-- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
+- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the native Android project.
+- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, and the **Magic Literal Prohibition**).
+- **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
+- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
+- **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the Design System.
 
 ## 2. Android CLI & System Skills
 Expert guides for system-level optimizations, tools, and best practices.
