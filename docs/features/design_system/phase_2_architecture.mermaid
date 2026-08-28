@@ -1,0 +1,32 @@
+graph TD
+    subgraph Tokens ["Foundation Tokens (Data Classes)"]
+        A[MMSpacing.kt]
+        B[MMColors.kt]
+        C[MMTypography.kt]
+    end
+
+    subgraph Infrastructure ["Infrastructure"]
+        D[MMDensityProvider.kt]
+        E[DataStore Persistence]
+    end
+
+    subgraph Core ["Design System Core"]
+        F[DesignSystem.kt]
+    end
+
+    subgraph Usage ["UI Usage"]
+        G[Stateless Components MM*]
+        H[Feature Screens]
+    end
+
+    A -- "staticCompositionLocalOf" --> F
+    B -- "compositionLocalOf" --> F
+    C -- "staticCompositionLocalOf" --> F
+    D -- "compositionLocalOf" --> F
+    E --> D
+
+    F -- "CompositionLocalProvider" --> G
+    F -- "CompositionLocalProvider" --> H
+
+    G -- "Consumes ALL tokens (Colors, Spacing, Typography)" --> G
+    H -- "Consumes ALL tokens (Colors, Spacing, Typography)" --> H

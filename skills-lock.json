@@ -197,7 +197,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/kotlin-style/SKILL.md",
-      "computedHash": "aa9a7d4e24041daa9338a978b16172ec7df53511c91833d060e6778df573c558"
+      "computedHash": "f0a2e44b766cbaefa95d856b3a9105f6bf2d2aa510b4023e8460e957fa62356b"
     },
     "kotlin-functions": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -311,7 +311,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-initializer/SKILL.md",
-      "computedHash": "d7f76ec2b0381755f7d830c9a2c3e67be574d674e8187b8b30417ab631597be6"
+      "computedHash": "12ff880e28d0eeb09635abdd100c1a14d97de40639e1cb901a4405da11e4b4b5"
     }
   }
 }

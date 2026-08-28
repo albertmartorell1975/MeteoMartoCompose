@@ -1,16 +1,28 @@
 package com.martorell.albert.meteomartocompose.ui
 
 import androidx.compose.runtime.Composable
-import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoComposeTheme
+import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
+import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
 
 /**
- * Its goal is to apply the project them and "inflates" a composable class
- * @param content it is a composable class, usually a Scaffold one
+ * This is the entry point for our app's visual structure.
+ *
+ * Think of this as a "wrapper" or a "container" that sets the rules for how everything
+ * inside it should look. It does two main things:
+ * 1. It applies the **MeteoMartoTheme**, which contains our custom colors, spaces, and fonts.
+ * 2. It handles **dynamic scaling** (like zoom), so if the user wants larger text,
+ *    this layout ensures every component inside it grows correctly.
+ *
+ * @param fontScale The "zoom level" for the app (1.0 is normal size).
+ * @param content The actual UI parts (like screens or buttons) that will be placed inside this wrapper.
  */
 @Composable
-fun MeteoMartoComposeLayout(content: @Composable () -> Unit) {
+fun MeteoMartoComposeLayout(
+    fontScale: Float = UserPreferences.DEFAULT_FONT_SCALE,
+    content: @Composable () -> Unit,
+) {
 
-    MeteoMartoComposeTheme {
+    MeteoMartoTheme(fontScale = fontScale) {
         content()
     }
 

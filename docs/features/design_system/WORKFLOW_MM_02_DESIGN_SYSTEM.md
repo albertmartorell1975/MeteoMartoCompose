@@ -14,17 +14,17 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 2: Foundation & Tokens (The "Truth")
-- [ ] **MANDATORY**: Consult `AGENTS.md` for style and logic standards.
-- [ ] Implement `MMSpacing.kt` (Reference scale: XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
-- [ ] Implement `MMColors.kt` (Semantic roles mapping Material 3 Expressive).
-- [ ] Implement `MMTypography.kt` (Mapping Display, Headline, Body using Roboto Flex Variable Font).
-- [ ] Create `DesignSystem.kt` (CompositionLocals provider).
-- [ ] Implement `MMDensityProvider.kt` with DataStore persistence for pinch-to-zoom.
-- [ ] **MANDATORY**: Execute `compiler` skill verification suite.
-- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
+- [x] **MANDATORY**: Consult `AGENTS.md` for style and logic standards.
+- [x] Implement `MMSpacing.kt` (Reference scale: XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
+- [x] Implement `MMColors.kt` (Semantic roles mapping Material 3 Expressive).
+- [x] Implement `MMTypography.kt` (Mapping Display, Headline, Body using Roboto Flex Variable Font).
+- [x] Create `DesignSystem.kt` (CompositionLocals provider).
+- [x] Implement `MMDensityProvider.kt` with DataStore persistence for pinch-to-zoom.
+- [x] **MANDATORY**: Execute `compiler` skill verification suite.
+- [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 3: Core Stateless Components (`MM*`)
-- [ ] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
+- [/] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
 - [ ] **MMButton**: Slot-based, Spring-motion, weight-axis focus feedback.
 - [ ] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
 - [ ] **MMText**: Semantic text wrapper for typography tokens.

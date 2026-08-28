@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,6 +24,7 @@ import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
+import com.martorell.albert.meteomartocompose.ui.theme.DesignSystemViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.NavigationBarCustom
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
@@ -34,8 +36,10 @@ import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashUI
 fun Navigation(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
+    designSystemViewModel: DesignSystemViewModel = hiltViewModel(),
 ) {
     val rootState by mainViewModel.state.collectAsState()
+    val fontScale by designSystemViewModel.fontScale.collectAsState()
 
     if (rootState.isLoading) {
         SplashUI()
@@ -43,11 +47,16 @@ fun Navigation(
         val appState: AppState = rememberAppState(navController = navController)
         val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-        // Scoping ViewModel to the Dashboard subgraph to avoid leaks between sessions
+        // Scoping ViewModel to the Dashboard subgraph to avoid leaks between sessions.
+        // We check the hierarchy to safely obtain the entry only when the subgraph is active.
         val dashboardEntry = remember(navBackStackEntry) {
-            try {
+            val isDashboardInHierarchy = navBackStackEntry?.destination?.hierarchy?.any {
+                it.hasRoute<SubGraphs.Dashboard>()
+            } == true
+
+            if (isDashboardInHierarchy) {
                 navController.getBackStackEntry(SubGraphs.Dashboard)
-            } catch (e: Exception) {
+            } else {
                 null
             }
         }
@@ -55,14 +64,14 @@ fun Navigation(
         val scrollState = rememberTopAppBarState()
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState)
 
-        MeteoMartoComposeLayout {
+        MeteoMartoComposeLayout(fontScale = fontScale) {
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     if (appState.showBottomNavigation) {
                         TopAppBarCustom(
                             navController = navController,
-                            scrollBehavior = scrollBehavior
+                            scrollBehavior = scrollBehavior,
                         )
                     }
                 },
