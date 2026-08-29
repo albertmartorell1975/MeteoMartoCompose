@@ -42,6 +42,30 @@ Evolving from fragmented shared components in `ui/screens/shared/` to a formal, 
 2.  **Shot Alternative**: Shot requires an emulator, which makes the CI/CD pipeline expensive and slow. We need instant feedback on every commit.
 3.  **Google Official Tool**: Currently lacks the mature automated scanner for 16 permutations (LTR/RTL x 2.0x Scale, etc.) that Roborazzi provides natively in 2026.
 
+### ADR 05: Slot API Pattern for Content
+**Decision**: Use "Slots" (Composable lambdas) for all components that wrap content (e.g., buttons, cards, containers).
+**Rationale**: Maximizes component flexibility and decoupling. The design system manages the "container" (layout, borders, interaction effects, motion), while the caller defines the "content" (text, icons, complex layouts). This aligns with the Material 3 standard and ensures components don't need to be modified when new content requirements arise.
+
+## Governance & Implementation Rules
+
+To maintain high architectural standards and visual consistency, all design system contributions must adhere to the rules defined in the **`design-system-governance`** skill.
+
+### 1. Component Architecture (Super-Hoisting)
+- **Stateless by Contract**: Every `MM*` component MUST be stateless. No internal `mutableStateOf`.
+- **Slot API Usage**: Components receiving content must use slots to allow for dynamic internal layouts.
+- **Modifier Requirement**: Every component signature MUST include `modifier: Modifier = Modifier` as its first optional parameter.
+
+### 2. Accessibility (A11y) & Adaptive Support
+- **Universal RTL**: Absolute prohibition of `left/right`. Use `start/end` exclusively.
+- **Icon Mirroring**: Directional icons (arrows, etc.) must be automatically mirrored in RTL layouts.
+- **Scaling & Reflow**: Support 200% font scaling via `sp`. Containers must use `wrapContentHeight()` or `minHeight` to avoid text clipping.
+- **Touch Targets**: Ensure a minimum interactive area of 48x48dp.
+
+### 3. Verification Protocol
+- **JDK 21 Requirement**: Mandatory for accurate simulation of Android 16+ runtimes during tests.
+- **Roborazzi Matrix**: Every component must pass visual regression against **16 permutations** (Theme x Font Scale x Orientation x Layout Direction).
+- **Stateless Previews**: `@Preview` functions must remain stateless to be compatible with automated scanners.
+
 ### Automated Screenshot Generation (Lessons Learned)
 To ensure the visual integrity of the design system without increasing the maintenance burden, we utilize the **Roborazzi Automated Preview Scanner**.
 
@@ -84,13 +108,15 @@ Visual scaling (pinch-to-zoom) is managed as part of the infrastructure layer.
 - **`DesignSystemViewModel`**: Exposes the `fontScale` as a `StateFlow<Float>`, ensuring the UI reacts instantly to changes.
 
 ### CompositionLocal Hierarchy
-The design system propagates tokens through the composition tree using the following keys:
-| Token Type | Key | Propagation Method | Change Frequency |
-| :--- | :--- | :--- | :--- |
-| **Spacing** | `LocalMMSpacing` | `staticCompositionLocalOf` | Low |
-| **Colors** | `LocalMMColors` | `compositionLocalOf` | Medium (Theme switch) |
-| **Typography** | `LocalMMTypography` | `staticCompositionLocalOf` | Low |
-| **Density** | `LocalDensity` | Overridden via `MMDensityProvider` | Medium (Zoom) |
+
+The design system propagates tokens through the composition tree using specialized keys. This ensures that every component can access the "source of truth" without manual parameter passing.
+
+| Token Type     | Key                  | Propagation Method          | Change Frequency   |
+| :------------- | :------------------- | :-------------------------- | :----------------- |
+| **Spacing**    | `LocalMMSpacing`     | `staticCompositionLocalOf`  | **Low**            |
+| **Colors**     | `LocalMMColors`      | `compositionLocalOf`        | **Medium** (Theme) |
+| **Typography** | `LocalMMTypography`  | `staticCompositionLocalOf`  | **Low**            |
+| **Density**    | `LocalDensity`       | Overridden via `Provider`   | **Medium** (Zoom)  |
 
 ## Typography Reference (Material 3)
 
@@ -128,14 +154,43 @@ These axes follow the **OpenType Variable Font** standard and the specific capab
 
 | Axis | Name | Range | Selected Default | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
-| **`wght`** | Weight | 100 - 1000 | 400 (Regular) | Standard weight for high legibility in body text. |
-| **`wdth`** | Width | 25 - 150 | 100 (Normal) | Maintains standard character proportions. |
-| **`slnt`** | Slant | -90 - 90 | 0 (Upright) | Default upright posture. |
-| **`opsz`** | Optical Size | 8 - 144 | 14 | Optimizes glyph shapes for standard reading distances. |
+| **`wght`** | Weight | 100 - 1000 | `MMFontWeight.NORMAL` (400) | Standard weight for high legibility in body text. |
+| **`wdth`** | Width | 25 - 150 | `MMFontAxes.WIDTH_DEFAULT` (100) | Maintains standard character proportions. |
+| **`slnt`** | Slant | -90 - 90 | `MMFontAxes.SLANT_DEFAULT` (0) | Default upright posture. |
+| **`opsz`** | Optical Size | 8 - 144 | `MMFontAxes.OPSZ_DEFAULT` (14) | Optimizes glyph shapes for standard reading distances. |
 
-**Official Reference**: [Google Fonts - Roboto Flex Axes](https://fonts.google.com/specimen/Roboto+Flex/tester)
+**Official Reference**: [Google Fonts - Roboto Flex Axes](https://fonts.google.com/specimen/Roboto+Flex/tester) | [OpenType OS/2 Weight Class Specification](https://learn.microsoft.com/en-us/typography/opentype/spec/os2#usweightclass)
+
+> [!NOTE]
+> **OpenType Standard**: We follow the universal OpenType specification (ISO/IEC 14496-22) for font weights. While the documentation is hosted by Microsoft, it is the global industry standard used by Android, iOS, and Figma to ensure cross-platform typography consistency.
 
 ### Design Implementation
-- **Dynamic Weight**: We prefer `FontWeight.Medium` (500) for Titles/Labels to improve hierarchical scannability.
-- **Optical Adaptation**: The `opsz` axis is set to 14 by default but can be dynamically adjusted for large hero temperatures (Display roles) if needed.
-> When implementing **Roboto Flex**, we will map these weights to specific axis values (e.g., `wght` 400 for Regular, 500 for Medium) to leverage variable font capabilities.
+- **Dynamic Weight**: We prefer `MMFontWeight.MEDIUM` (500) for Titles/Labels to improve hierarchical scannability.
+- **Optical Adaptation**: The `opsz` axis is set to `MMFontAxes.OPSZ_DEFAULT` (14) by default but can be dynamically adjusted for large hero temperatures (Display roles) if needed.
+
+## Motion & Animation (Phase 2)
+
+To ensure a cohesive "feel", all animations follow standardized motion tokens defined in `MMMotion.kt`.
+
+### Spring Physics
+We use **Spring Physics** instead of linear interpolations to achieve a natural, tactile feel that aligns with Android 16's expressive style.
+
+| Token | Description | Specification |
+| :--- | :--- | :--- |
+| **`SpringExpressive`** | Standard bounce for interaction feedback. | `DampingRatioMediumBouncy`, `StiffnessMediumLow` |
+
+## Components (Phase 3)
+
+### Buttons
+Buttons are categorized by their visual emphasis in the UI hierarchy.
+
+| Component | Hierarchy | Description |
+| :--- | :--- | :--- |
+| **`MMPrimaryButton`** | High Emphasis | For the main action of a screen. |
+| **`MMSecondaryButton`**| Medium Emphasis | For supporting actions. |
+| **`MMTertiaryButton`** | Low Emphasis | For auxiliary actions or dismissals. |
+
+**Key Features**:
+- **Variable Font Feedback**: Animates the `wght` axis of Roboto Flex (400 to 600) when pressed or focused.
+- **Spring Physics**: Uses `MMMotion.SpringExpressive` for consistent feedback.
+- **Stateless**: All states are hoisted to the caller.

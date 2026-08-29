@@ -24,8 +24,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 3: Core Stateless Components (`MM*`)
-- [/] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
-- [ ] **MMButton**: Slot-based, Spring-motion, weight-axis focus feedback.
+- [x] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
+- [x] **MMButton**: Slot-based, Spring-motion, weight-axis focus feedback.
 - [ ] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
 - [ ] **MMText**: Semantic text wrapper for typography tokens.
 - [ ] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.

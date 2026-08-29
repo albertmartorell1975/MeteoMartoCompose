@@ -22,14 +22,14 @@ import com.martorell.albert.meteomartocompose.R
  * @see [MM-02 Technical Record](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/docs/features/design_system/MM-02-Design-System.md) for detailed axes rationale.
  */
 @OptIn(ExperimentalTextApi::class)
-private val RobotoFlex = FontFamily(
+internal val RobotoFlex = FontFamily(
     Font(
         resId = R.font.roboto_flex,
         variationSettings = FontVariation.Settings(
-            FontVariation.weight(400),
-            FontVariation.width(100f),
-            FontVariation.slant(0f),
-            FontVariation.Setting("opsz", 14f)
+            FontVariation.weight(MMFontWeight.NORMAL),
+            FontVariation.width(MMFontAxes.WIDTH_DEFAULT),
+            FontVariation.slant(MMFontAxes.SLANT_DEFAULT),
+            FontVariation.Setting(MMFontAxes.OPSZ_TAG, MMFontAxes.OPSZ_DEFAULT)
         )
     )
 )
@@ -148,5 +148,28 @@ data class MMTypography(
         letterSpacing = 0.5.sp
     )
 )
+
+/**
+ * Constants for variable font axes values to avoid magic numbers.
+ */
+object MMFontAxes {
+    const val WIDTH_DEFAULT = 100f
+    const val SLANT_DEFAULT = 0f
+    const val OPSZ_DEFAULT = 14f
+    const val OPSZ_TAG = "opsz"
+}
+
+/**
+ * Common font weight constants for the Design System.
+ * These values follow the universal OpenType standard (ISO/IEC 14496-22), 
+ * ensuring consistency across platforms and design tools (e.g., Figma).
+ * @see [OpenType OS/2 Weight Class](https://learn.microsoft.com/en-us/typography/opentype/spec/os2#usweightclass)
+ */
+object MMFontWeight {
+    const val NORMAL = 400
+    const val MEDIUM = 500
+    const val SEMIBOLD = 600
+    const val BOLD = 700
+}
 
 val LocalMMTypography = staticCompositionLocalOf { MMTypography() }
