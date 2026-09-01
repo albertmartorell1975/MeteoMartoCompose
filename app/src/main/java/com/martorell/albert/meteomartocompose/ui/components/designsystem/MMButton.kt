@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.martorell.albert.meteomartocompose.ui.theme.MMFontWeight
 import com.martorell.albert.meteomartocompose.ui.theme.MMMotion
 import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
@@ -50,7 +49,7 @@ fun MMPrimaryButton(
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
         animationSpec = MMMotion.SpringExpressive,
-        label = MMMotion.Labels.BUTTON_WEIGHT
+        label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
     Button(
@@ -90,7 +89,7 @@ fun MMSecondaryButton(
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
         animationSpec = MMMotion.SpringExpressive,
-        label = MMMotion.Labels.BUTTON_WEIGHT
+        label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
     FilledTonalButton(
@@ -128,7 +127,7 @@ fun MMTertiaryButton(
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
         animationSpec = MMMotion.SpringExpressive,
-        label = MMMotion.Labels.BUTTON_WEIGHT
+        label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
     TextButton(
@@ -149,7 +148,7 @@ fun MMTertiaryButton(
 
 // --- Previews ---
 
-@Preview(showBackground = true)
+@MMPreview
 @Composable
 private fun MMPrimaryButtonPreview() {
     MeteoMartoTheme {
@@ -159,7 +158,7 @@ private fun MMPrimaryButtonPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@MMPreview
 @Composable
 private fun MMSecondaryButtonPreview() {
     MeteoMartoTheme {
@@ -169,7 +168,7 @@ private fun MMSecondaryButtonPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@MMPreview
 @Composable
 private fun MMTertiaryButtonPreview() {
     MeteoMartoTheme {

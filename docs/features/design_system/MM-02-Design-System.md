@@ -46,25 +46,48 @@ Evolving from fragmented shared components in `ui/screens/shared/` to a formal, 
 **Decision**: Use "Slots" (Composable lambdas) for all components that wrap content (e.g., buttons, cards, containers).
 **Rationale**: Maximizes component flexibility and decoupling. The design system manages the "container" (layout, borders, interaction effects, motion), while the caller defines the "content" (text, icons, complex layouts). This aligns with the Material 3 standard and ensures components don't need to be modified when new content requirements arise.
 
+### ADR 06: MMText as Typographic Boundary
+**Decision**: Mandate the use of `MMText` (to be implemented) as the exclusive boundary for typography in feature screens.
+**Rationale**: Prevents direct leaks of Material 3 `Text` components, ensuring that all text in the app strictly adheres to the `MMTypography` tokens and the Roboto Flex variable font configuration.
+
+### ADR 07: Density vs. Font Scaling Precision (UI Zoom)
+**Decision**: Explicitly implement a "Global UI Zoom" model where the user-defined scale affects both structural density (`dp`) and font scaling (`sp`).
+**Rationale**: Based on Architecture Audit v2 (Point 6), we acknowledge the distinction between purely visual font scaling and structural layout density. While modifying `LocalDensity` affects paddings, dimensions, and touch targets globally (risking `dp` to `px` conversion deviations), we have chosen this "ambitious" path to provide a holistic pinch-to-zoom experience.
+**Validation**: 
+- **Font Scaling**: Ensures text remains legible at higher scales.
+- **Layout Density**: Scales the entire UI container to maintain visual proportions during zoom.
+- **Risk Mitigation**: All components must use `sp` for text and `dp` for structural elements. We mandate a minimum touch target of 48dp, which, even when scaled structurally, remains functionally safe as long as the base dimension is correct.
+
+### ADR 08: Material 3 Adaptive Integration
+**Decision**: Incorporate `Material 3 Adaptive` and `NavigationSuiteScaffold` as first-class citizens of the design system.
+**Rationale**: Adds a responsive dimension for Window Size Classes, ensuring the app scales gracefully from mobile to tablets and foldables.
+
+### ADR 09: Pragmatic Snapshot Testing
+**Decision**: Move away from a rigid 16-permutation rule for every component.
+**Rationale**: Avoids combinatorial explosion and "snapshot fatigue". Coverage will be determined based on the component's significant behavioral dimensions (e.g., a simple spacer doesn't need 16 snapshots, but a complex Button does).
+
 ## Governance & Implementation Rules
 
 To maintain high architectural standards and visual consistency, all design system contributions must adhere to the rules defined in the **`design-system-governance`** skill.
 
-### 1. Component Architecture (Super-Hoisting)
+### 1. Component Architecture & Boundaries
 - **Stateless by Contract**: Every `MM*` component MUST be stateless. No internal `mutableStateOf`.
 - **Slot API Usage**: Components receiving content must use slots to allow for dynamic internal layouts.
 - **Modifier Requirement**: Every component signature MUST include `modifier: Modifier = Modifier` as its first optional parameter.
+- **Typographic Boundary**: Feature modules MUST NOT depend directly on Material 3 `Text`. Use `MMText` to ensure token compliance.
+- **M3 Dependency Rule**: Feature modules MUST NOT depend directly on Material 3 components when an equivalent `MM*` component exists.
 
-### 2. Accessibility (A11y) & Adaptive Support
-- **Universal RTL**: Absolute prohibition of `left/right`. Use `start/end` exclusively.
-- **Icon Mirroring**: Directional icons (arrows, etc.) must be automatically mirrored in RTL layouts.
-- **Scaling & Reflow**: Support 200% font scaling via `sp`. Containers must use `wrapContentHeight()` or `minHeight` to avoid text clipping.
-- **Touch Targets**: Ensure a minimum interactive area of 48x48dp.
+### 2. Accessibility (A11y), Adaptive & Scaling
+- **Universal RTL**: Absolute prohibition of `left/right`. Use `start/end` exclusively. Mirror directional icons.
+- **Scaling & Reflow**: Support 200% font scaling via `sp`. Use `wrapContentHeight()` to avoid clipping.
+- **Touch Targets**: Minimum interactive area of 48x48dp.
+- **Adaptive Layouts**: Use `NavigationSuiteScaffold` for automatic Bar/Rail transitions based on Window Size Classes.
 
-### 3. Verification Protocol
-- **JDK 21 Requirement**: Mandatory for accurate simulation of Android 16+ runtimes during tests.
-- **Roborazzi Matrix**: Every component must pass visual regression against **16 permutations** (Theme x Font Scale x Orientation x Layout Direction).
-- **Stateless Previews**: `@Preview` functions must remain stateless to be compatible with automated scanners.
+### 3. Verification & "Gates"
+- **Architecture Gates**: Progress between phases requires meeting specific quality gates (e.g., API stabilization before global migration).
+- **Multipreview Infrastructure**: Establish reusable Previews (Theme x RTL x Scale) before automating with Roborazzi.
+- **Pragmatic Snapshots**: Define significant permutations per component for Roborazzi verification, avoiding unnecessary redundant snapshots.
+- **Stateless Previews**: `@Preview` functions must remain stateless to support automated scanning.
 
 ### Automated Screenshot Generation (Lessons Learned)
 To ensure the visual integrity of the design system without increasing the maintenance burden, we utilize the **Roborazzi Automated Preview Scanner**.

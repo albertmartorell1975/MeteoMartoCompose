@@ -25,9 +25,10 @@ This document serves as the granular checklist and architectural roadmap for the
 
 ## Phase 3: Core Stateless Components (`MM*`)
 - [x] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
-- [x] **MMButton**: Slot-based, Spring-motion, weight-axis focus feedback.
+- [x] **MMPrimaryButton / MMSecondaryButton / MMTertiaryButton**: Slot-based, Spring-motion, weight-axis focus feedback.
+- [ ] **Multipreview Infrastructure**: Create reusable `@MMPreview` annotations for (Light/Dark x RTL x Scale).
+- [ ] **MMText**: Semantic text wrapper for typography tokens (The Typographic Boundary).
 - [ ] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
-- [ ] **MMText**: Semantic text wrapper for typography tokens.
 - [ ] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
 - [ ] **MANDATORY**: Execute `compiler` skill verification suite.
 - [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
