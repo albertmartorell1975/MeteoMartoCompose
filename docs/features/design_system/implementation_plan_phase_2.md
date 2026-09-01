@@ -58,7 +58,7 @@ graph TD
 > **`staticCompositionLocalOf` vs `compositionLocalOf`**:
 > *   Use **`staticCompositionLocalOf`** for values that rarely change (like Spacing or Typography). If the value changes, Compose recomposes the *entire* subtree, which is expensive but faster for reads.
 > *   Use **`compositionLocalOf`** for values that change more frequently (like Colors when switching Light/Dark themes). Compose tracks specific usages, so only affected components recompose.
-5.  **Usage**: Any component (`MMButton`, etc.) can access `MeteoMartoTheme.spacing.M` to retrieve the correct value reactively.
+5.  **Usage**: Any component (`MMPrimaryButton`, etc.) can access `MeteoMartoTheme.spacing.medium` to retrieve the correct value reactively.
 
 ## User Review Required
 
@@ -72,7 +72,7 @@ graph TD
 We will organize the new tokens under a dedicated package to separate them from the default project theme.
 
 #### [NEW] [MMSpacing.kt](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/app/src/main/java/com/martorell/albert/meteomartocompose/ui/theme/MMSpacing.kt)
-*   **Agent Task**: Implement the spacing scale (XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
+*   **Agent Task**: Implement the spacing scale (extraSmall=4dp, small=8dp, medium=16dp, large=24dp, extraLarge=32dp).
 *   **Technique**: Use a `data class` to hold the values and `LocalMMSpacing` for propagation.
 
 #### [NEW] [MMColors.kt](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/app/src/main/java/com/martorell/albert/meteomartocompose/ui/theme/MMColors.kt)

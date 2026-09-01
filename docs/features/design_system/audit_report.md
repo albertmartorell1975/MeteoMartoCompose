@@ -33,11 +33,11 @@ We will implement a `MeteoMartoDesignSystem` object to hold these tokens, ensuri
 
 ### Spacing (Scale)
 - `None`: 0.dp
-- `XS`: 4.dp
-- `S`: 8.dp
-- `M`: 16.dp (Standard gutter)
-- `L`: 24.dp
-- `XL`: 32.dp
+- `extraSmall`: 4.dp
+- `small`: 8.dp
+- `medium`: 16.dp (Standard gutter)
+- `large`: 24.dp
+- `extraLarge`: 32.dp
 
 ---
 

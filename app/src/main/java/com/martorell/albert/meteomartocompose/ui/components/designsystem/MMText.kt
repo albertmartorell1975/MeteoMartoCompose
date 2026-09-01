@@ -13,9 +13,8 @@ import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
 /**
  * [MMText] is the mandatory typographic boundary for the MeteoMarto Design System.
  * 
- * Following Architecture Audit v2 (Point 2), feature screens must use this component
- * instead of Material 3's Text to ensure strict adherence to the [MMTypography] tokens
- * and the Roboto Flex variable font configuration.
+ * Feature screens must use this component instead of Material 3's Text to ensure strict adherence
+ * to the [MMTypography] tokens and the Roboto Flex variable font configuration.
  */
 @Composable
 fun MMText(

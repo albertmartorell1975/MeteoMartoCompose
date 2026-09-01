@@ -202,6 +202,18 @@ We use **Spring Physics** instead of linear interpolations to achieve a natural,
 | :--- | :--- | :--- |
 | **`SpringExpressive`** | Standard bounce for interaction feedback. | `DampingRatioMediumBouncy`, `StiffnessMediumLow` |
 
+### Error Feedback (Shake)
+To capture user attention during validation failures, we use a "Shake" animation sequence defined by the following tokens:
+
+| Token | Value | Description | Rationale |
+| :--- | :--- | :--- | :--- |
+| **`OFFSET_POSITIVE`** | `10f` | Initial rightward movement. | Subtle enough to avoid layout breaking but visible for "denial" feedback. |
+| **`OFFSET_NEGATIVE`** | `-10f`| Counter-leftward movement. | Symmetrical displacement to create the oscillation effect. |
+| **`OFFSET_ZERO`**     | `0f`  | Return to equilibrium. | Ensures the component ends in its original, stable position. |
+
+> [!NOTE]
+> **Shake Rationale**: This 10-pixel displacement sequence is a standard UX micro-interaction pattern for "invalid input" feedback (mimicking a "no" gesture). It is tuned to be noticeable on standard mobile screen densities without shifting the component into neighboring tap targets.
+
 ## Components (Phase 3)
 
 ### Buttons

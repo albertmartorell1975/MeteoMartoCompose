@@ -9,11 +9,25 @@ import androidx.compose.animation.core.spring
  */
 object MMMotion {
     /**
+     * Standard spring configuration for expressive UI components.
+     */
+    const val SPRING_DAMPING = Spring.DampingRatioMediumBouncy
+    const val SPRING_STIFFNESS = Spring.StiffnessMediumLow
+
+    /**
      * Standard spring physics for expressive UI components (buttons, icons).
      */
-    val SpringExpressive = spring<Int>(
-        dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness = Spring.StiffnessMediumLow,
+    val SpringExpressiveInt = spring<Int>(
+        dampingRatio = SPRING_DAMPING,
+        stiffness = SPRING_STIFFNESS,
+    )
+
+    /**
+     * Standard spring physics for float-based animations (offsets, alpha).
+     */
+    val SpringExpressiveFloat = spring<Float>(
+        dampingRatio = SPRING_DAMPING,
+        stiffness = SPRING_STIFFNESS,
     )
 
     /**
@@ -21,5 +35,16 @@ object MMMotion {
      */
     object Labels {
         const val BUTTON_WEIGHT = "ButtonWeightAnimation"
+    }
+
+    /**
+     * Tokens for error feedback animations.
+     * These values represent the horizontal pixel offset for the "shake" sequence.
+     * 10px is chosen as a subtle but noticeable distance for "denial" feedback.
+     */
+    object ErrorShake {
+        const val OFFSET_POSITIVE = 10f
+        const val OFFSET_NEGATIVE = -10f
+        const val OFFSET_ZERO = 0f
     }
 }

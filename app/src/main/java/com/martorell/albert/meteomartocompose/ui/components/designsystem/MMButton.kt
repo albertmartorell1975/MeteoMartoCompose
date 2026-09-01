@@ -48,7 +48,7 @@ fun MMPrimaryButton(
 
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
-        animationSpec = MMMotion.SpringExpressive,
+        animationSpec = MMMotion.SpringExpressiveInt,
         label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
@@ -61,7 +61,7 @@ fun MMPrimaryButton(
     ) {
         val expressiveTextStyle = LocalTextStyle.current.copy(
             fontFamily = RobotoFlex,
-            fontWeight = FontWeight(animatedWeight)
+            fontWeight = FontWeight(animatedWeight),
         )
 
         CompositionLocalProvider(LocalTextStyle provides expressiveTextStyle) {
@@ -88,7 +88,7 @@ fun MMSecondaryButton(
     val targetWeight = if (isPressed || isFocused) MMFontWeight.SEMIBOLD else MMFontWeight.NORMAL
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
-        animationSpec = MMMotion.SpringExpressive,
+        animationSpec = MMMotion.SpringExpressiveInt,
         label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
@@ -100,7 +100,7 @@ fun MMSecondaryButton(
     ) {
         val expressiveTextStyle = LocalTextStyle.current.copy(
             fontFamily = RobotoFlex,
-            fontWeight = FontWeight(animatedWeight)
+            fontWeight = FontWeight(animatedWeight),
         )
         CompositionLocalProvider(LocalTextStyle provides expressiveTextStyle) {
             content()
@@ -126,7 +126,7 @@ fun MMTertiaryButton(
     val targetWeight = if (isPressed || isFocused) MMFontWeight.SEMIBOLD else MMFontWeight.NORMAL
     val animatedWeight by animateIntAsState(
         targetValue = targetWeight,
-        animationSpec = MMMotion.SpringExpressive,
+        animationSpec = MMMotion.SpringExpressiveInt,
         label = MMMotion.Labels.BUTTON_WEIGHT,
     )
 
@@ -138,7 +138,7 @@ fun MMTertiaryButton(
     ) {
         val expressiveTextStyle = LocalTextStyle.current.copy(
             fontFamily = RobotoFlex,
-            fontWeight = FontWeight(animatedWeight)
+            fontWeight = FontWeight(animatedWeight),
         )
         CompositionLocalProvider(LocalTextStyle provides expressiveTextStyle) {
             content()

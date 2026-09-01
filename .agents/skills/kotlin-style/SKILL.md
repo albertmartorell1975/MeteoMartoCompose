@@ -20,7 +20,8 @@ To maintain readability, all Kotlin classes MUST follow this declaration order:
 
 ## 2. Naming Conventions
 *   **Classes/Objects**: PascalCase (e.g., `RemoteConfigMapper`).
-*   **Functions/Properties**: lowerCamelCase (e.g., `mapToThreshold`). Property names MUST start with a lowercase letter (e.g., use `xs` instead of `XS`).
+*   **Functions/Properties**: lowerCamelCase (e.g., `mapToThreshold`). 
+*   **Descriptive over Brief**: Prioritize readability over brevity. Avoid abbreviations that obscure meaning. Property names MUST be descriptive and start with a lowercase letter (e.g., use `medium` instead of `m`, `extraSmall` instead of `xs`).
 *   **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_THRESHOLD`).
 
 ## 3. Imports

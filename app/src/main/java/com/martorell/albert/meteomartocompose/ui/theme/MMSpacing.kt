@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.dp
 @Immutable
 data class MMSpacing(
     val none: Dp = 0.dp,
-    val xs: Dp = 4.dp,
-    val s: Dp = 8.dp,
-    val m: Dp = 16.dp,
-    val l: Dp = 24.dp,
-    val xl: Dp = 32.dp,
+    val extraSmall: Dp = 4.dp,
+    val small: Dp = 8.dp,
+    val medium: Dp = 16.dp,
+    val large: Dp = 24.dp,
+    val extraLarge: Dp = 32.dp,
 )
 
 /**

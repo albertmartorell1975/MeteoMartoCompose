@@ -15,7 +15,7 @@ import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
 
 /**
  * MeteoMartoTheme provides a central access point for all tokens.
- * Usage: MeteoMartoTheme.spacing.m
+ * Usage: MeteoMartoTheme.spacing.medium
  */
 object MeteoMartoTheme {
     val spacing: MMSpacing
@@ -54,7 +54,7 @@ fun MeteoMartoTheme(
 
     // Bridge custom MMColors to Material 3 ColorScheme for interoperability
     val colorScheme = when {
-        (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) -> {
+        ((dynamicColor && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S))) -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
@@ -67,7 +67,7 @@ fun MeteoMartoTheme(
             surface = colors.surface,
             onSurface = colors.onSurface,
             error = colors.error,
-            onError = colors.onError
+            onError = colors.onError,
         )
 
         else -> lightColorScheme(
