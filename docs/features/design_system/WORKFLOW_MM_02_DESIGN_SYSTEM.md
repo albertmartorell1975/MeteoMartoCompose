@@ -28,8 +28,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **MMPrimaryButton / MMSecondaryButton / MMTertiaryButton**: Slot-based, Spring-motion, weight-axis focus feedback.
 - [x] **Multipreview Infrastructure**: Create reusable `@MMPreview` annotations for (Light/Dark x RTL x Scale).
 - [x] **MMText**: Semantic text wrapper for typography tokens (The Typographic Boundary).
-- [ ] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
-- [ ] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
+- [x] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
+- [x] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
 - [ ] **MANDATORY**: Execute `compiler` skill verification suite.
 - [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 

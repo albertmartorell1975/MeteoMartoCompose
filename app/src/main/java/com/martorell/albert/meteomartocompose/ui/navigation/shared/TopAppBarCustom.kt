@@ -12,6 +12,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.filterNot
 @Composable
 fun TopAppBarCustom(
     navController: NavHostController,
+    modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
 
@@ -38,6 +40,7 @@ fun TopAppBarCustom(
         }
     )
     TopAppBar(
+        modifier = modifier,
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             AppBarIcon(currentContentBackStackEntry)
@@ -51,7 +54,6 @@ fun TopAppBarCustom(
     )
 
 }
-
 
 
 /**

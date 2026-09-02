@@ -48,12 +48,14 @@ import kotlin.reflect.KSuspendFunction2
 @Composable
 fun SignUpScreen(
     goToDashboard: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
 
     val state = viewModel.state.collectAsState()
 
     SignUpContent(
+        modifier = modifier,
         signUpClick = viewModel::signUpClicked,
         goToDashboard = { goToDashboard() },
         state = state,

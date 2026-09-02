@@ -55,10 +55,10 @@ android {
 
 roborazzi {
     generateComposePreviewRobolectricTests {
-        // Temporarily disabled until all feature screens are refactored to be stateless.
-        // The scanner tries to instantiate @Preview components which fail if they depend on Firebase/Hilt.
-        enable = false
-        packages = listOf("${android.namespace}.ui")
+        enable = true
+        // Following ADR 09 (Pragmatic Snapshots), we only scan the design system package
+        // to avoid instantiation issues with legacy feature screens.
+        packages = listOf("${android.namespace}.ui.components.designsystem")
     }
 }
 

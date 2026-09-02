@@ -10,6 +10,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,11 +34,12 @@ fun TextFieldCustom(
     value: String,
     @StringRes title: Int,
     @StringRes placeholder: Int,
+    onValueChanged: (String) -> Unit,
+    onTrailIconChange: (Boolean) -> Unit?,
+    modifier: Modifier = Modifier,
     imeAction: ImeAction = ImeAction.Next,
     keyboardType: KeyboardType = KeyboardType.Text,
-    onValueChanged: (String) -> Unit,
     passwordVisible: Boolean = false,
-    onTrailIconChange: (Boolean) -> Unit?
 ) {
 
     TextField(
@@ -45,6 +47,7 @@ fun TextFieldCustom(
         onValueChange = {
             onValueChanged(it)
         },
+        modifier = modifier,
         label = { Text(text = stringResource(id = title)) },
         placeholder = { Text(text = stringResource(id = placeholder)) },
         keyboardOptions = KeyboardOptions(

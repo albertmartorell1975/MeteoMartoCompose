@@ -14,10 +14,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FavoriteEmptyState(title: String) {
+fun FavoriteEmptyState(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {

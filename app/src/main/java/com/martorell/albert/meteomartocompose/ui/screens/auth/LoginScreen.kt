@@ -53,12 +53,14 @@ fun LoginScreen(
     goToTerms: () -> Unit,
     goToDashboard: () -> Unit,
     goToSignUp: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
 ) {
 
     val state = viewModel.state.collectAsState()
 
     LoginContent(
+        modifier = modifier,
         goToTerms = { goToTerms() },
         goToDashboard = { goToDashboard() },
         goToSignUp = { goToSignUp() },
@@ -127,26 +129,26 @@ fun LoginContent(
                         value = state.value.email,
                         title = R.string.label_email_text_field,
                         placeholder = R.string.placeholder_email_text_field,
-                        keyboardType = KeyboardType.Email,
                         onValueChanged = {
                             onEmailChange(it)
                             loginUnchecked()
                         },
-                        onTrailIconChange = { }
+                        onTrailIconChange = { },
+                        keyboardType = KeyboardType.Email,
                     )
 
                     TextFieldCustom(
                         value = state.value.password,
                         title = R.string.label_password_text_field,
                         placeholder = R.string.placeholder_password_text_field,
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Password,
                         onValueChanged = {
                             onPasswordChange(it)
                             loginUnchecked()
                         },
+                        onTrailIconChange = { onPasswordVisibilityChange(it) },
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Password,
                         passwordVisible = state.value.passwordVisible,
-                        onTrailIconChange = { onPasswordVisibilityChange(it) }
                     )
 
                     Spacer(modifier.height(dimensionResource(R.dimen.standard_height)))

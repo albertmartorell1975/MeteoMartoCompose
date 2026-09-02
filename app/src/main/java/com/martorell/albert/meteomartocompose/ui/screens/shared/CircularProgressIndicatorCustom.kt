@@ -11,14 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CircularProgressIndicatorCustom(){
+fun CircularProgressIndicatorCustom(
+    modifier: Modifier = Modifier,
+) {
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .clickable { }
             .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }

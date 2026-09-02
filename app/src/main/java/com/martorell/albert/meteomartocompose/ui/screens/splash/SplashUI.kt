@@ -20,9 +20,11 @@ import androidx.compose.ui.unit.sp
 import com.martorell.albert.meteomartocompose.R
 
 @Composable
-fun SplashUI() {
+fun SplashUI(
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

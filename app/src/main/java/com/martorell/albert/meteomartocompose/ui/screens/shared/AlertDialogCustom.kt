@@ -7,6 +7,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
+import androidx.compose.ui.Modifier
+
 @Composable
 fun AlertDialogCustom(
     @StringRes title: Int,
@@ -14,11 +16,13 @@ fun AlertDialogCustom(
     @StringRes actionText: Int,
     @StringRes dismissText: Int,
     onDismissAction: () -> Unit,
-    onConfirmAction: () -> Unit
+    onConfirmAction: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     AlertDialog(
         onDismissRequest = { onDismissAction() },
+        modifier = modifier,
         title = { Text(stringResource(id = title)) },
         text = {
             Text(stringResource(id = content))

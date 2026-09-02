@@ -60,7 +60,7 @@ Evolving from fragmented shared components in `ui/screens/shared/` to a formal, 
 
 ### ADR 08: Material 3 Adaptive Integration
 **Decision**: Incorporate `Material 3 Adaptive` and `NavigationSuiteScaffold` as first-class citizens of the design system.
-**Rationale**: Adds a responsive dimension for Window Size Classes, ensuring the app scales gracefully from mobile to tablets and foldables.
+**Rationale**: Adds a responsive dimension based on [Material 3 Window Size Classes](https://m3.material.io/foundations/layout/applying-layout/window-size-classes), ensuring the app scales gracefully from mobile to tablets and foldables.
 
 ### ADR 09: Pragmatic Snapshot Testing
 **Decision**: Move away from a rigid 16-permutation rule for every component.
@@ -229,3 +229,28 @@ Buttons are categorized by their visual emphasis in the UI hierarchy.
 - **Variable Font Feedback**: Animates the `wght` axis of Roboto Flex (400 to 600) when pressed or focused.
 - **Spring Physics**: Uses `MMMotion.SpringExpressive` for consistent feedback.
 - **Stateless**: All states are hoisted to the caller.
+
+### MMNavigation
+An adaptive scaffold that implements the "Adaptive Dimension" of the design system.
+
+**Key Features**:
+- **Automatic Layout Switching**: Automatically toggles between a Bottom Navigation Bar (Compact), a Navigation Rail (Medium), and a Navigation Drawer (Expanded) using `NavigationSuiteScaffold`.
+- **Typographic Boundary**: Uses `MMText` for all navigation labels.
+- **Integrated Scaffold**: Provides slots for `topBar` and `floatingActionButton`, ensuring consistent layout across different window sizes.
+
+## Integration Strategy (Phase 5 Guidelines)
+
+To ensure long-term maintainability and architectural purity during the global migration, the following rules apply:
+
+### 1. Shell vs. Logic Separation
+- **`Navigation.kt` (Logic)**: Acts as the "Brain". It manages `NavHost`, `ViewModels`, and business rules (e.g., `isLoggedIn`).
+- **`MMNavigation.kt` (UI Shell)**: Acts as the "Clothing". It is a pure stateless component that provides the adaptive scaffold. 
+- **Rule**: All integration logic (mapping routes to navigation items) must reside in the root `Navigation.kt`.
+
+### 2. The "Empty Shell" Pattern
+- For screens that do not require global navigation (e.g., Login, Sign Up), `MMNavigation` must still be used as the root container, but passed an **empty list of items**. 
+- This ensures a single `Scaffold` hierarchy and consistent `MeteoMartoTheme` propagation across the entire app (KISS principle).
+
+### 3. Stateless Screen Mandate
+- After migration, feature screens (e.g., `LoginScreen`) MUST NOT contain their own `Scaffold`, `TopAppBar`, or `MeteoMartoComposeLayout` calls.
+- Screens should receive a `Modifier` and focus exclusively on their internal content, relying on the root shell for the global UI structure.

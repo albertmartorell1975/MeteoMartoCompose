@@ -18,11 +18,14 @@ private const val RTL_LOCALE = "ar"
 private const val MAX_FONT_SCALE = 2.0f
 
 /**
- * Device specifications following Material 3 Window Size Classes.
+ * Device specifications following [Material 3 Window Size Classes](https://m3.material.io/foundations/layout/applying-layout/window-size-classes).
  */
 private const val PHONE_DEVICE = "spec:width=411dp,height=891dp"
+private const val PHONE_LANDSCAPE_DEVICE = "spec:width=891dp,height=411dp,orientation=landscape"
 private const val TABLET_DEVICE = "spec:width=1280dp,height=800dp,dpi=240"
+private const val TABLET_PORTRAIT_DEVICE = "spec:width=800dp,height=1280dp,dpi=240"
 private const val FOLDABLE_DEVICE = "spec:width=673dp,height=841dp"
+private const val FOLDABLE_LANDSCAPE_DEVICE = "spec:width=841dp,height=673dp,orientation=landscape"
 
 /**
  * [MMPreview] is a Multipreview annotation that encapsulates the primary visual dimensions
@@ -44,6 +47,9 @@ annotation class MMPreview
  * defined by Material 3 Window Size Classes.
  */
 @Preview(name = "Phone", device = PHONE_DEVICE)
+@Preview(name = "Phone Landscape", device = PHONE_LANDSCAPE_DEVICE)
 @Preview(name = "Tablet", device = TABLET_DEVICE)
+@Preview(name = "Tablet Portrait", device = TABLET_PORTRAIT_DEVICE)
 @Preview(name = "Foldable", device = FOLDABLE_DEVICE)
+@Preview(name = "Foldable Landscape", device = FOLDABLE_LANDSCAPE_DEVICE)
 annotation class MMDevicePreview

@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
 import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
 
@@ -18,12 +19,15 @@ import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
  */
 @Composable
 fun MeteoMartoComposeLayout(
+    modifier: Modifier = Modifier,
     fontScale: Float = UserPreferences.DEFAULT_FONT_SCALE,
     content: @Composable () -> Unit,
 ) {
 
     MeteoMartoTheme(fontScale = fontScale) {
-        content()
+        androidx.compose.foundation.layout.Box(modifier = modifier) {
+            content()
+        }
     }
 
 }

@@ -237,7 +237,11 @@ fun CityWeatherContent(
                 )
             } else {
                 state.city?.let { city ->
-                    WeatherInfo(city = city, isHighTempAlertActive = state.isHighTempAlertActive)
+                    WeatherInfo(
+                        city = city,
+                        isHighTempAlertActive = state.isHighTempAlertActive,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }
@@ -259,12 +263,20 @@ fun CityWeatherContent(
  * Internal helper to render the weather details.
  */
 @Composable
-private fun WeatherInfo(city: CityWeatherDomain, isHighTempAlertActive: Boolean) {
-    CityTextView(
-        contentFix = city.name,
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold
-    )
+private fun WeatherInfo(
+    city: CityWeatherDomain,
+    isHighTempAlertActive: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        CityTextView(
+            contentFix = city.name,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+        )
 
     Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
 
@@ -325,6 +337,7 @@ private fun WeatherInfo(city: CityWeatherDomain, isHighTempAlertActive: Boolean)
         contentDynamic = city.rain.toString(),
         colorDynamic = Color.Blue
     )
+    }
 }
 
 @Preview(showBackground = true)

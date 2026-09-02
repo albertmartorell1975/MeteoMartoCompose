@@ -29,10 +29,11 @@ import com.martorell.albert.meteomartocompose.R
 @Composable
 fun HighTemperatureAlertScreen(
     temperature: Double,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.errorContainer)
             .safeDrawingPadding()

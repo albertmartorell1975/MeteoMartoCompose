@@ -19,10 +19,10 @@ import com.martorell.albert.meteomartocompose.R
 
 @Composable
 fun CityTextView(
-    modifier: Modifier = Modifier.fillMaxWidth(),
+    contentFix: String?,
+    modifier: Modifier = Modifier,
     fontSize: TextUnit = 25.sp,
     fontWeight: FontWeight = FontWeight.W400,
-    contentFix: String?,
     contentDynamic: String = "",
     colorFix: Color = Color.DarkGray,
     colorDynamic: Color = Color.DarkGray,
@@ -40,11 +40,10 @@ fun CityTextView(
                 }
             }
         },
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         fontWeight = fontWeight,
         fontSize = fontSize,
-
     )
 
     if (showSpacer) {
