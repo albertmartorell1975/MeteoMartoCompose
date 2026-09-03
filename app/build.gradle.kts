@@ -54,11 +54,15 @@ android {
 }
 
 roborazzi {
+    outputDir.set(file("src/test/snapshots"))
     generateComposePreviewRobolectricTests {
         enable = true
         // Following ADR 09 (Pragmatic Snapshots), we only scan the design system package
         // to avoid instantiation issues with legacy feature screens.
         packages = listOf("${android.namespace}.ui.components.designsystem")
+        // Enables scanning of private @Preview functions to keep the internal component 
+        // API clean while still ensuring full visual regression coverage.
+        includePrivatePreviews = true
     }
 }
 
