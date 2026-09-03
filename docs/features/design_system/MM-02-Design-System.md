@@ -1,9 +1,9 @@
 # MM-02: Android Design System Technical Record
 
-## Context
+## Context & Vision
 Evolving from fragmented shared components in `ui/screens/shared/` to a formal, modular, and testable Design System layer. This record documents key architectural decisions (ADRs) and compliance traceability.
 
-## Behavioral Matrix (The "Source of Truth")
+### Behavioral Matrix (The "Source of Truth")
 
 | Feature | Android 12+ (API 31) | Android 11 & Lower |
 | :--- | :--- | :--- |
@@ -13,7 +13,9 @@ Evolving from fragmented shared components in `ui/screens/shared/` to a formal, 
 | **Navigation** | **Adaptive**: Automatic Bar vs. Rail transition. | **Fixed**: Logic-based transition. |
 | **Motion (Spring)**| **Standard**: Available on all versions via Compose library. | **Standard**: Honors "Remove animations" setting. |
 
-## Key Decisions (ADRs)
+---
+
+## Architectural Decisions (ADRs)
 
 ### ADR 01: Component Abstraction Strategy
 **Decision**: Wrap Material 3 components into explicit `MM*` equivalents.
@@ -38,33 +40,37 @@ Evolving from fragmented shared components in `ui/screens/shared/` to a formal, 
 | **Google Official** | JVM | Compose Engine | Limited | Emerging |
 
 **Why Roborazzi for this Design System?**
-1.  **Paparazzi Alternative**: While Paparazzi is slightly faster, it cannot simulate interactions. For a Design System where components have focus/pressed states (expressive motion), being able to "click" before the screenshot is vital.
-2.  **Shot Alternative**: Shot requires an emulator, which makes the CI/CD pipeline expensive and slow. We need instant feedback on every commit.
-3.  **Google Official Tool**: Currently lacks the mature automated scanner for 16 permutations (LTR/RTL x 2.0x Scale, etc.) that Roborazzi provides natively in 2026.
+1.  **Interaction Support**: Unlike Paparazzi, it can simulate clicks/focus before the snapshot, vital for verifying "Expressive Motion".
+2.  **Infrastructure Efficiency**: Doesn't require emulators (like Shot), making CI/CD faster and cheaper.
+3.  **Maturity**: In 2026, it provides the most mature automated scanner for 16-permutation matrices.
 
 ### ADR 05: Slot API Pattern for Content
 **Decision**: Use "Slots" (Composable lambdas) for all components that wrap content (e.g., buttons, cards, containers).
-**Rationale**: Maximizes component flexibility and decoupling. The design system manages the "container" (layout, borders, interaction effects, motion), while the caller defines the "content" (text, icons, complex layouts). This aligns with the Material 3 standard and ensures components don't need to be modified when new content requirements arise.
+**Rationale**: Maximizes component flexibility and decoupling. Aligns with M3 standards.
 
 ### ADR 06: MMText as Typographic Boundary
-**Decision**: Mandate the use of `MMText` (to be implemented) as the exclusive boundary for typography in feature screens.
-**Rationale**: Prevents direct leaks of Material 3 `Text` components, ensuring that all text in the app strictly adheres to the `MMTypography` tokens and the Roboto Flex variable font configuration.
+**Decision**: Mandate the use of `MMText` as the exclusive boundary for typography in feature screens.
+**Rationale**: Prevents direct leaks of Material 3 `Text` components and ensures token compliance.
 
 ### ADR 07: Density vs. Font Scaling Precision (UI Zoom)
 **Decision**: Explicitly implement a "Global UI Zoom" model where the user-defined scale affects both structural density (`dp`) and font scaling (`sp`).
-**Rationale**: Based on Architecture Audit v2 (Point 6), we acknowledge the distinction between purely visual font scaling and structural layout density. While modifying `LocalDensity` affects paddings, dimensions, and touch targets globally (risking `dp` to `px` conversion deviations), we have chosen this "ambitious" path to provide a holistic pinch-to-zoom experience.
-**Validation**: 
-- **Font Scaling**: Ensures text remains legible at higher scales.
-- **Layout Density**: Scales the entire UI container to maintain visual proportions during zoom.
-- **Risk Mitigation**: All components must use `sp` for text and `dp` for structural elements. We mandate a minimum touch target of 48dp, which, even when scaled structurally, remains functionally safe as long as the base dimension is correct.
+**Rationale**: Provides a holistic pinch-to-zoom experience. While altering `LocalDensity` has risks, it ensures visual proportions are maintained during zoom.
 
 ### ADR 08: Material 3 Adaptive Integration
-**Decision**: Incorporate `Material 3 Adaptive` and `NavigationSuiteScaffold` as first-class citizens of the design system.
-**Rationale**: Adds a responsive dimension based on [Material 3 Window Size Classes](https://m3.material.io/foundations/layout/applying-layout/window-size-classes), ensuring the app scales gracefully from mobile to tablets and foldables.
+**Decision**: Incorporate `Material 3 Adaptive` and `NavigationSuiteScaffold` as first-class citizens.
+**Rationale**: Ensures the app scales gracefully from mobile to tablets and foldables based on Window Size Classes.
 
 ### ADR 09: Pragmatic Snapshot Testing
 **Decision**: Move away from a rigid 16-permutation rule for every component.
-**Rationale**: Avoids combinatorial explosion and "snapshot fatigue". Coverage will be determined based on the component's significant behavioral dimensions (e.g., a simple spacer doesn't need 16 snapshots, but a complex Button does).
+**Rationale**: Avoids "snapshot fatigue" and CI/CD waste. Focuses on dimensions (A11y, RTL, Scale) that actually impact the user experience.
+
+> [!TIP]
+> **"For Everyone" Explanation:**
+> Instead of taking 16 automatic photos of every button (where many would be nearly identical), we only capture situations where the design is actually at risk. 
+> For example: What happens if the user has giant text for accessibility? Or if they use a language that reads from right to left? 
+> We don't take photos "just because," but to ensure the app remains beautiful and functional where it is most difficult to achieve. This allows us to be faster without sacrificing quality.
+
+---
 
 ## Governance & Implementation Rules
 
@@ -89,49 +95,11 @@ To maintain high architectural standards and visual consistency, all design syst
 - **Pragmatic Snapshots**: Define significant permutations per component for Roborazzi verification, avoiding unnecessary redundant snapshots.
 - **Stateless Previews**: `@Preview` functions must remain stateless to support automated scanning.
 
-### Automated Screenshot Generation (Lessons Learned)
-To ensure the visual integrity of the design system without increasing the maintenance burden, we utilize the **Roborazzi Automated Preview Scanner**.
+---
 
-```kotlin
-roborazzi {
-    generateComposePreviewRobolectricTests {
-        enable = true // Currently disabled during migration
-        packages = listOf("${android.namespace}.ui")
-    }
-}
-```
-
-#### ⚠️ Critical Troubleshooting & Requirements:
-*   **JDK 21 (MANDATORY)**: As the project targets SDK 36 (Android 16), **Java 21** is required.
-*   **Test Application Isolation**: Robolectric tests now use `TestMeteoMartoApp` (defined in `app/src/test/resources/robolectric.properties`) to avoid instantiating the real `MeteoMartoApp`. This prevents infrastructure leaks (Firebase/Hilt) during test setup.
-*   **Stateless Previews**: Even with application isolation, `@Preview` functions MUST be **100% Stateless** to be scannable by Roborazzi without requiring dependency injection.
-
-#### Why this is critical for the project:
-*   **Automatic Synchronization**: In a Design System, the `@Preview` is the source of truth. Every preview automatically becomes a test case.
-*   **Permutation Scaling**: Roborazzi handles the complexity of the 16 different permutations matrix (RTL, Landscape, Scaling, etc.).
-*   **JVM-Speed Feedback**: Tests run on the JVM, providing seconds-fast visual regression suites for CI/CD.
-
-#### Developer Workflow:
-- **Recording**: When a new component or visual state is finalized, run `./gradlew recordRoborazziDebug` to store the new reference images.
-- **Verification**: During development or PR checks, run `./gradlew verifyRoborazziDebug`.
-
-## Accessibility (A11y) Traceability
-- **Contrast**: WCAG 2.1 AA (4.5:1) compliance for all semantic colors.
-- **Touch Targets**: 48x48dp minimum for interactive zones.
-- **LVM (Low Vision Mode)**: Native support for 2.0x scaling with reflow.
-
-## Infrastructure & Persistence (Phase 2)
-
-To ensure visual preferences are persistent and reactive, we utilize **Jetpack DataStore**.
-
-### Single Source of Truth (SSOT)
-Visual scaling (pinch-to-zoom) is managed as part of the infrastructure layer. 
-- **`UserPreferences`**: Domain-level interface defining the contract for visual preferences.
-- **`UserPreferencesImpl`**: Infrastructure-level implementation using `DataStore<Preferences>`.
-- **`DesignSystemViewModel`**: Exposes the `fontScale` as a `StateFlow<Float>`, ensuring the UI reacts instantly to changes.
+## Design Foundations (The Tokens)
 
 ### CompositionLocal Hierarchy
-
 The design system propagates tokens through the composition tree using specialized keys. This ensures that every component can access the "source of truth" without manual parameter passing.
 
 | Token Type     | Key                  | Propagation Method          | Change Frequency   |
@@ -141,11 +109,8 @@ The design system propagates tokens through the composition tree using specializ
 | **Typography** | `LocalMMTypography`  | `staticCompositionLocalOf`  | **Low**            |
 | **Density**    | `LocalDensity`       | Overridden via `Provider`   | **Medium** (Zoom)  |
 
-## Typography Reference (Material 3)
-
-To ensure we don't "pull values out of thin air," we strictly follow the **Material 3 Type Scale**. These values are the foundation for `MMTypography.kt`.
-
-**Official Reference**: [Material 3 Typography Tokens](https://m3.material.io/styles/typography/tokens)
+### Typography Reference (Material 3)
+We strictly follow the **Material 3 Type Scale**. These values are the foundation for `MMTypography.kt`.
 
 | Style | Size (sp) | Line Height (sp) | Letter Spacing (sp) | Weight (Default) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -168,89 +133,99 @@ To ensure we don't "pull values out of thin air," we strictly follow the **Mater
 > [!NOTE]
 > **Accessibility Standard**: While `Label Small` follows the M3 standard (11sp), it is recommended for non-critical information only. For better readability, `Label Medium` (12sp) is preferred for functional text.
 
-## Variable Font Foundations (Roboto Flex)
-
-To leverage modern Android expressive capabilities, we use **Roboto Flex**, a variable font that allows fine-grained control over typography without multiple file overhead.
-
-### Technical Axes Reference
-These axes follow the **OpenType Variable Font** standard and the specific capabilities of Roboto Flex.
+### Variable Font Foundations (Roboto Flex)
+We use **Roboto Flex**, a variable font that allows fine-grained control over typography.
 
 | Axis | Name | Range | Selected Default | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
 | **`wght`** | Weight | 100 - 1000 | `MMFontWeight.NORMAL` (400) | Standard weight for high legibility in body text. |
 | **`wdth`** | Width | 25 - 150 | `MMFontAxes.WIDTH_DEFAULT` (100) | Maintains standard character proportions. |
 | **`slnt`** | Slant | -90 - 90 | `MMFontAxes.SLANT_DEFAULT` (0) | Default upright posture. |
-| **`opsz`** | Optical Size | 8 - 144 | `MMFontAxes.OPSZ_DEFAULT` (14) | Optimizes glyph shapes for standard reading distances. |
+| **`opsz`** | Optical Size | 8 - 144 | `MMFontAxes.OPSZ_DEFAULT` (14) | Optimizes glyph shapes for reading distances. |
 
-**Official Reference**: [Google Fonts - Roboto Flex Axes](https://fonts.google.com/specimen/Roboto+Flex/tester) | [OpenType OS/2 Weight Class Specification](https://learn.microsoft.com/en-us/typography/opentype/spec/os2#usweightclass)
-
-> [!NOTE]
-> **OpenType Standard**: We follow the universal OpenType specification (ISO/IEC 14496-22) for font weights. While the documentation is hosted by Microsoft, it is the global industry standard used by Android, iOS, and Figma to ensure cross-platform typography consistency.
-
-### Design Implementation
-- **Dynamic Weight**: We prefer `MMFontWeight.MEDIUM` (500) for Titles/Labels to improve hierarchical scannability.
-- **Optical Adaptation**: The `opsz` axis is set to `MMFontAxes.OPSZ_DEFAULT` (14) by default but can be dynamically adjusted for large hero temperatures (Display roles) if needed.
-
-## Motion & Animation (Phase 2)
-
-To ensure a cohesive "feel", all animations follow standardized motion tokens defined in `MMMotion.kt`.
-
-### Spring Physics
-We use **Spring Physics** instead of linear interpolations to achieve a natural, tactile feel that aligns with Android 16's expressive style.
+### Motion & Animation
+All animations follow standardized motion tokens defined in `MMMotion.kt`.
 
 | Token | Description | Specification |
 | :--- | :--- | :--- |
 | **`SpringExpressive`** | Standard bounce for interaction feedback. | `DampingRatioMediumBouncy`, `StiffnessMediumLow` |
 
-### Error Feedback (Shake)
-To capture user attention during validation failures, we use a "Shake" animation sequence defined by the following tokens:
+**Error Feedback (Shake)**:
+To capture user attention during validation failures, we use a 10-pixel displacement sequence:
+- **`OFFSET_POSITIVE`** (10f): Initial rightward movement.
+- **`OFFSET_NEGATIVE`** (-10f): Counter-leftward movement.
+- **`OFFSET_ZERO`** (0f): Return to equilibrium.
 
-| Token | Value | Description | Rationale |
-| :--- | :--- | :--- | :--- |
-| **`OFFSET_POSITIVE`** | `10f` | Initial rightward movement. | Subtle enough to avoid layout breaking but visible for "denial" feedback. |
-| **`OFFSET_NEGATIVE`** | `-10f`| Counter-leftward movement. | Symmetrical displacement to create the oscillation effect. |
-| **`OFFSET_ZERO`**     | `0f`  | Return to equilibrium. | Ensures the component ends in its original, stable position. |
+---
 
-> [!NOTE]
-> **Shake Rationale**: This 10-pixel displacement sequence is a standard UX micro-interaction pattern for "invalid input" feedback (mimicking a "no" gesture). It is tuned to be noticeable on standard mobile screen densities without shifting the component into neighboring tap targets.
+## Infrastructure & Persistence
 
-## Components (Phase 3)
+### Single Source of Truth (SSOT)
+Visual scaling (pinch-to-zoom) is managed as part of the infrastructure layer. 
+- **`UserPreferences`**: Domain-level interface defining the contract for visual preferences.
+- **`UserPreferencesImpl`**: Infrastructure-level implementation using **Jetpack DataStore**.
+- **`DesignSystemViewModel`**: Exposes the `fontScale` as a `StateFlow<Float>`, ensuring the UI reacts instantly.
+
+---
+
+## Core Components
 
 ### Buttons
-Buttons are categorized by their visual emphasis in the UI hierarchy.
+Categorized by visual emphasis in the UI hierarchy.
+- **`MMPrimaryButton`**: High Emphasis. Features dynamic font weight feedback (Roboto Flex axis 400 to 600) when pressed or focused.
+- **`MMSecondaryButton`**: Medium Emphasis.
+- **`MMTertiaryButton`**: Low Emphasis (Cancel, auxiliary actions).
 
-| Component | Hierarchy | Description |
-| :--- | :--- | :--- |
-| **`MMPrimaryButton`** | High Emphasis | For the main action of a screen. |
-| **`MMSecondaryButton`**| Medium Emphasis | For supporting actions. |
-| **`MMTertiaryButton`** | Low Emphasis | For auxiliary actions or dismissals. |
-
-**Key Features**:
-- **Variable Font Feedback**: Animates the `wght` axis of Roboto Flex (400 to 600) when pressed or focused.
-- **Spring Physics**: Uses `MMMotion.SpringExpressive` for consistent feedback.
-- **Stateless**: All states are hoisted to the caller.
+### MMTextField
+- **Typographic Boundary**: Encourages the use of [MMText] for labels.
+- **Expressive Motion**: Features a "shake" animation when error state is triggered.
+- **Stateless**: All input and error states are hoisted.
 
 ### MMNavigation
-An adaptive scaffold that implements the "Adaptive Dimension" of the design system.
+Adaptive scaffold that automatically switches between Bottom Bar, Nav Rail, or Nav Drawer based on device size.
+- **Material 3 Adaptive**: Wraps `NavigationSuiteScaffold`.
+- **Integrated Scaffold**: Provides slots for `topBar` and `floatingActionButton`.
 
-**Key Features**:
-- **Automatic Layout Switching**: Automatically toggles between a Bottom Navigation Bar (Compact), a Navigation Rail (Medium), and a Navigation Drawer (Expanded) using `NavigationSuiteScaffold`.
-- **Typographic Boundary**: Uses `MMText` for all navigation labels.
-- **Integrated Scaffold**: Provides slots for `topBar` and `floatingActionButton`, ensuring consistent layout across different window sizes.
+---
 
-## Integration Strategy (Phase 5 Guidelines)
+## Integration & Migration Strategy (Phase 5)
 
-To ensure long-term maintainability and architectural purity during the global migration, the following rules apply:
+To ensure long-term maintainability and architectural purity during the global migration:
 
-### 1. Shell vs. Logic Separation
-- **`Navigation.kt` (Logic)**: Acts as the "Brain". It manages `NavHost`, `ViewModels`, and business rules (e.g., `isLoggedIn`).
-- **`MMNavigation.kt` (UI Shell)**: Acts as the "Clothing". It is a pure stateless component that provides the adaptive scaffold. 
-- **Rule**: All integration logic (mapping routes to navigation items) must reside in the root `Navigation.kt`.
+1. **Shell vs. Logic Separation**: `Navigation.kt` (Logic) acts as the "Brain"; `MMNavigation.kt` (UI Shell) acts as the "Clothing".
+2. **The "Empty Shell" Pattern**: For screens without global navigation (e.g. Login), `MMNavigation` must still be used as the root container with an empty list of items to ensure consistent theme propagation.
+3. **Stateless Screen Mandate**: Feature screens MUST NOT contain their own `Scaffold` or `TopAppBar`. They receive a `Modifier` and focus exclusively on internal content.
 
-### 2. The "Empty Shell" Pattern
-- For screens that do not require global navigation (e.g., Login, Sign Up), `MMNavigation` must still be used as the root container, but passed an **empty list of items**. 
-- This ensures a single `Scaffold` hierarchy and consistent `MeteoMartoTheme` propagation across the entire app (KISS principle).
+---
 
-### 3. Stateless Screen Mandate
-- After migration, feature screens (e.g., `LoginScreen`) MUST NOT contain their own `Scaffold`, `TopAppBar`, or `MeteoMartoComposeLayout` calls.
-- Screens should receive a `Modifier` and focus exclusively on their internal content, relying on the root shell for the global UI structure.
+## Automation & Maintenance
+
+### Visual Regression (Roborazzi)
+Utilizes the **Roborazzi Automated Preview Scanner** for JVM-speed visual regression.
+
+#### ⚠️ Critical Environment Requirements:
+*   **JDK 21 (MANDATORY)**: As the project targets SDK 36 (Android 16), **Java 21** is required for Robolectric/Roborazzi.
+*   **Test Application Isolation**: Robolectric tests use `TestMeteoMartoApp` to avoid infrastructure leaks (Firebase/Hilt).
+*   **Stateless Previews**: `@Preview` functions MUST be **100% Stateless** to be scannable.
+
+#### Developer Workflow:
+- **Recording**: Run `./gradlew :app:recordRoborazziPreDebug` to store reference images.
+- **Verification**: Run `./gradlew :app:verifyRoborazziPreDebug` during development or before PRs.
+
+### CI/CD Integration
+The **GitHub Actions** pipeline (`design-system-ci.yml`) is triggered on every Push or Pull Request that modifies Design System components or tokens.
+
+1. **Verification**: Compares current UI against "Golden Images".
+2. **Failure Handling**: If a mismatch is found, the build fails and an artifact `roborazzi-comparison-results` is uploaded for review.
+3. **Automated Documentation**: Generates the "Design System Styleguide" on every successful run.
+
+### Documentation (Dokka)
+We use Dokka V2 to generate technical documentation directly from the source code.
+
+#### How to Generate:
+- **Design System Styleguide** (Visual): `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs`
+- **Full Technical Reference** (Architecture): `./gradlew :dokkaGenerateHtml -PgenerateDocs`
+
+#### Access Paths:
+- **Styleguide**: `app/build/dokka/design-system/index.html`
+- **Technical Reference**: `build/dokka/technical-reference/index.html`

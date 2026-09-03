@@ -34,12 +34,15 @@ This document serves as the granular checklist and architectural roadmap for the
 - [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 4: Testing & CI/CD
-- [ ] **MANDATORY**: Consult `AGENTS.md` for DoD requirements.
-- [ ] Create Roborazzi snapshot matrix (16 permutations per component).
-- [ ] Generate KDoc via Dokka.
-- [ ] Configure `.github/workflows/design-system-ci.yml`.
-- [ ] **MANDATORY**: Execute `compiler` skill verification suite.
-- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
+- [x] **MANDATORY**: Consult `AGENTS.md` for DoD requirements.
+- [x] **Implement Pragmatic Snapshot Matrix** (ADR 09):
+    - [x] Classify components by risk level (Visual vs. Interactive vs. Adaptive).
+    - [x] Configure key permutations: L/D Theme, 2.0x Font Scale (A11y), and RTL.
+    - [x] Verify structure on different screen sizes (Compact/Medium/Expanded).
+- [x] Generate KDoc via Dokka.
+- [x] Configure `.github/workflows/design-system-ci.yml`.
+- [x] **MANDATORY**: Execute `compiler` skill verification suite.
+- [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 5: Global Migration & Comprehensive Audit
 - [ ] **MANDATORY**: Consult `AGENTS.md` for UI/UX Engineer standards.
