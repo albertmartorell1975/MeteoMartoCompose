@@ -30,8 +30,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **MMText**: Semantic text wrapper for typography tokens (The Typographic Boundary).
 - [x] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
 - [x] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
-- [ ] **MANDATORY**: Execute `compiler` skill verification suite.
-- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
+- [x] **MANDATORY**: Execute `compiler` skill verification suite.
+- [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
 ## Phase 4: Testing & CI/CD
 - [x] **MANDATORY**: Consult `AGENTS.md` for DoD requirements.
