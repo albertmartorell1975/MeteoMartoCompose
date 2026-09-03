@@ -1,7 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui.components.designsystem
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -105,9 +107,9 @@ fun MMTextField(
 @Composable
 private fun MMTextFieldPreview() {
     MeteoMartoTheme {
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier.padding(MeteoMartoTheme.spacing.medium),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(MeteoMartoTheme.spacing.small),
+            verticalArrangement = Arrangement.spacedBy(MeteoMartoTheme.spacing.small),
         ) {
             MMTextField(
                 value = "Standard Input",
@@ -121,6 +123,13 @@ private fun MMTextFieldPreview() {
                 isError = true,
                 label = { MMText.LabelSmall("Password") },
                 supportingText = { MMText.LabelSmall("Incorrect password") },
+            )
+
+            MMTextField(
+                value = "Disabled Input",
+                onValueChange = {},
+                enabled = false,
+                label = { MMText.LabelSmall("Username") },
             )
         }
     }

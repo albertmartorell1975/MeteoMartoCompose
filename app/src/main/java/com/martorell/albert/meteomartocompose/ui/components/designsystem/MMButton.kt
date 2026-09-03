@@ -4,7 +4,10 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -174,6 +177,22 @@ private fun MMTertiaryButtonPreview() {
     MeteoMartoTheme {
         MMTertiaryButton(onClick = {}) {
             Text("Tertiary Action")
+        }
+    }
+}
+
+@MMPreview
+@Composable
+private fun MMButtonStatesPreview() {
+    MeteoMartoTheme {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(MeteoMartoTheme.spacing.small),
+            modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
+        ) {
+            MMPrimaryButton(onClick = {}, enabled = true) { Text("Primary Enabled") }
+            MMPrimaryButton(onClick = {}, enabled = false) { Text("Primary Disabled") }
+            MMSecondaryButton(onClick = {}, enabled = true) { Text("Secondary Enabled") }
+            MMSecondaryButton(onClick = {}, enabled = false) { Text("Secondary Disabled") }
         }
     }
 }
