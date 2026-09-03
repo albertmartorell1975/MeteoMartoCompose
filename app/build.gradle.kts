@@ -62,6 +62,40 @@ roborazzi {
     }
 }
 
+// Dokka Optimization: Tasks are disabled by default to speed up regular compilation.
+// Use -PgenerateDocs to enable them.
+val isDocGenRequested = project.hasProperty("generateDocs")
+val isDesignSystemMode = project.hasProperty("designSystemDocs")
+
+tasks.withType<org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask>().configureEach {
+    enabled = isDocGenRequested
+    
+    if (isDocGenRequested) {
+        if (isDesignSystemMode) {
+            outputDirectory.set(layout.buildDirectory.dir("dokka/design-system"))
+            generator.moduleName.set("MeteoMartoCompose Design System Reference")
+            generator.dokkaSourceSets.configureEach {
+                perPackageOption {
+                    matchingRegex.set(".*")
+                    suppress.set(true)
+                }
+                perPackageOption {
+                    matchingRegex.set("com\\.martorell\\.albert\\.meteomartocompose\\.ui\\.components\\.designsystem.*")
+                    suppress.set(false)
+                }
+                perPackageOption {
+                    matchingRegex.set("com\\.martorell\\.albert\\.meteomartocompose\\.ui\\.theme.*")
+                    suppress.set(false)
+                }
+            }
+        } else {
+            // Default App Layer documentation (used in full technical reference)
+            outputDirectory.set(layout.buildDirectory.dir("dokka/technical-reference"))
+            generator.moduleName.set("MeteoMartoCompose Technical Reference")
+        }
+    }
+}
+
 /**
  * To improve your build time by telling Dagger not to format the generated code
  */
