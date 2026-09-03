@@ -2,14 +2,14 @@ name: Design System CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/**' ]
     paths:
       - 'app/src/main/java/com/martorell/albert/meteomartocompose/ui/components/designsystem/**'
       - 'app/src/main/java/com/martorell/albert/meteomartocompose/ui/theme/**'
       - 'gradle/libs.versions.toml'
       - '.github/workflows/design-system-ci.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/**' ]
     paths:
       - 'app/src/main/java/com/martorell/albert/meteomartocompose/ui/components/designsystem/**'
       - 'app/src/main/java/com/martorell/albert/meteomartocompose/ui/theme/**'
