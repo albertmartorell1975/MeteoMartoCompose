@@ -16,6 +16,11 @@ on:
       - 'gradle/libs.versions.toml'
       - '.github/workflows/design-system-ci.yml'
 
+# Permissions for the GITHUB_TOKEN
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   visual-regression:
     name: Visual Regression (Roborazzi)
@@ -37,7 +42,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Verify Visual Regression
-        run: ./gradlew :app:verifyRoborazziPreDebug
+        run: ./gradlew :app:verifyRoborazziPreDebug --no-daemon
 
       - name: Upload Comparison Results
         if: failure()
@@ -45,6 +50,7 @@ jobs:
         with:
           name: roborazzi-comparison-results
           path: "app/build/outputs/roborazzi/*"
+          retention-days: 5
 
   documentation:
     name: Generate Design System Styleguide (Dokka)
@@ -66,10 +72,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate Styleguide
-        run: ./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs
+        run: ./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon
 
       - name: Upload Styleguide Artifact
         uses: actions/upload-artifact@v4
         with:
           name: design-system-styleguide
           path: "app/build/dokka/design-system"
+          retention-days: 7

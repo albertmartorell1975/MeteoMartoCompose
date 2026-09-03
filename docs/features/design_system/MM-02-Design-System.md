@@ -203,9 +203,14 @@ To ensure long-term maintainability and architectural purity during the global m
 ### Visual Regression (Roborazzi)
 Utilizes the **Roborazzi Automated Preview Scanner** for JVM-speed visual regression.
 
+#### 📁 Storage & Persistence
+- **Golden Images Path**: `app/src/test/snapshots/`
+- All visual snapshots are committed to the repository to serve as the baseline for CI/CD.
+
 #### ⚠️ Critical Environment Requirements:
 *   **JDK 21 (MANDATORY)**: As the project targets SDK 36 (Android 16), **Java 21** is required for Robolectric/Roborazzi.
 *   **Test Application Isolation**: Robolectric tests use `TestMeteoMartoApp` to avoid infrastructure leaks (Firebase/Hilt).
+*   **Private Previews**: We use `includePrivatePreviews = true` in Gradle to ensure all component variants are captured without leaking internal Previews to the public API.
 *   **Stateless Previews**: `@Preview` functions MUST be **100% Stateless** to be scannable.
 
 #### Developer Workflow:
@@ -213,12 +218,16 @@ Utilizes the **Roborazzi Automated Preview Scanner** for JVM-speed visual regres
 - **Verification**: Run `./gradlew :app:verifyRoborazziPreDebug` during development or before PRs.
 
 ### CI/CD Integration
-The **GitHub Actions** pipeline (`design-system-ci.yml`) is triggered on every Push or Pull Request that modifies Design System components or tokens.
+The **GitHub Actions** pipeline (`design-system-ci.yml`) is triggered on every **Push** or **Pull Request** to `main`, `develop`, or any `feature/**` branch that modifies Design System components or tokens.
 
 1. **Verification**: Compares current UI against "Golden Images".
-2. **Failure Handling**: If a mismatch is found, the build fails and an artifact `roborazzi-comparison-results` is uploaded for review.
+   - Uses the `--no-daemon` flag for isolated execution.
+2. **Failure Handling**: If a mismatch is found, the build fails and an artifact `roborazzi-comparison-results` is uploaded (retained for 5 days).
 3. **Automated Documentation**: Generates the "Design System Styleguide" on every successful run.
+   - Uploads the documentation as an artifact `design-system-styleguide` (retained for 7 days).
 
+### Security & Permissions
+The CI workflow operates under strict **GITHUB_TOKEN** permissions (`contents: read`, `actions: write`) to ensure repository integrity while allowing artifact management.
 ### Documentation (Dokka)
 We use Dokka V2 to generate technical documentation directly from the source code.
 
