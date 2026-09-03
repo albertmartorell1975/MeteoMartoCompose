@@ -104,13 +104,13 @@ The design system propagates tokens through the composition tree using specializ
 
 | Token Type     | Key                  | Propagation Method          | Change Frequency   |
 | :------------- | :------------------- | :-------------------------- | :----------------- |
-| **Spacing**    | `LocalMMSpacing`     | `staticCompositionLocalOf`  | **Low**            |
-| **Colors**     | `LocalMMColors`      | `compositionLocalOf`        | **Medium** (Theme) |
-| **Typography** | `LocalMMTypography`  | `staticCompositionLocalOf`  | **Low**            |
+| **Spacing**    | `LocalFndSpacing`    | `staticCompositionLocalOf`  | **Low**            |
+| **Colors**     | `LocalFndColors`     | `compositionLocalOf`        | **Medium** (Theme) |
+| **Typography** | `LocalFndTypography` | `staticCompositionLocalOf`  | **Low**            |
 | **Density**    | `LocalDensity`       | Overridden via `Provider`   | **Medium** (Zoom)  |
 
 ### Typography Reference (Material 3)
-We strictly follow the **Material 3 Type Scale**. These values are the foundation for `MMTypography.kt`.
+We strictly follow the **Material 3 Type Scale**. These values are the foundation for `FndTypography.kt`.
 
 | Style | Size (sp) | Line Height (sp) | Letter Spacing (sp) | Weight (Default) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -138,13 +138,13 @@ We use **Roboto Flex**, a variable font that allows fine-grained control over ty
 
 | Axis | Name | Range | Selected Default | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
-| **`wght`** | Weight | 100 - 1000 | `MMFontWeight.NORMAL` (400) | Standard weight for high legibility in body text. |
-| **`wdth`** | Width | 25 - 150 | `MMFontAxes.WIDTH_DEFAULT` (100) | Maintains standard character proportions. |
-| **`slnt`** | Slant | -90 - 90 | `MMFontAxes.SLANT_DEFAULT` (0) | Default upright posture. |
-| **`opsz`** | Optical Size | 8 - 144 | `MMFontAxes.OPSZ_DEFAULT` (14) | Optimizes glyph shapes for reading distances. |
+| **`wght`** | Weight | 100 - 1000 | `FndFontWeight.NORMAL` (400) | Standard weight for high legibility in body text. |
+| **`wdth`** | Width | 25 - 150 | `FndFontAxes.WIDTH_DEFAULT` (100) | Maintains standard character proportions. |
+| **`slnt`** | Slant | -90 - 90 | `FndFontAxes.SLANT_DEFAULT` (0) | Default upright posture. |
+| **`opsz`** | Optical Size | 8 - 144 | `FndFontAxes.OPSZ_DEFAULT` (14) | Optimizes glyph shapes for reading distances. |
 
 ### Motion & Animation
-All animations follow standardized motion tokens defined in `MMMotion.kt`.
+All animations follow standardized motion tokens defined in `FndMotion.kt`.
 
 | Token | Description | Specification |
 | :--- | :--- | :--- |
@@ -164,7 +164,7 @@ To capture user attention during validation failures, we use a 10-pixel displace
 Visual scaling (pinch-to-zoom) is managed as part of the infrastructure layer. 
 - **`UserPreferences`**: Domain-level interface defining the contract for visual preferences.
 - **`UserPreferencesImpl`**: Infrastructure-level implementation using **Jetpack DataStore**.
-- **`DesignSystemViewModel`**: Exposes the `fontScale` as a `StateFlow<Float>`, ensuring the UI reacts instantly.
+- **`FndDesignSystemViewModel`**: Exposes the `fontScale` as a `StateFlow<Float>`, ensuring the UI reacts instantly.
 
 ---
 
@@ -172,16 +172,16 @@ Visual scaling (pinch-to-zoom) is managed as part of the infrastructure layer.
 
 ### Buttons
 Categorized by visual emphasis in the UI hierarchy.
-- **`MMPrimaryButton`**: High Emphasis. Features dynamic font weight feedback (Roboto Flex axis 400 to 600) when pressed or focused.
-- **`MMSecondaryButton`**: Medium Emphasis.
-- **`MMTertiaryButton`**: Low Emphasis (Cancel, auxiliary actions).
+- **`MmPrimaryButton`**: High Emphasis. Features dynamic font weight feedback (Roboto Flex axis 400 to 600) when pressed or focused.
+- **`MmSecondaryButton`**: Medium Emphasis.
+- **`MmTertiaryButton`**: Low Emphasis (Cancel, auxiliary actions).
 
-### MMTextField
-- **Typographic Boundary**: Encourages the use of [MMText] for labels.
+### MmTextField
+- **Typographic Boundary**: Encourages the use of [MmText] for labels.
 - **Expressive Motion**: Features a "shake" animation when error state is triggered.
 - **Stateless**: All input and error states are hoisted.
 
-### MMNavigation
+### MmNavigation
 Adaptive scaffold that automatically switches between Bottom Bar, Nav Rail, or Nav Drawer based on device size.
 - **Material 3 Adaptive**: Wraps `NavigationSuiteScaffold`.
 - **Integrated Scaffold**: Provides slots for `topBar` and `floatingActionButton`.
@@ -192,8 +192,8 @@ Adaptive scaffold that automatically switches between Bottom Bar, Nav Rail, or N
 
 To ensure long-term maintainability and architectural purity during the global migration:
 
-1. **Shell vs. Logic Separation**: `Navigation.kt` (Logic) acts as the "Brain"; `MMNavigation.kt` (UI Shell) acts as the "Clothing".
-2. **The "Empty Shell" Pattern**: For screens without global navigation (e.g. Login), `MMNavigation` must still be used as the root container with an empty list of items to ensure consistent theme propagation.
+1. **Shell vs. Logic Separation**: `Navigation.kt` (Logic) acts as the "Brain"; `MmNavigation.kt` (UI Shell) acts as the "Clothing".
+2. **The "Empty Shell" Pattern**: For screens without global navigation (e.g. Login), `MmNavigation` must still be used as the root container with an empty list of items to ensure consistent theme propagation.
 3. **Stateless Screen Mandate**: Feature screens MUST NOT contain their own `Scaffold` or `TopAppBar`. They receive a `Modifier` and focus exclusively on internal content.
 
 ---

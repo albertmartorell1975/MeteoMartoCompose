@@ -15,21 +15,21 @@ This document serves as the granular checklist and architectural roadmap for the
 
 ## Phase 2: Foundation & Tokens (The "Truth")
 - [x] **MANDATORY**: Consult `AGENTS.md` for style and logic standards.
-- [x] Implement `MMSpacing.kt` (Reference scale: XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
-- [x] Implement `MMColors.kt` (Semantic roles mapping Material 3 Expressive).
-- [x] Implement `MMTypography.kt` (Mapping Display, Headline, Body using Roboto Flex Variable Font).
+- [x] Implement `FndSpacing.kt` (Reference scale: XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
+- [x] Implement `FndColors.kt` (Semantic roles mapping Material 3 Expressive).
+- [x] Implement `FndTypography.kt` (Mapping Display, Headline, Body using Roboto Flex Variable Font).
 - [x] Create `DesignSystem.kt` (CompositionLocals provider).
-- [x] Implement `MMDensityProvider.kt` with DataStore persistence for pinch-to-zoom.
+- [x] Implement `FndDensityProvider.kt` with DataStore persistence for pinch-to-zoom.
 - [x] **MANDATORY**: Execute `compiler` skill verification suite.
 - [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
-## Phase 3: Core Stateless Components (`MM*`)
+## Phase 3: Core Stateless Components (`Mm*`)
 - [x] **MANDATORY**: Consult `AGENTS.md` for architectural mandates.
-- [x] **MMPrimaryButton / MMSecondaryButton / MMTertiaryButton**: Slot-based, Spring-motion, weight-axis focus feedback.
-- [x] **Multipreview Infrastructure**: Create reusable `@MMPreview` annotations for (Light/Dark x RTL x Scale).
-- [x] **MMText**: Semantic text wrapper for typography tokens (The Typographic Boundary).
-- [x] **MMTextField**: RTL mirroring, A11y labels, semantic error states.
-- [x] **MMNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
+- [x] **MmPrimaryButton / MmSecondaryButton / MmTertiaryButton**: Slot-based, Spring-motion, weight-axis focus feedback.
+- [x] **Multipreview Infrastructure**: Create reusable `@MmPreview` annotations for (Light/Dark x RTL x Scale).
+- [x] **MmText**: Semantic text wrapper for typography tokens (The Typographic Boundary).
+- [x] **MmTextField**: RTL mirroring, A11y labels, semantic error states.
+- [x] **MmNavigation**: Adaptive scaffold wrapping `NavigationSuiteScaffold`.
 - [x] **MANDATORY**: Execute `compiler` skill verification suite.
 - [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
@@ -44,17 +44,32 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **MANDATORY**: Execute `compiler` skill verification suite.
 - [x] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 
-## Phase 5: Global Migration & Comprehensive Audit
+## Phase 5: Screen-by-Screen Migration & Comprehensive Audit
 - [ ] **MANDATORY**: Consult `AGENTS.md` for UI/UX Engineer standards.
-- [ ] Identify and eliminate all `androidx.compose.material3` leaks in feature screens.
-- [ ] Replace `shared/` legacy components with `MM*`.
+- [ ] **Auth Module Migration**:
+    - [ ] **LoginScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmTertiaryButton`, and `MmLoadingOverlay`.
+    - [ ] **SignUpScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmErrorState`, and `MmLoadingOverlay`.
+    - [ ] **TermsScreen**: Migrate to `MmNavigation`, `MmText.BodyLarge`, and `MmPrimaryButton`.
+- [ ] **City Module Migration**:
+    - [ ] **CityWeatherScreen**: Migrate to `MmText`, `FndSpacing`, and adaptive components.
+    - [ ] **HighTemperatureAlertScreen**: Migrate to `MmText` and `MmPrimaryButton`.
+- [ ] **Favorites Module Migration**:
+    - [ ] **FavoriteEmptyState**: Migrate to `MmText`.
+    - [ ] **FavoriteItem**: Migrate to `MmText` and `FndSpacing`.
+- [ ] **Architectural Enforcement**:
+    - [ ] **Stateless Screen Mandate**: Remove local `Scaffold` and `TopAppBar` from feature screens (hoist to `MmNavigation`).
+    - [ ] **Typographic Boundary**: Replace all `androidx.compose.material3.Text` leaks with `MmText`.
+    - [ ] **Token Compliance**: Replace hardcoded `dp`/`sp` and `R.dimen`/`R.color` with `FndSpacing` and `FndColors`.
 - [ ] **Comprehensive Quality Audit**:
+    - [ ] **Global UI Zoom**: Validate layout integrity during pinch-to-zoom (Density changes).
     - [ ] Android 15 Edge-to-Edge compliance.
     - [ ] Rotation state preservation (UX).
     - [ ] TalkBack walkthrough (A11y).
     - [ ] Pseudo-localization check (Overflow).
     - [ ] Recomposition count audit (Performance).
-- [ ] Cleanup: Delete `ui/screens/shared/`.
+- [ ] **Cleanup**: 
+    - [ ] Delete `ui/screens/shared/` directory.
+    - [ ] Remove obsolete resources from `res/values/`.
 - [ ] **MANDATORY**: Execute `compiler` skill verification suite.
 - [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing.
 

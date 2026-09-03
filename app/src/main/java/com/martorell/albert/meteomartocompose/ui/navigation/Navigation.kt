@@ -24,7 +24,7 @@ import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
-import com.martorell.albert.meteomartocompose.ui.theme.DesignSystemViewModel
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.FndDesignSystemViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.NavigationBarCustom
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
@@ -36,7 +36,7 @@ import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashUI
 fun Navigation(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
-    designSystemViewModel: DesignSystemViewModel = hiltViewModel(),
+    designSystemViewModel: FndDesignSystemViewModel = hiltViewModel(),
 ) {
     val rootState by mainViewModel.state.collectAsState()
     val fontScale by designSystemViewModel.fontScale.collectAsState()

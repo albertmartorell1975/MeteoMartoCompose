@@ -3,7 +3,7 @@ package com.martorell.albert.meteomartocompose.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
-import com.martorell.albert.meteomartocompose.ui.theme.MeteoMartoTheme
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 /**
  * This is the entry point for our app's visual structure.
