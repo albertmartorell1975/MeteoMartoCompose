@@ -59,7 +59,7 @@ roborazzi {
         enable = true
         // Following ADR 09 (Pragmatic Snapshots), we only scan the design system package
         // to avoid instantiation issues with legacy feature screens.
-        packages = listOf("${android.namespace}.ui.components.designsystem")
+        packages = listOf("${android.namespace}.ui.designsystem.components")
         // Enables scanning of private @Preview functions to keep the internal component 
         // API clean while still ensuring full visual regression coverage.
         includePrivatePreviews = true
@@ -180,12 +180,10 @@ dependencies {
     testImplementation(libs.roborazzi.composable.scanner)
 
     // Instrumented Tests
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
     // Roborazzi also needs these in unit tests for Preview scanning
-    testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.ui.test.junit4)
 
     // Debugging Tools

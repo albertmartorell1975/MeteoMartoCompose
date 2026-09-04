@@ -134,17 +134,6 @@ fun CityWeatherScreen(
 }
 
 /**
- * Data class to group UI actions and avoid unnecessary parameters.
- */
-data class CityWeatherActions(
-    val onRefresh: suspend () -> Unit,
-    val onHideGpsDialog: () -> Unit,
-    val onHideRationale: () -> Unit,
-    val onLogoutConfirm: () -> Unit,
-    val onLogoutCancel: () -> Unit
-)
-
-/**
  * Pure Stateless UI Composable.
  * Responsible ONLY for rendering based on provided state and callbacks.
  * No dependency on Hilt, ViewModels, or specific Android Manifest permissions.
@@ -374,3 +363,14 @@ fun CityWeatherPreview() {
         )
     )
 }
+
+/**
+ * Data class to group UI actions and avoid unnecessary parameters.
+ */
+data class CityWeatherActions(
+    val onRefresh: suspend () -> Unit,
+    val onHideGpsDialog: () -> Unit,
+    val onHideRationale: () -> Unit,
+    val onLogoutConfirm: () -> Unit,
+    val onLogoutCancel: () -> Unit,
+)

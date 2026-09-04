@@ -25,6 +25,7 @@ As a Skill, `compiler` provides both standalone actions and a complete verificat
   - Check that `java -version` matches the `jvmToolchain` defined in `build.gradle.kts`.
   - Check that the IDE's Gradle JDK (from `.idea/gradle.xml`) is correctly aligned.
   - If a mismatch is detected, the agent MUST stop and report the configuration error to the user before attempting any build.
+- **Structural Sync (MANDATORY)**: Any modification to `.gradle.kts`, `libs.versions.toml`, or `gradle.properties` MUST be immediately followed by a `gradle_sync` call before any build or analysis.
 - **Static Analysis**: To be executed on specific files during development.
   - **Command**: `analyze_file [file_path]`
 - **Code Cleanliness**: Agents MUST remove all unused imports, variables, and functions detected during the analysis phase or identified through manual review.
