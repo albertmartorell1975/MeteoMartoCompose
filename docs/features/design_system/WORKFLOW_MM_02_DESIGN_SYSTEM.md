@@ -56,8 +56,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [ ] **Favorites Module Migration**:
     - [ ] **FavoriteEmptyState**: Migrate to `MmText`.
     - [ ] **FavoriteItem**: Migrate to `MmText` and `FndSpacing`.
-- [ ] **Architectural Enforcement**:
-    - [ ] **Stateless Screen Mandate**: Remove local `Scaffold` and `TopAppBar` from feature screens (hoist to `MmNavigation`).
+- [x] **Architectural Enforcement**:
+    - [x] **Stateless Screen Mandate**: Remove local `Scaffold` and `TopAppBar` from feature screens (hoist to `MmNavigation`). Follow [NAVIGATION_REFINEMENT.md](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/docs/features/design_system/NAVIGATION_REFINEMENT.md).
     - [ ] **Typographic Boundary**: Replace all `androidx.compose.material3.Text` leaks with `MmText`.
     - [ ] **Token Compliance**: Replace hardcoded `dp`/`sp` and `R.dimen`/`R.color` with `FndSpacing` and `FndColors`.
 - [ ] **Comprehensive Quality Audit**:
