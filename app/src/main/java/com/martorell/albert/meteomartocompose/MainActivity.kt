@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.navigation.compose.rememberNavController
 import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,8 +24,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            Navigation(navController = rememberNavController(), mainViewModel = viewModel)
+            Navigation(mainViewModel = viewModel)
         }
     }
-
 }

@@ -1,5 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
@@ -25,7 +29,11 @@ fun MeteoMartoComposeLayout(
 ) {
 
     MeteoMartoTheme(fontScale = fontScale) {
-        androidx.compose.foundation.layout.Box(modifier = modifier) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
             content()
         }
     }
