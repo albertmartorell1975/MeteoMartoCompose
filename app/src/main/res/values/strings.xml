@@ -54,6 +54,12 @@
     <string name="city_weather_detail">City weather</string>
     <string name="favorite_top_bar_title">List of Favorites</string>
     <string name="city_top_bar_title">Meteo Marto</string>
+    <string name="back">Back</string>
+
+    <!-- Error States -->
+    <string name="error_connectivity">Connectivity error</string>
+    <string name="error_firebase">Server error</string>
+    <string name="error_unknown">Unknown error</string>
 
     <!-- High Temperature Notification -->
     <string name="high_temp_notif_channel_name">MeteoMarto Warnings</string>

@@ -29,12 +29,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -45,21 +46,21 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CircularProgressIndicatorCustom
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
 import com.martorell.albert.meteomartocompose.utils.AppConstants
 import kotlinx.coroutines.launch
 
-/**
- * Stateful Screen Composable.
- * Responsible for wiring Hilt ViewModel, Navigation, and System Permissions.
- */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CityWeatherScreen(
     modifier: Modifier = Modifier,
     viewModel: CityWeatherViewModel,
+    nestedScrollConnection: NestedScrollConnection? = null,
     goToLogin: () -> Unit,
     goToHighTempAlert: (Double) -> Unit,
     setFabVisibility: (isVisible: Boolean) -> Unit,
@@ -67,23 +68,19 @@ fun CityWeatherScreen(
     val uiState by viewModel.state.collectAsState()
     val context = LocalContext.current
 
-    // 1. Handle Navigation Events
     LaunchedEffect(Unit) {
         viewModel.events.collect { alert ->
             goToHighTempAlert(alert.currentTemperature)
         }
     }
 
-    // 2. Handle FAB Visibility
     LaunchedEffect(uiState.showFab) {
         setFabVisibility(uiState.showFab)
     }
 
-    // 3. Handle Permissions (Hoisted from UI to Screen)
     val permissionsToRequest = remember { viewModel.getRequiredPermissions() }
     val permissionState = rememberMultiplePermissionsState(permissions = permissionsToRequest)
 
-    // Sync permission state with ViewModel
     LaunchedEffect(permissionState.allPermissionsGranted) {
         if (permissionState.allPermissionsGranted && uiState.locationChecked && !uiState.permissionsGranted) {
             viewModel.getCurrentLocationStarted()
@@ -91,7 +88,9 @@ fun CityWeatherScreen(
     }
 
     CityWeatherContent(
-        modifier = modifier,
+        modifier = modifier.then(
+            if (nestedScrollConnection != null) Modifier.nestedScroll(nestedScrollConnection) else Modifier
+        ),
         state = uiState,
         allPermissionsGranted = permissionState.allPermissionsGranted,
         locationRationale = permissionState.permissions.any {
@@ -133,11 +132,6 @@ fun CityWeatherScreen(
     )
 }
 
-/**
- * Pure Stateless UI Composable.
- * Responsible ONLY for rendering based on provided state and callbacks.
- * No dependency on Hilt, ViewModels, or specific Android Manifest permissions.
- */
 @Composable
 fun CityWeatherContent(
     modifier: Modifier = Modifier,
@@ -159,7 +153,6 @@ fun CityWeatherContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. Dialogs Layer
         if (state.logOut) {
             AlertDialogCustom(
                 title = R.string.logout_title,
@@ -216,7 +209,6 @@ fun CityWeatherContent(
             )
         }
 
-        // 2. Weather Content Layer
         if (state.loadedForecast) {
             if (state.errorLocation != null || state.errorForecast != null) {
                 CityTextView(
@@ -235,22 +227,18 @@ fun CityWeatherContent(
             }
         }
 
-        // 3. Actions Layer
         Button(onClick = {
             coroutineScope.launch { actions.onRefresh() }
         }) {
             Text(text = stringResource(R.string.update_forecast))
         }
 
-        Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
+        Spacer(Modifier.height(LocalFndSpacing.current.medium))
     }
 
     if (state.loading) CircularProgressIndicatorCustom()
 }
 
-/**
- * Internal helper to render the weather details.
- */
 @Composable
 private fun WeatherInfo(
     city: CityWeatherDomain,
@@ -267,7 +255,7 @@ private fun WeatherInfo(
             fontWeight = FontWeight.Bold,
         )
 
-    Spacer(Modifier.height(dimensionResource(R.dimen.medium_spacer)))
+    Spacer(Modifier.height(LocalFndSpacing.current.medium))
 
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
@@ -294,12 +282,12 @@ private fun WeatherInfo(
             contentDynamic = city.temperature.toString()
         )
         if (isHighTempAlertActive) {
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(LocalFndSpacing.current.small))
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = stringResource(R.string.high_temp_alert_icon_description),
                 tint = Color.Red,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(LocalFndSpacing.current.large)
             )
         }
     }
@@ -329,9 +317,9 @@ private fun WeatherInfo(
     }
 }
 
-@Preview(showBackground = true)
+@MmPreview
 @Composable
-fun CityWeatherPreview() {
+private fun CityWeatherScreenPreview() {
     val dummyState = CityWeatherViewModel.UiState(
         loadedForecast = true,
         city = CityWeatherDomain(
@@ -346,27 +334,26 @@ fun CityWeatherPreview() {
         isHighTempAlertActive = true
     )
 
-    CityWeatherContent(
-        state = dummyState,
-        allPermissionsGranted = true,
-        locationRationale = false,
-        notificationRationale = false,
-        onPermissionAction = {},
-        onOpenSettings = {},
-        onOpenLocationSettings = {},
-        actions = CityWeatherActions(
-            onRefresh = {},
-            onHideGpsDialog = {},
-            onHideRationale = {},
-            onLogoutConfirm = {},
-            onLogoutCancel = {}
+    MeteoMartoTheme {
+        CityWeatherContent(
+            state = dummyState,
+            allPermissionsGranted = true,
+            locationRationale = false,
+            notificationRationale = false,
+            onPermissionAction = {},
+            onOpenSettings = {},
+            onOpenLocationSettings = {},
+            actions = CityWeatherActions(
+                onRefresh = {},
+                onHideGpsDialog = {},
+                onHideRationale = {},
+                onLogoutConfirm = {},
+                onLogoutCancel = {}
+            )
         )
-    )
+    }
 }
 
-/**
- * Data class to group UI actions and avoid unnecessary parameters.
- */
 data class CityWeatherActions(
     val onRefresh: suspend () -> Unit,
     val onHideGpsDialog: () -> Unit,

@@ -22,20 +22,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 import com.martorell.albert.meteomartocompose.ui.screens.shared.CityTextView
 import com.martorell.albert.meteomartocompose.ui.screens.shared.ErrorScreen
 import kotlinx.coroutines.launch
-import kotlin.reflect.KSuspendFunction0
 
 @Composable
 fun FavoritesDetailScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
+    onBack: () -> Unit,
     viewModel: FavoritesDetailViewModel = hiltViewModel<FavoritesDetailViewModel>()
 ) {
 
@@ -44,7 +45,7 @@ fun FavoritesDetailScreen(
         modifier = modifier,
         state = state,
         loadCityWeatherAction = viewModel::loadCityWeather,
-        backHandlerAction = { navController.popBackStack() }
+        backHandlerAction = onBack
     )
 
 }
@@ -53,7 +54,7 @@ fun FavoritesDetailScreen(
 fun FavoritesDetailContent(
     modifier: Modifier = Modifier,
     state: State<FavoritesDetailViewModel.UiState>,
-    loadCityWeatherAction: KSuspendFunction0<Unit>,
+    loadCityWeatherAction: suspend () -> Unit,
     backHandlerAction: () -> Unit
 ) {
 
@@ -142,4 +143,32 @@ fun FavoritesDetailContent(
 
     }
 
+}
+
+@MmPreview
+@Composable
+private fun FavoritesDetailScreenPreview() {
+    val dummyCity = CityWeatherDomain(
+        name = "Sabadell",
+        temperature = 25.5,
+        temperatureMin = 20.0,
+        temperatureMax = 30.0,
+        pressure = 1012,
+        weatherDescription = "Partly Cloudy"
+    )
+    val dummyState = androidx.compose.runtime.remember {
+        androidx.compose.runtime.mutableStateOf(
+            FavoritesDetailViewModel.UiState(
+                city = arrow.core.Either.Right(dummyCity)
+            )
+        )
+    }
+
+    MeteoMartoTheme {
+        FavoritesDetailContent(
+            state = dummyState,
+            loadCityWeatherAction = { },
+            backHandlerAction = { }
+        )
+    }
 }

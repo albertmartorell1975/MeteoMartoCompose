@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 @Composable
 fun HighTemperatureAlertScreen(
@@ -37,7 +40,7 @@ fun HighTemperatureAlertScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.errorContainer)
             .safeDrawingPadding()
-            .padding(16.dp)
+            .padding(LocalFndSpacing.current.medium)
     ) {
         IconButton(
             onClick = onDismiss,
@@ -58,7 +61,7 @@ fun HighTemperatureAlertScreen(
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = null,
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = LocalFndSpacing.current.medium),
                 tint = MaterialTheme.colorScheme.error
             )
             Text(
@@ -73,7 +76,10 @@ fun HighTemperatureAlertScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+                modifier = Modifier.padding(
+                    top = LocalFndSpacing.current.medium,
+                    bottom = LocalFndSpacing.current.extraLarge
+                )
             )
             Button(
                 onClick = onDismiss,
@@ -84,3 +90,15 @@ fun HighTemperatureAlertScreen(
         }
     }
 }
+
+@MmPreview
+@Composable
+private fun HighTemperatureAlertScreenPreview() {
+    MeteoMartoTheme {
+        HighTemperatureAlertScreen(
+            temperature = 35.5,
+            onDismiss = {}
+        )
+    }
+}
+

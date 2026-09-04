@@ -1,15 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.compose.ui.window.DialogProperties
@@ -19,18 +13,17 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarAction
-import com.martorell.albert.meteomartocompose.ui.navigation.shared.ProvideAppBarTitle
+import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.city.HighTemperatureAlertScreen
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
 
 fun NavGraphBuilder.dashboardGraph(
-    navController: NavHostController,
+    appState: AppState,
+    nestedScrollConnection: NestedScrollConnection,
     modifier: Modifier = Modifier,
-    setFabVisibility: (isVisible: Boolean) -> Unit
+    setFabVisibility: (isVisible: Boolean) -> Unit,
 ) {
     navigation<SubGraphs.Dashboard>(
         startDestination = DashboardScreens.CityWeather
@@ -38,53 +31,34 @@ fun NavGraphBuilder.dashboardGraph(
 
         composable<DashboardScreens.CityWeather> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SubGraphs.Dashboard)
+                appState.getBackStackEntry(SubGraphs.Dashboard)
             }
             val viewModel: CityWeatherViewModel = hiltViewModel(parentEntry)
-
-            ProvideAppBarTitle {
-                Text(text = stringResource(R.string.city_top_bar_title))
-            }
-
-            ProvideAppBarAction {
-                IconButton(
-                    onClick = {
-                        viewModel.showLogOutDialog()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.Logout,
-                        contentDescription = stringResource(R.string.logout_title)
-                    )
-                }
-            }
 
             CityWeatherScreen(
                 modifier = modifier,
                 viewModel = viewModel,
+                nestedScrollConnection = nestedScrollConnection,
                 goToLogin = {
-                    navController.navigate(SubGraphs.Auth) {
+                    appState.navigate(SubGraphs.Auth) {
                         popUpTo(SubGraphs.Dashboard) {
                             inclusive = true
                         }
                     }
                 },
                 goToHighTempAlert = { temperature ->
-                    navController.navigate(DashboardScreens.HighTemperatureAlert(temperature))
+                    appState.navigate(DashboardScreens.HighTemperatureAlert(temperature))
                 },
                 setFabVisibility = setFabVisibility
             )
         }
 
         composable<DashboardScreens.Favorites> {
-            ProvideAppBarTitle {
-                Text(text = stringResource(R.string.favorite_top_bar_title))
-            }
-
             FavoritesScreen(
                 modifier = modifier.padding(),
-                goToDetail = {
-                    navController.navigate(SubGraphs.FavoritesGraph(cityName = it?.name))
+                nestedScrollConnection = nestedScrollConnection,
+                goToDetail = { city ->
+                    appState.navigate(SubGraphs.FavoritesGraph(cityName = city?.name))
                 }
             )
         }
@@ -104,7 +78,7 @@ fun NavGraphBuilder.dashboardGraph(
             HighTemperatureAlertScreen(
                 temperature = route.temperature,
                 onDismiss = {
-                    navController.popBackStack()
+                    appState.navigateUp()
                 }
             )
         }
