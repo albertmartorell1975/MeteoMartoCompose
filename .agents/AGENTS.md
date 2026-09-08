@@ -157,15 +157,34 @@ When implementing a new feature:
     val permissions = viewModel.getRequiredPermissions()
     ```
 
-2.  **Stateless UI First**: Every Screen must be split into a Stateful "Wiring" Composable and a Stateless "Content" Composable.
+2.  **Stateless UI First (THE MANDATE)**: Every Screen must be split into a Stateful "Wiring" Composable and a Stateless "Content" Composable.
+    - **Wiring (Screen)**: Handles `LaunchedEffect`, event collection, navigation calls, and ViewModel interaction.
+    - **Content (Stateless)**: MUST be a pure function. It only takes State and event lambdas. It is STRICTLY FORBIDDEN to perform navigation or trigger side-effects directly from within a `Content` composable.
     ```kotlin
-    // ✅ Separation of concerns:
-    @Composable fun CityWeatherScreen(vm: ViewModel) { /* Wiring */ }
-    @Composable fun CityWeatherContent(state: UiState) { /* Pure UI */ }
+    // ✅ Correct Separation:
+    @Composable fun CityWeatherScreen(vm: ViewModel) { 
+        /* Collect State, LaunchedEffect for Nav, ViewModel calls */
+        CityWeatherContent(state, onEvent) 
+    }
+    @Composable fun CityWeatherContent(state: UiState, onEvent: () -> Unit) { 
+        /* Pure UI layout and tokens only */ 
+    }
     ```
 
 3.  **Magic Literal Prohibition**: Any value that is not a business entity or a transient UI state must live in `AppConstants.kt` or `config.xml`.
     ```kotlin
     // ❌ Uri.fromParts("package", ...)
     // ✅ Uri.fromParts(AppConstants.SCHEME_PACKAGE, ...)
+    ```
+
+4.  **Modifier Propagation Mandate**: To avoid the "Double-Application" bug (e.g., duplicated padding or size), every `@Composable` that accepts a `modifier` parameter MUST follow these rules:
+    *   **Root Only**: The `modifier` parameter MUST only be applied to the **root** layout component of the function.
+    *   **Internal Independence**: All children components MUST use a fresh `Modifier` instance (e.g., `Modifier.fillMaxWidth()` or `Modifier.padding(...)`) instead of chaining from the passed parameter.
+    ```kotlin
+    // ✅ Correct Propagation:
+    @Composable fun MyComponent(modifier: Modifier = Modifier) {
+        Box(modifier = modifier) { // Applied to root only
+            Text(modifier = Modifier.padding(8.dp), text = "Hello") // Internal only
+        }
+    }
     ```

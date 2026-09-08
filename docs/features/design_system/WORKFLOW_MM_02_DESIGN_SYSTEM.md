@@ -47,7 +47,7 @@ This document serves as the granular checklist and architectural roadmap for the
 ## Phase 5: Screen-by-Screen Migration & Comprehensive Audit
 - [ ] **MANDATORY**: Consult `AGENTS.md` for UI/UX Engineer standards.
 - [ ] **Auth Module Migration**:
-    - [ ] **LoginScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmTertiaryButton`, and `MmLoadingOverlay`.
+    - [x] **LoginScreen**: Migrate to `MmNavigation` (hoisted), `MmTextField`, `MmPrimaryButton`, `MmTertiaryButton`, and `MmLoadingOverlay`.
     - [ ] **SignUpScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmErrorState`, and `MmLoadingOverlay`.
     - [ ] **TermsScreen**: Migrate to `MmNavigation`, `MmText.BodyLarge`, and `MmPrimaryButton`.
 - [ ] **City Module Migration**:
