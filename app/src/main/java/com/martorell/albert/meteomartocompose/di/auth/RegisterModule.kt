@@ -9,6 +9,8 @@ import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSou
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpUseCase
+import com.martorell.albert.meteomartocompose.usecases.utils.ValidateEmailUseCase
+import com.martorell.albert.meteomartocompose.usecases.utils.ValidatePasswordUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,8 +22,12 @@ class RegisterModule {
 
     @Provides
     fun signUpInteractorsProvider(
+        validateEmailUseCase: ValidateEmailUseCase,
+        validatePasswordUseCase: ValidatePasswordUseCase,
         signUpUseCase: SignUpUseCase,
     ) = SignUpInteractors(
+        validateEmailUseCase = validateEmailUseCase,
+        validatePasswordUseCase = validatePasswordUseCase,
         signUpUseCase = signUpUseCase
     )
 
