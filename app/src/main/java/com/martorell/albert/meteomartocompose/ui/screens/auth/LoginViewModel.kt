@@ -4,134 +4,140 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val loginInteractors: LoginInteractors
+    private val loginInteractors: LoginInteractors
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<LoginEvent>(Channel.BUFFERED)
+    val events: Flow<LoginEvent> = _events.receiveAsFlow()
+
+    sealed interface LoginEvent {
+        object LoginError : LoginEvent
+    }
 
     data class UiState(
         val loading: Boolean = false,
         val loginChecked: Boolean = false,
         val loginStatus: Boolean = false,
         val email: String = "",
+        val isEmailValid: Boolean = true,
         val password: String = "",
+        val isPasswordValid: Boolean = true,
         val passwordVisible: Boolean = false,
         val showError: Boolean = false,
         val validUser: Boolean = false
     )
 
-    fun checkLogin() {
-
+    fun performLogin() {
         viewModelScope.launch {
+            val currentEmail = _state.value.email
+            val currentPassword = _state.value.password
 
-            val tmpState = _state.value
-            var updatedState = tmpState.copy(
-                loading = true,
+            val isEmailValid = loginInteractors.validateEmailUseCase(currentEmail)
+            val isPasswordValid = loginInteractors.validatePasswordUseCase(currentPassword)
+
+            if (!isEmailValid || !isPasswordValid) {
+                _state.update {
+                    it.copy(
+                        isEmailValid = isEmailValid,
+                        isPasswordValid = isPasswordValid,
+                        showError = true,
+                        loginChecked = false // Do not show snackbar for local validation errors
+                    )
+                }
+                return@launch
+            }
+
+            _state.update { it.copy(loading = true, loginChecked = false, showError = false) }
+
+            // Simulate network delay
+            delay(2000.milliseconds)
+
+            val result = loginInteractors.logInUseCase.invoke(
+                email = currentEmail,
+                password = currentPassword
             )
 
-            _state.value = updatedState
-
-            updatedState = tmpState.copy(
-                loginChecked = true,
-                loginStatus = loginInteractors.validateLoginUseCase.invoke(
-                    email = _state.value.email,
-                    password = _state.value.password,
-                ),
-                showError = !state.value.loginStatus && state.value.loginChecked
-            )
-
-            _state.value = updatedState
+            result.fold({
+                _state.update {
+                    it.copy(
+                        validUser = false,
+                        loading = false,
+                        loginChecked = true,
+                        showError = true,
+                        loginStatus = false
+                    )
+                }
+                viewModelScope.launch { _events.send(LoginEvent.LoginError) }
+            }) {
+                _state.update {
+                    it.copy(
+                        validUser = true,
+                        loginChecked = true,
+                        loading = false,
+                        loginStatus = true
+                    )
+                }
+            }
         }
-
     }
 
-    fun buttonEnabled(): Boolean =
-        _state.value.email.isNotEmpty() && _state.value.password.isNotEmpty()
-
     fun loginUnchecked() {
+        _state.update { it.copy(loginChecked = false) }
+    }
 
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            loginChecked = false
-        )
-        _state.value = updatedState
+    fun validateEmail() {
+        if (_state.value.email.isNotEmpty()) {
+            _state.update { it.copy(isEmailValid = loginInteractors.validateEmailUseCase(_state.value.email)) }
+        }
+    }
 
+    fun clearEmailError() {
+        _state.update { it.copy(isEmailValid = true) }
     }
 
     fun setEmail(email: String) {
+        _state.update { it.copy(email = email, isEmailValid = true) }
+    }
 
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(email = email)
-        _state.value = updatedState
+    fun validatePassword() {
+        if (_state.value.password.isNotEmpty()) {
+            _state.update {
+                it.copy(isPasswordValid = loginInteractors.validatePasswordUseCase(_state.value.password))
+            }
+        }
+    }
 
+    fun clearPasswordError() {
+        _state.update { it.copy(isPasswordValid = true) }
     }
 
     fun setPassword(password: String) {
-
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(password = password)
-        _state.value = updatedState
-
+        _state.update { it.copy(password = password, isPasswordValid = true) }
     }
 
     fun setPasswordVisible(visibility: Boolean) {
-
-        val tmpState = _state.value
-        val updatedState = tmpState.copy(
-            passwordVisible = visibility
-        )
-        _state.value = updatedState
-
+        _state.update { it.copy(passwordVisible = visibility) }
     }
 
-    suspend fun logInClicked(
-        email: String,
-        password: String
-    ) {
-
-        var tmpState = _state.value
-        var updatedState = tmpState.copy(
-            loading = true
-        )
-        _state.value = updatedState
-        delay(2000)
-
-        val result = loginInteractors.logInUseCase.invoke(
-            email = email,
-            password = password
-        )
-
-        result.fold({
-            tmpState = _state.value
-            updatedState = tmpState.copy(
-                validUser = false,
-                loading = false,
-                loginChecked = true,
-                showError = false,
-                loginStatus = false
-            )
-            _state.value = updatedState
-
-        }) {
-
-            tmpState = _state.value
-            updatedState = tmpState.copy(
-                validUser = true,
-                loginChecked = true,
-                loading = false
-            )
-            _state.value = updatedState
-        }
-
+    fun buttonEnabled(): Boolean {
+        val state = _state.value
+        return loginInteractors.validateEmailUseCase(state.email) &&
+                loginInteractors.validatePasswordUseCase(state.password)
     }
-
 }
