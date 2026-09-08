@@ -211,21 +211,7 @@ To ensure long-term maintainability and architectural purity during the global m
 ## Automation & Maintenance
 
 ### Visual Regression (Roborazzi)
-Utilizes the **Roborazzi Automated Preview Scanner** for JVM-speed visual regression.
-
-#### 📁 Storage & Persistence
-- **Golden Images Path**: `app/src/test/snapshots/`
-- All visual snapshots are committed to the repository to serve as the baseline for CI/CD.
-
-#### ⚠️ Critical Environment Requirements:
-*   **JDK 21 (MANDATORY)**: As the project targets SDK 36 (Android 16), **Java 21** is required for Robolectric/Roborazzi.
-*   **Test Application Isolation**: Robolectric tests use `TestMeteoMartoApp` to avoid infrastructure leaks (Firebase/Hilt).
-*   **Private Previews**: We use `includePrivatePreviews = true` in Gradle to ensure all component variants are captured without leaking internal Previews to the public API.
-*   **Stateless Previews**: `@Preview` functions MUST be **100% Stateless** to be scannable.
-
-#### Developer Workflow:
-- **Recording**: Run `./gradlew :app:recordRoborazziPreDebug` to store reference images.
-- **Verification**: Run `./gradlew :app:verifyRoborazziPreDebug` during development or before PRs.
+Visual regression is handled via Roborazzi on the JVM. For technical instructions on how to record and verify snapshots, refer to the project's [Testing Strategy Guide](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/docs/testing_strategy_guide.md).
 
 ### CI/CD Integration
 The **GitHub Actions** pipeline (`design-system-ci.yml`) is triggered on every **Push** or **Pull Request** to `main`, `develop`, or any `feature/**` branch that modifies Design System components or tokens.
