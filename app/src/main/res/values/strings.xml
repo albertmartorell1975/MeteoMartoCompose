@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MeteoMartoCompose</string>
     <string name="login">Login</string>
+    <string name="login_call_to_action">Already have an account? Login</string>
     <string name="label_email_text_field">Email</string>
     <string name="label_password_text_field">Password</string>
     <string name="placeholder_email_text_field">Type your wonderful e-mail</string>

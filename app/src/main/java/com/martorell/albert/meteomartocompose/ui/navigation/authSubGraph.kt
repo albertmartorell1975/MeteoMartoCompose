@@ -31,11 +31,13 @@ fun NavGraphBuilder.authSubGraph(
 
         composable<AuthScreens.SignUp> {
             SignUpScreen(
+                snackbarHostState = appState.snackbarHostState,
                 goToDashboard = {
                     appState.navigate(SubGraphs.Dashboard) {
                         popUpTo(SubGraphs.Auth) { inclusive = true }
                     }
-                }
+                },
+                goToLogin = { appState.navigateUp() }
             )
         }
 
