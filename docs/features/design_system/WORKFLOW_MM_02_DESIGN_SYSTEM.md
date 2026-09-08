@@ -18,6 +18,7 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] Implement `FndSpacing.kt` (Reference scale: XS=4dp, S=8dp, M=16dp, L=24dp, XL=32dp).
 - [x] Implement `FndColors.kt` (Semantic roles mapping Material 3 Expressive).
 - [x] Implement `FndTypography.kt` (Mapping Display, Headline, Body using Roboto Flex Variable Font).
+- [x] Implement `FndDimensions.kt` (Standardized widths and heights to avoid magic literals).
 - [x] Create `DesignSystem.kt` (CompositionLocals provider).
 - [x] Implement `FndDensityProvider.kt` with DataStore persistence for pinch-to-zoom.
 - [x] **MANDATORY**: Execute `compiler` skill verification suite.

@@ -105,9 +105,19 @@ The design system propagates tokens through the composition tree using specializ
 | Token Type     | Key                  | Propagation Method          | Change Frequency   |
 | :------------- | :------------------- | :-------------------------- | :----------------- |
 | **Spacing**    | `LocalFndSpacing`    | `staticCompositionLocalOf`  | **Low**            |
+| **Dimensions** | `LocalFndDimensions` | `staticCompositionLocalOf`  | **Low**            |
 | **Colors**     | `LocalFndColors`     | `compositionLocalOf`        | **Medium** (Theme) |
 | **Typography** | `LocalFndTypography` | `staticCompositionLocalOf`  | **Low**            |
 | **Density**    | `LocalDensity`       | Overridden via `Provider`   | **Medium** (Zoom)  |
+
+### Dimensions & Fixed Sizes (`FndDimensions.kt`)
+To avoid "Magic Literals" and ensure visual alignment across forms and controls, we centralize structural dimensions.
+
+| Token | Value | Rationale |
+| :--- | :--- | :--- |
+| **`buttonHeight`** | 48.dp | **A11y Standard**: Ensures the minimum touch target for interactive elements. |
+| **`buttonMinWidth`** | 200.dp | Prevents layout "jumping" and provides a stable visual anchor for actions. |
+| **`authFormWidth`** | 300.dp | Standardized width for authentication inputs to ensure consistency in LargeFont/RTL scenarios. |
 
 ### Typography Reference (Material 3)
 We strictly follow the **Material 3 Type Scale**. These values are the foundation for `FndTypography.kt`.
