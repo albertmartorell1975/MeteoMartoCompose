@@ -19,6 +19,11 @@ object MeteoMartoTheme {
         @ReadOnlyComposable
         get() = LocalFndSpacing.current
 
+    val dimensions: FndDimensions
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalFndDimensions.current
+
     val colors: FndColors
         @Composable
         @ReadOnlyComposable
@@ -73,6 +78,7 @@ fun MeteoMartoTheme(
             LocalFndSpacing provides FndSpacing(),
             LocalFndColors provides colors,
             LocalFndTypography provides FndTypography(),
+            LocalFndDimensions provides FndDimensions(),
         ) {
             MaterialTheme(
                 colorScheme = colorScheme,

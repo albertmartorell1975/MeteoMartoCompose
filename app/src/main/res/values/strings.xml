@@ -70,4 +70,6 @@
     <string name="high_temp_alert_icon_description">High temperature warning icon</string>
     <string name="weather_icon_description">Weather condition icon</string>
 
+    <string name="error_invalid_email">Invalid email format</string>
+    <string name="error_invalid_password">Password is too short</string>
 </resources>

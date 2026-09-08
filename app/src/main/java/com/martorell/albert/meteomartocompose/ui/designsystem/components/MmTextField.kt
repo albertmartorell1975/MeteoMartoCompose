@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -60,7 +61,7 @@ fun MmTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier,
+            modifier = Modifier.fillMaxWidth(),
             label = label,
             placeholder = placeholder,
             leadingIcon = leadingIcon,
@@ -85,6 +86,7 @@ private fun MmTextFieldPreview() {
             verticalArrangement = Arrangement.spacedBy(MeteoMartoTheme.spacing.small),
         ) {
             MmTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = "Standard Input",
                 onValueChange = {},
                 label = { MmText.LabelSmall("Email") },
