@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,19 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPrimaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
-import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 @Composable
@@ -29,47 +26,59 @@ fun TermsScreen(
     modifier: Modifier = Modifier,
     goToLogin: () -> Unit
 ) {
-    // Standard Compose pattern: A single scrollable Column with Arrangement.Center 
-    // handles centering when content is small and scrolling when it's large.
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(LocalFndSpacing.current.medium),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    TermsContent(
+        modifier = modifier,
+        onAcceptClick = goToLogin
+    )
+}
+
+@Composable
+fun TermsContent(
+    modifier: Modifier = Modifier,
+    onAcceptClick: () -> Unit
+) {
+    // El Box actua com a contenidor arrel per centrar la columna a la pantalla.
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
+        // Una única Column que gestiona el scroll, l'amplada màxima i l'espaiat.
         Column(
-            modifier = Modifier.widthIn(max = 600.dp),
+            modifier = Modifier
+                .widthIn(max = MeteoMartoTheme.dimensions.maxContentWidth)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(MeteoMartoTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            verticalArrangement = Arrangement.spacedBy(
+                MeteoMartoTheme.spacing.small,
+                Alignment.CenterVertically
+            )
         ) {
-            Text(
-                modifier = Modifier.padding(top = dimensionResource(R.dimen.standard_height)),
+            MmText.TitleLarge(
+                modifier = Modifier.padding(top = MeteoMartoTheme.spacing.large),
                 text = stringResource(R.string.terms_and_conditions),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = MeteoMartoTheme.colors.primary
             )
 
-            Text(
-                modifier = Modifier.padding(dimensionResource(R.dimen.standard_height)),
+            MmText.BodyLarge(
+                modifier = Modifier.padding(vertical = MeteoMartoTheme.spacing.large),
                 text = stringResource(R.string.terms_conditions_content),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary
+                color = MeteoMartoTheme.colors.secondary
             )
 
-            Button(
-                onClick = { goToLogin() },
+            MmPrimaryButton(
+                onClick = onAcceptClick,
                 modifier = Modifier
-                    .widthIn(min = 200.dp)
-                    .height(dimensionResource(R.dimen.standard_height_button))
+                    .widthIn(min = MeteoMartoTheme.dimensions.buttonMinWidth)
+                    .height(MeteoMartoTheme.dimensions.buttonHeight)
             ) {
-                Text(
+                MmText.BodyMedium(
                     text = stringResource(R.string.accept)
                 )
             }
 
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.standard_height)))
+            Spacer(modifier = Modifier.height(MeteoMartoTheme.spacing.large))
         }
     }
 }
@@ -79,6 +88,6 @@ fun TermsScreen(
 @Composable
 private fun TermsScreenPreview() {
     MeteoMartoTheme {
-        TermsScreen(goToLogin = {})
+        TermsContent(onAcceptClick = {})
     }
 }
