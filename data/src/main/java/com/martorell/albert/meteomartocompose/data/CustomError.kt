@@ -17,25 +17,16 @@ sealed class CustomError {
 
     class FirebaseError(val code: Int) : CustomError()
     data object Connectivity : CustomError()
+    data object InvalidCredentials : CustomError()
     class Unknown(val message: String) : CustomError()
 }
 
 fun Exception.toCustomError(): CustomError =
-
     when (this) {
-
-        is IOException ->
-            CustomError.Connectivity
-
-        is HttpException ->
-
-            CustomError.FirebaseError(code())
-
-        else ->
-            CustomError.Unknown(message ?: "")
-
+        is IOException -> CustomError.Connectivity
+        is HttpException -> CustomError.FirebaseError(code())
+        else -> CustomError.Unknown(message ?: "")
     }
-
 
 inline fun <T> customTryCatch(action: () -> T): ResultResponse<T> = try {
     action().right()
