@@ -196,6 +196,11 @@ Adaptive scaffold that automatically switches between Bottom Bar, Nav Rail, or N
 - **Material 3 Adaptive**: Wraps `NavigationSuiteScaffold`.
 - **Integrated Scaffold**: Provides slots for `topBar` and `floatingActionButton`.
 
+### MmDialog
+Slot-based dialog component that wraps Material 3 `AlertDialog`.
+- **Testing Resilience**: Uses an internal `MmDialogPreviewLayout` to allow Roborazzi captures without multi-window overhead.
+- **Theme Integrity**: Force-propagates `onSurface` color to ensure readability in Dark Mode regardless of parent context.
+
 ---
 
 ## Integration & Migration Strategy (Phase 5)

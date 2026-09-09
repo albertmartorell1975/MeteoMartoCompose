@@ -33,6 +33,9 @@ android {
             isIncludeAndroidResources = true
             all {
                 it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
+                it.systemProperties["roborazzi.test.record"] = "true"
+                it.systemProperties["roborazzi.test.compare"] = "true"
+                it.systemProperties["roborazzi.test.verify"] = "true"
             }
         }
     }

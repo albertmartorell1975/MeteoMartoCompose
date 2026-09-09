@@ -40,7 +40,7 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
     - A new screen is migrated to the Design System.
     - The visual regression pipeline fails in CI due to intentional changes.
 - **Stateless Previews**: `@Preview` functions MUST be stateless and must not instantiate infrastructure-dependent components.
-- **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs SHOULD use a `Box` wrapper that mocks the dialog's appearance (background, shape, elevation) instead of the actual `AlertDialog` component.
+- **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs MUST NOT use the actual `AlertDialog` or `Dialog` components. Instead, they MUST use an internal layout (e.g., `MmDialogPreviewLayout`) that mimics the dialog's visual structure (Surface, shape, elevation) to ensure capture within the main test window.
 
 ## 5. Behavioral Matrix (Version Compliance)
 
