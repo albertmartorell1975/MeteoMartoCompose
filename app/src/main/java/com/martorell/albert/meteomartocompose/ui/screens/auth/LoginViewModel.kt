@@ -2,6 +2,7 @@ package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -27,7 +28,7 @@ class LoginViewModel @Inject constructor(
     val events: Flow<LoginEvent> = _events.receiveAsFlow()
 
     sealed interface LoginEvent {
-        object LoginError : LoginEvent
+        data class LoginError(val error: CustomError) : LoginEvent
     }
 
     data class UiState(
@@ -40,7 +41,8 @@ class LoginViewModel @Inject constructor(
         val isPasswordValid: Boolean = true,
         val passwordVisible: Boolean = false,
         val showError: Boolean = false,
-        val validUser: Boolean = false
+        val validUser: Boolean = false,
+        val error: CustomError? = null
     )
 
     fun performLogin() {
@@ -73,17 +75,18 @@ class LoginViewModel @Inject constructor(
                 password = currentPassword
             )
 
-            result.fold({
+            result.fold({ customError ->
                 _state.update {
                     it.copy(
                         validUser = false,
                         loading = false,
                         loginChecked = true,
                         showError = true,
-                        loginStatus = false
+                        loginStatus = false,
+                        error = customError
                     )
                 }
-                viewModelScope.launch { _events.send(LoginEvent.LoginError) }
+                viewModelScope.launch { _events.send(LoginEvent.LoginError(customError)) }
             }) {
                 _state.update {
                     it.copy(

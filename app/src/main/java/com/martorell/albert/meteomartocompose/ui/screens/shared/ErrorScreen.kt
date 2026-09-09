@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,13 +30,15 @@ import com.martorell.albert.meteomartocompose.data.CustomError
 fun ErrorScreen(
     customError: CustomError,
     setTryAgainState: () -> Unit,
-    onBackHandlerAction:() ->Unit
+    onBackHandlerAction: () -> Unit
 ) {
 
+    val context = LocalContext.current
     val message = when (customError) {
-        CustomError.Connectivity -> "Connectivity error"
-        is CustomError.FirebaseError -> "Server error"
-        is CustomError.Unknown -> "CustomError error: ${customError.message}"
+        CustomError.Connectivity -> context.getString(R.string.error_connectivity)
+        is CustomError.FirebaseError -> context.getString(R.string.error_firebase)
+        is CustomError.InvalidCredentials -> context.getString(R.string.error_invalid_credentials)
+        is CustomError.Unknown -> context.getString(R.string.error_unknown)
     }
 
     Column(

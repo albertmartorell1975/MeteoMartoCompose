@@ -28,7 +28,7 @@ class SignUpViewModel @Inject constructor(
     val events: Flow<SignUpEvent> = _events.receiveAsFlow()
 
     sealed interface SignUpEvent {
-        object SignUpError : SignUpEvent
+        data class SignUpError(val error: CustomError) : SignUpEvent
     }
 
     data class UiState(
@@ -86,7 +86,7 @@ class SignUpViewModel @Inject constructor(
                         error = customError
                     )
                 }
-                viewModelScope.launch { _events.send(SignUpEvent.SignUpError) }
+                viewModelScope.launch { _events.send(SignUpEvent.SignUpError(customError)) }
             }) {
                 _state.update {
                     it.copy(

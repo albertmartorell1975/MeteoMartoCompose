@@ -60,6 +60,7 @@
     <!-- Error States -->
     <string name="error_connectivity">Connectivity error</string>
     <string name="error_firebase">Server error</string>
+    <string name="error_invalid_credentials">Invalid email or password</string>
     <string name="error_unknown">Unknown error</string>
 
     <!-- High Temperature Notification -->

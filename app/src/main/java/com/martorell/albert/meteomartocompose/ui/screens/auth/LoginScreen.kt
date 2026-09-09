@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -46,6 +47,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTerti
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTextField
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
+import com.martorell.albert.meteomartocompose.ui.mappers.asStringRes
 
 @Composable
 fun LoginScreen(
@@ -56,6 +58,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState()
 
     LaunchedEffect(state.value.validUser) {
@@ -64,15 +67,14 @@ fun LoginScreen(
         }
     }
 
-    val loginFailureMessage = stringResource(R.string.title_login_snack_bar)
     val loginFailureAction = stringResource(R.string.action_login_snack_bar)
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                LoginViewModel.LoginEvent.LoginError -> {
+                is LoginViewModel.LoginEvent.LoginError -> {
                     snackbarHostState.showSnackbar(
-                        message = loginFailureMessage,
+                        message = context.getString(event.error.asStringRes()),
                         actionLabel = loginFailureAction,
                         duration = SnackbarDuration.Short
                     )

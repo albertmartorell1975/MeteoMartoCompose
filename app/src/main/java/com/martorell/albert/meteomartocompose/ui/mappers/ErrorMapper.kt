@@ -14,6 +14,7 @@ fun CustomError.asStringRes(): Int {
     return when (this) {
         is CustomError.Connectivity -> R.string.error_connectivity
         is CustomError.FirebaseError -> R.string.error_firebase
+        is CustomError.InvalidCredentials -> R.string.error_invalid_credentials
         is CustomError.Unknown -> R.string.error_unknown
     }
 }

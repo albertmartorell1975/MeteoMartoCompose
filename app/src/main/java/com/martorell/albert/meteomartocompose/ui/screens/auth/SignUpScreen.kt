@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -46,6 +47,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTerti
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTextField
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
+import com.martorell.albert.meteomartocompose.ui.mappers.asStringRes
 
 @Composable
 fun SignUpScreen(
@@ -55,6 +57,7 @@ fun SignUpScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = hiltViewModel<SignUpViewModel>(),
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState()
 
     LaunchedEffect(state.value.validUser) {
@@ -63,15 +66,14 @@ fun SignUpScreen(
         }
     }
 
-    val signUpFailureMessage = stringResource(R.string.title_login_snack_bar) // Reusing for now, should ideally have its own
     val signUpFailureAction = stringResource(R.string.action_login_snack_bar)
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                SignUpViewModel.SignUpEvent.SignUpError -> {
+                is SignUpViewModel.SignUpEvent.SignUpError -> {
                     snackbarHostState.showSnackbar(
-                        message = signUpFailureMessage,
+                        message = context.getString(event.error.asStringRes()),
                         actionLabel = signUpFailureAction,
                         duration = SnackbarDuration.Short
                     )
