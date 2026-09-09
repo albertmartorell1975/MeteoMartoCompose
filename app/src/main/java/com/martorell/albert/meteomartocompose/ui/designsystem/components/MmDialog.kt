@@ -53,9 +53,15 @@ private fun MmDialogPreview() {
                 .padding(MeteoMartoTheme.spacing.large)
         ) {
             Column {
-                MmText.HeadlineMedium("Confirm Action")
+                MmText.HeadlineMedium(
+                    text = "Confirm Action",
+                    color = MeteoMartoTheme.colors.onSurface
+                )
                 Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
-                MmText.BodyMedium("Are you sure you want to proceed?")
+                MmText.BodyMedium(
+                    text = "Are you sure you want to proceed?",
+                    color = MeteoMartoTheme.colors.onSurface
+                )
                 Spacer(Modifier.height(MeteoMartoTheme.spacing.large))
                 Row(
                     modifier = Modifier.fillMaxWidth(),

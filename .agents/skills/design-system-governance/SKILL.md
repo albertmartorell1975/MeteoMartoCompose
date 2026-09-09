@@ -34,7 +34,13 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 - **JDK 21**: Mandatory for projects targeting SDK 36+ (Robolectric/Roborazzi simulation).
 - **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `@MMPreview`) for common configurations.
 - **Pragmatic Snapshots**: Do not blindly follow a 16-permutation rule. Determine significant behavioral dimensions per component for Roborazzi verification to avoid snapshot bloat.
+- **Snapshot Regeneration Trigger**: New snapshots MUST be generated (`recordRoborazzi*` tasks) whenever:
+    - A Design Token (Color, Spacing, Typography, Dimension) is modified.
+    - A Design System component (`Mm*`) layout or internal style is changed.
+    - A new screen is migrated to the Design System.
+    - The visual regression pipeline fails in CI due to intentional changes.
 - **Stateless Previews**: `@Preview` functions MUST be stateless and must not instantiate infrastructure-dependent components.
+- **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs SHOULD use a `Box` wrapper that mocks the dialog's appearance (background, shape, elevation) instead of the actual `AlertDialog` component.
 
 ## 5. Behavioral Matrix (Version Compliance)
 
