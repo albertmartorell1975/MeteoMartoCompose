@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.jacoco)
 }
 
 apply(from = "../flavors.gradle")
@@ -192,4 +193,55 @@ dependencies {
     // Debugging Tools
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+/**
+ * The below section goal is to config the Jacoco test coverage plugin.
+ */
+val fileFilter = mutableSetOf(
+    "**/R.class",
+    "**/R$*.class",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+    "**/*Test*.*",
+    "android/**/*.*",
+    "**/*$[0-9]*.*",
+    "**/*_Factory*.*",
+    "**/*_MembersInjector*.*",
+    "**/*_Component*.*",
+    "**/*_Module*.*",
+    "**/*Hilt*.*",
+    "hilt_aggregated_deps/**",
+    "**/*Screen*.*",
+    "**/*Preview*.*"
+)
+
+tasks.withType<Test> {
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testPreDebugUnitTest")
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for the preDebug build."
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    val debugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/preDebug") {
+        exclude(fileFilter)
+    }
+    
+    val mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files(mainSrc))
+    classDirectories.setFrom(files(debugTree))
+    executionData.setFrom(fileTree(layout.buildDirectory.get()) {
+        include("jacoco/testPreDebugUnitTest.exec")
+    })
 }

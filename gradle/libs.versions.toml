@@ -139,5 +139,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 # Design System Verification & Docs
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+# Test coverage
+jacoco = { id = "jacoco" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
