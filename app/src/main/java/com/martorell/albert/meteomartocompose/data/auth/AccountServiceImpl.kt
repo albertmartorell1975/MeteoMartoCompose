@@ -1,12 +1,13 @@
 package com.martorell.albert.meteomartocompose.data.auth
 
+import arrow.core.left
 import arrow.core.right
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.data.auth.mappers.AuthErrorMapper
 import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
-import com.martorell.albert.meteomartocompose.data.customTryCatch
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import com.martorell.albert.meteomartocompose.utils.toDomain
 import kotlinx.coroutines.channels.awaitClose
@@ -31,36 +32,23 @@ class AccountServiceImpl @Inject constructor() : AccountService {
     override suspend fun hasUser(): Boolean =
         Firebase.auth.currentUser != null
 
-    override suspend fun singUp(email: String, password: String):
-            ResultResponse<UserDomain?> =
-
-        customTryCatch {
-
-            val result = Firebase.auth.createUserWithEmailAndPassword(
-                email,
-                password,
-            ).await()
-
-            return result.user?.toDomain().right()
-
-        }
+    override suspend fun singUp(email: String, password: String): ResultResponse<UserDomain?> =
+        runCatching {
+            Firebase.auth.createUserWithEmailAndPassword(email, password).await()
+        }.fold(
+            onSuccess = { result -> result.user?.toDomain().right() },
+            onFailure = { ex -> AuthErrorMapper.map(ex).left() },
+        )
 
     override suspend fun logIn(email: String, password: String): ResultResponse<UserDomain?> =
-
-        customTryCatch {
-
-            val result = Firebase.auth.signInWithEmailAndPassword(
-                email,
-                password,
-            ).await()
-
-            return result.user?.toDomain().right()
-
-        }
+        runCatching {
+            Firebase.auth.signInWithEmailAndPassword(email, password).await()
+        }.fold(
+            onSuccess = { result -> result.user?.toDomain().right() },
+            onFailure = { ex -> AuthErrorMapper.map(ex).left() },
+        )
 
     override fun signOut() {
-
         Firebase.auth.signOut()
-
     }
 }
