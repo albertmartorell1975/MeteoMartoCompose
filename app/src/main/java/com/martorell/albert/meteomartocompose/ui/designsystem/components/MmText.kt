@@ -48,6 +48,14 @@ object MmText {
     ) = MmText(text, MeteoMartoTheme.typography.headlineMedium, modifier, color, textAlign)
 
     @Composable
+    fun TitleLarge(
+        text: String,
+        modifier: Modifier = Modifier,
+        color: Color = Color.Unspecified,
+        textAlign: TextAlign? = null,
+    ) = MmText(text, MeteoMartoTheme.typography.titleLarge, modifier, color, textAlign)
+
+    @Composable
     fun BodyLarge(
         text: String,
         modifier: Modifier = Modifier,
