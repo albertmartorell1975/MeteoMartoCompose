@@ -49,8 +49,8 @@ This document serves as the granular checklist and architectural roadmap for the
 - [ ] **MANDATORY**: Consult `AGENTS.md` for UI/UX Engineer standards.
 - [ ] **Auth Module Migration**:
     - [x] **LoginScreen**: Migrate to `MmNavigation` (hoisted), `MmTextField`, `MmPrimaryButton`, `MmTertiaryButton`, and `MmLoadingOverlay`.
-    - [ ] **SignUpScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmErrorState`, and `MmLoadingOverlay`.
-    - [ ] **TermsScreen**: Migrate to `MmNavigation`, `MmText.BodyLarge`, and `MmPrimaryButton`.
+    - [x] **SignUpScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmErrorState`, and `MmLoadingOverlay`.
+    - [x] **TermsScreen**: Migrate to `MmNavigation`, `MmText.BodyLarge`, and `MmPrimaryButton`.
 - [ ] **City Module Migration**:
     - [ ] **CityWeatherScreen**: Migrate to `MmText`, `FndSpacing`, and adaptive components.
     - [ ] **HighTemperatureAlertScreen**: Migrate to `MmText` and `MmPrimaryButton`.
