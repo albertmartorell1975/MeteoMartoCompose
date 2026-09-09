@@ -134,7 +134,7 @@ class LoginViewModelTest {
             viewModel.performLogin()
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertEquals(LoginViewModel.LoginEvent.LoginError, awaitItem())
+            assertEquals(LoginViewModel.LoginEvent.LoginError(error), awaitItem())
             val finalState = viewModel.state.value
             assertFalse(finalState.validUser)
             assertTrue(finalState.loginChecked)

@@ -133,7 +133,7 @@ class SignUpViewModelTest {
             viewModel.performSignUp()
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertEquals(SignUpViewModel.SignUpEvent.SignUpError, awaitItem())
+            assertEquals(SignUpViewModel.SignUpEvent.SignUpError(error), awaitItem())
             val finalState = viewModel.state.value
             assertFalse(finalState.validUser)
             assertTrue(finalState.signUpChecked)
