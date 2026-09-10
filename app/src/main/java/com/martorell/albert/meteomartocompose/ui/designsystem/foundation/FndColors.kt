@@ -17,6 +17,8 @@ data class FndColors(
     val onSurface: Color,
     val error: Color,
     val onError: Color,
+    val errorContainer: Color,
+    val onErrorContainer: Color,
     val success: Color,
     val onSuccess: Color,
     val isLight: Boolean
@@ -31,6 +33,8 @@ val FndColorsLight = FndColors(
     onSurface = Color(0xFF1C1B1F),
     error = Color(0xFFB3261E),
     onError = Color.White,
+    errorContainer = Color(0xFFF9DEDC),
+    onErrorContainer = Color(0xFF410E0B),
     success = Color(0xFF2E7D32),
     onSuccess = Color.White,
     isLight = true
@@ -45,6 +49,8 @@ val FndColorsDark = FndColors(
     onSurface = Color(0xFFE6E1E5),
     error = Color(0xFFF2B8B5),
     onError = Color(0xFF601410),
+    errorContainer = Color(0xFF8C1D18),
+    onErrorContainer = Color(0xFFF9DEDC),
     success = Color(0xFF81C784),
     onSuccess = Color(0xFF003300),
     isLight = false

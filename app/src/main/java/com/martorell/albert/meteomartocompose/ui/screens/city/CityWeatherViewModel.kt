@@ -23,6 +23,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the City Weather screen.
+ *
+ * This state holder follows the Passive Initialization Mandate: it does not trigger any
+ * side effects (like coroutines or API calls) in its [init] block. All work is triggered
+ * explicitly by the UI or through declarative streams.
+ *
+ * @property cityWeatherInteractors A data class containing all use cases required for this feature.
+ */
 @HiltViewModel
 class CityWeatherViewModel @Inject constructor(
     private val cityWeatherInteractors: CityWeatherInteractors,
@@ -50,35 +59,6 @@ class CityWeatherViewModel @Inject constructor(
         val isHighTempAlertActive: Boolean = false,
     )
 
-    init {
-
-        viewModelScope.launch {
-
-            getCurrentLocationStarted()
-
-        }
-
-        viewModelScope.launch {
-            cityWeatherInteractors.checkTemperatureThresholdUseCase()
-                .collect { result ->
-                    Log.d(
-                        "TempAlert",
-                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
-                    )
-                    
-                    _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
-
-                    if (result.showAlert) {
-                        _events.send(result)
-                        cityWeatherInteractors.markCityAlertNotifiedUseCase(result.cityName, true)
-                    } else if (!result.isPersistentAlertActive) {
-                        cityWeatherInteractors.markCityAlertNotifiedUseCase(result.cityName, false)
-                    }
-                }
-        }
-
-    }
-
     fun gpsDialogHid() {
 
         _state.update {
@@ -86,7 +66,7 @@ class CityWeatherViewModel @Inject constructor(
                 loading = false,
                 showGPSDialog = false,
                 errorLocation = null,
-                coordinates = Either.Right(CurrentLocationDomain())
+                coordinates = Either.Right(CurrentLocationDomain()),
             )
         }
 
@@ -97,7 +77,7 @@ class CityWeatherViewModel @Inject constructor(
         _state.update {
             it.copy(
                 locationChecked = true,
-                showRationale = true
+                showRationale = true,
             )
         }
 
@@ -116,94 +96,107 @@ class CityWeatherViewModel @Inject constructor(
 
     }
 
-    suspend fun getCurrentLocationStarted() {
+    fun onOpenAppSettingsClicked() {
+        cityWeatherInteractors.openAppSettingsUseCase()
+    }
 
-        _state.update {
-            it.copy(
-                loading = true,
-                errorLocation = null,
-                locationChecked = false,
-                showGPSDialog = false,
-                showRationale = false
-            )
-        }
+    fun onOpenLocationSettingsClicked() {
+        cityWeatherInteractors.openLocationSettingsUseCase()
+    }
 
-        val locationGranted = cityWeatherInteractors.checkLocationPermissionsUseCase.invoke()
-        val notificationsGranted =
-            cityWeatherInteractors.checkNotificationPermissionUseCase.invoke()
-        val allPermissionsGranted = locationGranted && notificationsGranted
+    /**
+     * Initiates the flow to get the current location and load weather data.
+     * Handles permission checks and GPS status internally.
+     */
+    fun getCurrentLocationStarted() {
 
-        if (allPermissionsGranted) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    loading = true,
+                    errorLocation = null,
+                    locationChecked = false,
+                    showGPSDialog = false,
+                    showRationale = false
+                )
+            }
 
-            if (cityWeatherInteractors.isGPSEnableUseCase.invoke()) {
+            val locationGranted = cityWeatherInteractors.checkLocationPermissionsUseCase.invoke()
+            val notificationsGranted =
+                cityWeatherInteractors.checkNotificationPermissionUseCase.invoke()
+            val allPermissionsGranted = locationGranted && notificationsGranted
 
-                val currentLocation = cityWeatherInteractors.currentLocationUseCase.invoke()
+            if (allPermissionsGranted) {
 
-                currentLocation.fold({
+                if (cityWeatherInteractors.isGPSEnableUseCase.invoke()) {
 
-                    // current location not loaded
+                    val currentLocation = cityWeatherInteractors.currentLocationUseCase.invoke()
+
+                    currentLocation.fold({
+
+                        // current location not loaded
+                        _state.update { updatedState ->
+                            updatedState.copy(
+                                loading = false,
+                                showGPSDialog = true,
+                                errorLocation = it,
+                                locationChecked = true,
+                                permissionsGranted = true,
+                            )
+                        }
+
+                    }) {
+
+                        // current location loaded
+                        cityWeatherInteractors.saveLocationUseCase.invoke(
+                            latitude = it.latitude, longitude = it.longitude
+                        )
+
+                        _state.update { updatedState ->
+                            updatedState.copy(
+                                loading = true,
+                                coordinates = currentLocation,
+                                showGPSDialog = false,
+                                errorLocation = null,
+                                errorForecast = null,
+                                locationChecked = true,
+                                permissionsGranted = true,
+                            )
+                        }
+
+                        loadCityWeather()
+
+                    }
+
+                } else {
+
+                    // GPS is not enabled
                     _state.update { updatedState ->
                         updatedState.copy(
                             loading = false,
-                            showGPSDialog = true,
-                            errorLocation = it,
-                            locationChecked = true,
-                            permissionsGranted = true,
-                        )
-                    }
-
-                }) {
-
-                    // current location loaded
-                    cityWeatherInteractors.saveLocationUseCase.invoke(
-                        latitude = it.latitude, longitude = it.longitude
-                    )
-
-                    _state.update { updatedState ->
-                        updatedState.copy(
-                            loading = true,
-                            coordinates = currentLocation,
-                            showGPSDialog = false,
                             errorLocation = null,
-                            errorForecast = null,
-                            locationChecked = true,
                             permissionsGranted = true,
+                            locationChecked = true,
+                            showGPSDialog = true
                         )
                     }
-
-                    loadCityWeather()
 
                 }
 
             } else {
 
-                // GPS is not enabled
+                // Permissions are not granted
                 _state.update { updatedState ->
                     updatedState.copy(
                         loading = false,
                         errorLocation = null,
-                        permissionsGranted = true,
-                        locationChecked = true,
-                        showGPSDialog = true
+                        permissionsGranted = false,
+                        locationChecked = true
                     )
                 }
 
             }
-
-        } else {
-
-            // Permissions are not granted
-            _state.update { updatedState ->
-                updatedState.copy(
-                    loading = false,
-                    errorLocation = null,
-                    permissionsGranted = false,
-                    locationChecked = true
-                )
-            }
-
         }
-
     }
 
     private suspend fun loadCityWeather() {
@@ -290,6 +283,37 @@ class CityWeatherViewModel @Inject constructor(
             )
         }
 
+    }
+
+    /**
+     * Starts monitoring temperature thresholds using a declarative stream.
+     * This function should be called by the UI when it's ready to receive alerts.
+     */
+    fun startMonitoring() {
+        viewModelScope.launch {
+            cityWeatherInteractors.checkTemperatureThresholdUseCase()
+                .collect { result ->
+                    Log.d(
+                        "TempAlert",
+                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
+                    )
+
+                    _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
+
+                    if (result.showAlert) {
+                        _events.send(result)
+                        cityWeatherInteractors.markCityAlertNotifiedUseCase(
+                            cityName = result.cityName,
+                            notified = true
+                        )
+                    } else if (!result.isPersistentAlertActive) {
+                        cityWeatherInteractors.markCityAlertNotifiedUseCase(
+                            cityName = result.cityName,
+                            notified = false
+                        )
+                    }
+                }
+        }
     }
 
     fun getRequiredPermissions(): List<String> = cityWeatherInteractors.getWeatherPermissionsUseCase()

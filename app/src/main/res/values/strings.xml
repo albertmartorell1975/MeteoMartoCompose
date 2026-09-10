@@ -33,11 +33,11 @@
     <string name="permissions_rationale_action">Open Settings</string>
     <string name="location_rationale_action">Accept</string>
     <string name="location_rationale_cancel">Cancel</string>
-    <string name="city_current_temperature">"Temperature: "</string>
-    <string name="city_min_temperature">"Min: "</string>
-    <string name="city_max_temperature">"Max: "</string>
-    <string name="city_pressure">"Pressure: "</string>
-    <string name="city_rain">"Rain: "</string>
+    <string name="city_current_temperature">Temperature: %s</string>
+    <string name="city_min_temperature">Min: %s</string>
+    <string name="city_max_temperature">Max: %s</string>
+    <string name="city_pressure">Pressure: %s</string>
+    <string name="city_rain">Rain: %s</string>
     <string name="city_forecast_error">Failed to find out the city forecast</string>
     <string name="favorite">Favorite</string>
     <string name="no_favorites_cities">There are no cities added as \'Favorite\'</string>

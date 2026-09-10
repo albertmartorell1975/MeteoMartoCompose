@@ -59,6 +59,8 @@ fun MeteoMartoTheme(
             onSurface = colors.onSurface,
             error = colors.error,
             onError = colors.onError,
+            errorContainer = colors.errorContainer,
+            onErrorContainer = colors.onErrorContainer,
         )
 
         else -> lightColorScheme(
@@ -69,7 +71,9 @@ fun MeteoMartoTheme(
             surface = colors.surface,
             onSurface = colors.onSurface,
             error = colors.error,
-            onError = colors.onError
+            onError = colors.onError,
+            errorContainer = colors.errorContainer,
+            onErrorContainer = colors.onErrorContainer,
         )
     }
 

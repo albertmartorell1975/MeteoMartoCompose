@@ -11,6 +11,7 @@ data class FndDimensions(
     val buttonHeight: Dp = 48.dp,
     val authFormWidth: Dp = 300.dp,
     val maxContentWidth: Dp = 600.dp,
+    val alertIconSize: Dp = 80.dp,
 )
 
 val LocalFndDimensions = staticCompositionLocalOf { FndDimensions() }

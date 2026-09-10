@@ -5,28 +5,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.martorell.albert.meteomartocompose.R
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPrimaryButton
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
-import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 @Composable
@@ -38,60 +35,60 @@ fun HighTemperatureAlertScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.errorContainer)
+            .background(MeteoMartoTheme.colors.errorContainer)
             .safeDrawingPadding()
-            .padding(LocalFndSpacing.current.medium)
+            .padding(MeteoMartoTheme.spacing.medium),
     ) {
         IconButton(
             onClick = onDismiss,
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier.align(Alignment.TopEnd),
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onErrorContainer
+                contentDescription = stringResource(R.string.back),
+                tint = MeteoMartoTheme.colors.onErrorContainer
             )
         }
 
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = null,
-                modifier = Modifier.padding(bottom = LocalFndSpacing.current.medium),
-                tint = MaterialTheme.colorScheme.error
+                modifier = Modifier
+                    .size(MeteoMartoTheme.dimensions.alertIconSize)
+                    .padding(bottom = MeteoMartoTheme.spacing.medium),
+                tint = MeteoMartoTheme.colors.error,
             )
-            Text(
+            MmText.HeadlineMedium(
                 text = stringResource(R.string.high_temp_notif_title),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                color = MeteoMartoTheme.colors.onErrorContainer,
+                textAlign = TextAlign.Center,
             )
-            Text(
+            MmText.BodyLarge(
                 text = stringResource(R.string.high_temp_notif_content, temperature),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onErrorContainer,
+                color = MeteoMartoTheme.colors.onErrorContainer,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(
-                    top = LocalFndSpacing.current.medium,
-                    bottom = LocalFndSpacing.current.extraLarge
-                )
+                    top = MeteoMartoTheme.spacing.medium,
+                    bottom = MeteoMartoTheme.spacing.extraLarge,
+                ),
             )
-            Button(
+            MmPrimaryButton(
                 onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth(0.6f)
+                modifier = Modifier.widthIn(max = MeteoMartoTheme.dimensions.authFormWidth),
             ) {
-                Text(text = stringResource(R.string.accept_warning))
+                MmText.BodyLarge(text = stringResource(R.string.accept_warning))
             }
         }
     }
 }
 
 @MmPreview
+@MmDevicePreview
 @Composable
 private fun HighTemperatureAlertScreenPreview() {
     MeteoMartoTheme {
@@ -101,4 +98,3 @@ private fun HighTemperatureAlertScreenPreview() {
         )
     }
 }
-
