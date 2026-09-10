@@ -2,9 +2,11 @@ package com.martorell.albert.meteomartocompose.di
 
 import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
 import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
+import com.martorell.albert.meteomartocompose.data.city.sources.SystemService
 import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
 import com.martorell.albert.meteomartocompose.framework.preferences.UserPreferencesImpl
+import com.martorell.albert.meteomartocompose.framework.system.AndroidSystemService
 import com.martorell.albert.meteomartocompose.utils.AndroidPermissionChecker
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserverImpl
@@ -41,4 +43,10 @@ abstract class AppBindingModule {
     abstract fun bindUserPreferences(
         impl: UserPreferencesImpl,
     ): UserPreferences
+
+    @Binds
+    @Singleton
+    abstract fun bindSystemService(
+        impl: AndroidSystemService,
+    ): SystemService
 }
