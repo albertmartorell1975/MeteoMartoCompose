@@ -40,6 +40,7 @@ This document serves as the granular checklist and architectural roadmap for the
     - [x] Classify components by risk level (Visual vs. Interactive vs. Adaptive).
     - [x] Configure key permutations: L/D Theme, 2.0x Font Scale (A11y), and RTL.
     - [x] Verify structure on different screen sizes (Compact/Medium/Expanded).
+    - [x] Generate initial snapshots for migrated feature screens (City Module).
 - [x] Generate KDoc via Dokka.
 - [x] Configure `.github/workflows/design-system-ci.yml`.
 - [x] **MANDATORY**: Execute `compiler` skill verification suite.
@@ -51,9 +52,9 @@ This document serves as the granular checklist and architectural roadmap for the
     - [x] **LoginScreen**: Migrate to `MmNavigation` (hoisted), `MmTextField`, `MmPrimaryButton`, `MmTertiaryButton`, and `MmLoadingOverlay`.
     - [x] **SignUpScreen**: Migrate to `MmNavigation`, `MmTextField`, `MmPrimaryButton`, `MmErrorState`, and `MmLoadingOverlay`.
     - [x] **TermsScreen**: Migrate to `MmNavigation`, `MmText.BodyLarge`, and `MmPrimaryButton`.
-- [ ] **City Module Migration**:
-    - [ ] **CityWeatherScreen**: Migrate to `MmText`, `FndSpacing`, and adaptive components.
-    - [ ] **HighTemperatureAlertScreen**: Migrate to `MmText` and `MmPrimaryButton`.
+- [x] **City Module Migration**:
+    - [x] **CityWeatherScreen**: Migrate to `MmText`, `FndSpacing`, and adaptive components.
+    - [x] **HighTemperatureAlertScreen**: Migrate to `MmText` and `MmPrimaryButton`.
 - [ ] **Favorites Module Migration**:
     - [ ] **FavoriteEmptyState**: Migrate to `MmText`.
     - [ ] **FavoriteItem**: Migrate to `MmText` and `FndSpacing`.
