@@ -16,4 +16,6 @@ data class CityWeatherInteractors @Inject constructor(
     val checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase,
     val markCityAlertNotifiedUseCase: MarkCityAlertNotifiedUseCase,
     val getWeatherPermissionsUseCase: GetWeatherPermissionsUseCase,
+    val openAppSettingsUseCase: OpenAppSettingsUseCase,
+    val openLocationSettingsUseCase: OpenLocationSettingsUseCase,
 )
