@@ -5,12 +5,12 @@
 ### Component Inventory (`ui/screens/shared/`)
 | Current Component | Status | Recommendation |
 | :--- | :--- | :--- |
-| `ErrorScreen` | Fragmented | Migrate to `MMErrorState` (Foundation). |
-| `CityTextView` | **REPLACED** | Migrated to `MMText` with semantic tokens (City Module). |
+| `ErrorScreen` | **REPLACED** | Migrated to `MMErrorState` with shared `@Composable` mappers. |
+| `CityTextView` | **REPLACED** | Migrated to `MMText` with semantic tokens (City/Favorites Module). |
 | `TextFieldCustom` | Partial Wrapper | Refactor into `MMTextField` with full M3 slot support. |
 | `SnackBarCustom` | Utility | Refactor into `MMSnackbar` extension. |
-| `AlertDialogCustom` | **REPLACED** | Migrated to `MMDialog` (City Module). |
-| `CircularProgressIndicatorCustom` | **REPLACED** | Migrated to `MMLoadingOverlay` (City Module). |
+| `AlertDialogCustom` | **REPLACED** | Migrated to `MMDialog` (City/Favorites Module). |
+| `CircularProgressIndicatorCustom` | **REPLACED** | Migrated to `MMLoadingOverlay` (City/Favorites Module). |
 
 ### Theme & Foundation Audit
 - **Colors**: Currently uses default M3 template colors (`Purple80`, etc.). Lacks semantic naming relevant to a weather app (e.g., `Sunny`, `Rainy`, `Warning`).

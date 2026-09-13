@@ -55,13 +55,13 @@ This document serves as the granular checklist and architectural roadmap for the
 - [x] **City Module Migration**:
     - [x] **CityWeatherScreen**: Migrate to `MmText`, `FndSpacing`, and adaptive components.
     - [x] **HighTemperatureAlertScreen**: Migrate to `MmText` and `MmPrimaryButton`.
-- [ ] **Favorites Module Migration**:
-    - [ ] **FavoriteEmptyState**: Migrate to `MmText`.
-    - [ ] **FavoriteItem**: Migrate to `MmText` and `FndSpacing`.
+- [x] **Favorites Module Migration**:
+    - [x] **FavoriteEmptyState**: Migrate to `MmText`.
+    - [x] **FavoriteItem**: Migrate to `MmText` and `FndSpacing`.
 - [x] **Architectural Enforcement**:
     - [x] **Stateless Screen Mandate**: Remove local `Scaffold` and `TopAppBar` from feature screens (hoist to `MmNavigation`). Follow [NAVIGATION_REFINEMENT.md](file:///Users/AlbertMartorell/Development/Android/MeteoMartoCompose/docs/features/design_system/NAVIGATION_REFINEMENT.md).
-    - [ ] **Typographic Boundary**: Replace all `androidx.compose.material3.Text` leaks with `MmText`.
-    - [ ] **Token Compliance**: Replace hardcoded `dp`/`sp` and `R.dimen`/`R.color` with `FndSpacing` and `FndColors`.
+    - [x] **Typographic Boundary**: Replace all `androidx.compose.material3.Text` leaks with `MmText`.
+    - [x] **Token Compliance**: Replace hardcoded `dp`/`sp` and `R.dimen`/`R.color` with `FndSpacing` and `FndColors`.
 - [ ] **Comprehensive Quality Audit**:
     - [ ] **Global UI Zoom**: Validate layout integrity during pinch-to-zoom (Density changes).
     - [ ] Android 15 Edge-to-Edge compliance.
