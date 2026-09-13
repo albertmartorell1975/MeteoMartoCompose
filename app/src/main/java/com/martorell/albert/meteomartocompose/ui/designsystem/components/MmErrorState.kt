@@ -55,6 +55,7 @@ fun MmErrorState(
 }
 
 @MmPreview
+@MmDevicePreview
 @Composable
 private fun MmErrorStatePreview() {
     MeteoMartoTheme {
