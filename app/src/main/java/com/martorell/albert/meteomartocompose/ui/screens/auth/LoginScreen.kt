@@ -47,7 +47,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTerti
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTextField
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
-import com.martorell.albert.meteomartocompose.ui.mappers.asStringRes
+import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
 
 @Composable
 fun LoginScreen(
@@ -74,7 +74,7 @@ fun LoginScreen(
             when (event) {
                 is LoginViewModel.LoginEvent.LoginError -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(event.error.asStringRes()),
+                        message = event.error.toMessage(context),
                         actionLabel = loginFailureAction,
                         duration = SnackbarDuration.Short
                     )

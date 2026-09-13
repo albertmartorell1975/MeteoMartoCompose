@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -28,8 +25,9 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
-import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 import com.martorell.albert.meteomartocompose.utils.previewAsyncImageCoil
 
@@ -46,10 +44,10 @@ fun FavoriteItem(
             .fillMaxSize()
             .clickable { clickOnRow() }) {
 
-        val spacing = LocalFndSpacing.current
+        val spacing = MeteoMartoTheme.spacing
         val (deleteIcon, cityName, weather, weatherIcon) = createRefs()
 
-        Text(
+        MmText.TitleLarge(
             modifier = Modifier
                 .constrainAs(cityName) {
                     top.linkTo(parent.top, margin = spacing.medium)
@@ -61,7 +59,6 @@ fun FavoriteItem(
             text = city.name,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
 
@@ -72,10 +69,9 @@ fun FavoriteItem(
                 .constrainAs(deleteIcon) {
                     top.linkTo(parent.top, margin = spacing.medium)
                     end.linkTo(parent.end, margin = spacing.medium)
-                    width = Dimension.fillToConstraints
                 }
                 .clickable { clickOnDelete() },
-            tint = Color.Black
+            tint = MeteoMartoTheme.colors.onSurface
         )
 
         AsyncImage(
@@ -95,58 +91,36 @@ fun FavoriteItem(
             contentScale = ContentScale.Crop
         )
 
-        city.weatherDescription?.also {
-            Text(
-                color = Color.DarkGray,
-                modifier = Modifier.constrainAs(weather) {
-                    top.linkTo(cityName.bottom, margin = spacing.small)
-                    bottom.linkTo(weatherIcon.bottom)
-                    start.linkTo(weatherIcon.end)
-                    end.linkTo(parent.end, margin = spacing.medium)
-                    width = Dimension.fillToConstraints
-                },
-                text = it,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium
-            )
-        } ?: run {
-
-            Text(
-                color = Color.DarkGray,
-                modifier = Modifier.constrainAs(weather) {
-                    top.linkTo(cityName.bottom, margin = spacing.small)
-                    bottom.linkTo(weatherIcon.bottom)
-                    start.linkTo(weatherIcon.end)
-                    end.linkTo(parent.end, margin = spacing.medium)
-                    width = Dimension.fillToConstraints
-                },
-                text = stringResource(R.string.weather_not_available),
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
+        MmText.TitleMedium(
+            color = MeteoMartoTheme.colors.onSurface.copy(alpha = 0.6f),
+            modifier = Modifier.constrainAs(weather) {
+                top.linkTo(cityName.bottom, margin = spacing.small)
+                bottom.linkTo(weatherIcon.bottom)
+                start.linkTo(weatherIcon.end)
+                end.linkTo(parent.end, margin = spacing.medium)
+                width = Dimension.fillToConstraints
+            },
+            text = city.weatherDescription ?: stringResource(R.string.weather_not_available),
+            overflow = TextOverflow.Ellipsis
+        )
 
     }
 
 }
 
-
-
 @OptIn(ExperimentalCoilApi::class)
 @MmPreview
+@MmDevicePreview
 @Composable
-private fun FavoriteItemPreview(
-    modifier: Modifier = Modifier,
-) {
+private fun FavoriteItemPreview() {
     MeteoMartoTheme {
-        val spacing = LocalFndSpacing.current
+        val spacing = MeteoMartoTheme.spacing
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
 
             // Create references for the composables to constrain
             val (deleteIcon, cityName, weather, weatherIcon) = createRefs()
 
-            Text(
+            MmText.TitleLarge(
                 modifier = Modifier
                     .constrainAs(cityName) {
                         top.linkTo(parent.top, margin = spacing.medium)
@@ -156,9 +130,7 @@ private fun FavoriteItemPreview(
                     },
                 text = "Sabadell",
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                overflow = TextOverflow.Ellipsis
             )
 
             Icon(
@@ -168,10 +140,9 @@ private fun FavoriteItemPreview(
                     .constrainAs(deleteIcon) {
                         top.linkTo(parent.top, margin = spacing.medium)
                         end.linkTo(parent.end, margin = spacing.medium)
-                        width = Dimension.fillToConstraints
                     }
                     .clickable {},
-                tint = Color.Black
+                tint = MeteoMartoTheme.colors.onSurface
             )
 
             CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageCoil) {
@@ -192,8 +163,8 @@ private fun FavoriteItemPreview(
                 )
             }
 
-            Text(
-                color = Color.DarkGray,
+            MmText.TitleMedium(
+                color = MeteoMartoTheme.colors.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.constrainAs(weather) {
                     top.linkTo(cityName.bottom, margin = spacing.small)
                     start.linkTo(weatherIcon.end, margin = spacing.medium)
@@ -201,8 +172,7 @@ private fun FavoriteItemPreview(
                     width = Dimension.fillToConstraints
                 },
                 text = "Sunny day in the city",
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium
+                overflow = TextOverflow.Ellipsis
             )
 
         }

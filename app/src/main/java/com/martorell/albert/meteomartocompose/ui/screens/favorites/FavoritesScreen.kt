@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -18,11 +16,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.martorell.albert.meteomartocompose.R
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDialog
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmErrorState
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmLoadingOverlay
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
-import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.LocalFndSpacing
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSecondaryButton
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTertiaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
-import com.martorell.albert.meteomartocompose.ui.screens.shared.AlertDialogCustom
-import kotlinx.coroutines.launch
+import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
 
 @Composable
 fun FavoritesScreen(
@@ -34,12 +36,17 @@ fun FavoritesScreen(
 
     val state = viewModel.state.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.onStart()
+    }
+
     FavoriteContent(
         modifier = modifier.then(
             if (nestedScrollConnection != null) Modifier.nestedScroll(nestedScrollConnection) else Modifier
         ),
         state = state,
         goToDetail = goToDetail,
+        onRetry = viewModel::onStart,
         displayAlertDialogAction = viewModel::userClickedOnDeleteFavoriteCity,
         dismissAlertDialogAction = viewModel::userDismissedAlertDialog,
         removeCityFromFavoritesAction = viewModel::removeCityFromFavorites
@@ -47,78 +54,71 @@ fun FavoritesScreen(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteContent(
     modifier: Modifier = Modifier,
     state: State<FavoritesViewModel.UiState>,
     goToDetail: (CityWeatherDomain?) -> Unit,
+    onRetry: () -> Unit,
     displayAlertDialogAction: (String) -> Unit,
     dismissAlertDialogAction: () -> Unit,
-    removeCityFromFavoritesAction: suspend () -> Unit
+    removeCityFromFavoritesAction: () -> Unit
 ) {
 
-    val coroutineScope = rememberCoroutineScope()
-
-    if (state.value.error != null) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            FavoriteEmptyState(stringResource(R.string.city_forecast_error))
-        }
-
-    } else {
-
-        if (state.value.citiesFavorites.isEmpty()) {
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                FavoriteEmptyState(stringResource(R.string.no_favorites_cities))
+    Box(modifier = modifier.fillMaxSize()) {
+        when (val content = state.value.content) {
+            is FavoritesViewModel.FavoritesContent.Loading -> {
+                MmLoadingOverlay()
             }
 
-        } else {
+            is FavoritesViewModel.FavoritesContent.Error -> {
+                MmErrorState(
+                    message = content.error.toMessage(),
+                    onRetry = onRetry
+                )
+            }
 
-            LazyColumn(
-                modifier = modifier
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(LocalFndSpacing.current.small),
-                verticalArrangement = Arrangement.spacedBy(LocalFndSpacing.current.extraSmall)
-            ) {
-
-                items(count = state.value.citiesFavorites.size) { index ->
-                    FavoriteItem(
-                        city = state.value.citiesFavorites[index],
-                        clickOnDelete = {
-                            displayAlertDialogAction(state.value.citiesFavorites[index].name)
-                        },
-                        clickOnRow = { goToDetail(state.value.citiesFavorites[index]) }
-                    )
+            is FavoritesViewModel.FavoritesContent.Success -> {
+                if (content.cities.isEmpty()) {
+                    FavoriteEmptyState(stringResource(R.string.no_favorites_cities))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(MeteoMartoTheme.spacing.small),
+                        verticalArrangement = Arrangement.spacedBy(MeteoMartoTheme.spacing.extraSmall)
+                    ) {
+                        items(count = content.cities.size) { index ->
+                            FavoriteItem(
+                                city = content.cities[index],
+                                clickOnDelete = {
+                                    displayAlertDialogAction(content.cities[index].name)
+                                },
+                                clickOnRow = { goToDetail(content.cities[index]) }
+                            )
+                        }
+                    }
                 }
             }
-
-            if (state.value.cityToUnMarkAsFavorite.isNotEmpty())
-                AlertDialogCustom(
-                    title = R.string.delete_favority_city_title,
-                    content = R.string.delete_favority_city_explanation,
-                    actionText = R.string.delete_favority_city_action,
-                    dismissText = R.string.delete_favority_city_cancel,
-                    onDismissAction = dismissAlertDialogAction,
-                    onConfirmAction = {
-                        coroutineScope.launch {
-                            removeCityFromFavoritesAction()
-                        }
-                    })
-
         }
 
+        if (state.value.cityToUnMarkAsFavorite.isNotEmpty()) {
+            MmDialog(
+                onDismissRequest = dismissAlertDialogAction,
+                title = { MmText.HeadlineMedium(stringResource(R.string.delete_favority_city_title)) },
+                text = { MmText.BodyMedium(stringResource(R.string.delete_favority_city_explanation)) },
+                confirmButton = {
+                    MmSecondaryButton(onClick = removeCityFromFavoritesAction) {
+                        MmText.BodyLarge(stringResource(R.string.delete_favority_city_action))
+                    }
+                },
+                dismissButton = {
+                    MmTertiaryButton(onClick = dismissAlertDialogAction) {
+                        MmText.BodyLarge(stringResource(R.string.delete_favority_city_cancel))
+                    }
+                }
+            )
+        }
     }
-
 }
 
 @MmPreview
@@ -127,9 +127,11 @@ private fun FavoritesScreenPreview() {
     val dummyState = androidx.compose.runtime.remember {
         androidx.compose.runtime.mutableStateOf(
             FavoritesViewModel.UiState(
-                citiesFavorites = listOf(
-                    CityWeatherDomain(name = "Sabadell", temperature = 25.0, temperatureMin = 20.0, temperatureMax = 30.0, pressure = 1012),
-                    CityWeatherDomain(name = "Barcelona", temperature = 28.0, temperatureMin = 22.0, temperatureMax = 32.0, pressure = 1010)
+                content = FavoritesViewModel.FavoritesContent.Success(
+                    cities = listOf(
+                        CityWeatherDomain(name = "Sabadell", temperature = 25.0, temperatureMin = 20.0, temperatureMax = 30.0, pressure = 1012),
+                        CityWeatherDomain(name = "Barcelona", temperature = 28.0, temperatureMin = 22.0, temperatureMax = 32.0, pressure = 1010)
+                    )
                 )
             )
         )
@@ -139,6 +141,7 @@ private fun FavoritesScreenPreview() {
         FavoriteContent(
             state = dummyState,
             goToDetail = {},
+            onRetry = {},
             displayAlertDialogAction = {},
             dismissAlertDialogAction = {},
             removeCityFromFavoritesAction = { }

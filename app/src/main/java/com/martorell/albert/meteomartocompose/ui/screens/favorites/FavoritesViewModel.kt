@@ -23,60 +23,52 @@ class FavoritesViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     data class UiState(
-        val loading: Boolean = false,
-        val error: CustomErrorFlow? = null,
-        val citiesFavorites: List<CityWeatherDomain> = emptyList(),
+        val content: FavoritesContent = FavoritesContent.Loading,
         val cityToUnMarkAsFavorite: String = ""
     )
 
-    init {
+    sealed interface FavoritesContent {
+        data object Loading : FavoritesContent
+        data class Success(val cities: List<CityWeatherDomain>) : FavoritesContent
+        data class Error(val error: CustomErrorFlow) : FavoritesContent
+    }
 
+    fun onStart() {
         viewModelScope.launch {
             getAllFavoritesCities()
         }
-
     }
 
     private suspend fun getAllFavoritesCities() {
-
-        _state.update { stateUpdated ->
-            stateUpdated.copy(
-                loading = true
-            )
-        }
+        _state.update { it.copy(content = FavoritesContent.Loading) }
 
         favoritesInteractors.getAllCitiesUseCase.invoke()
             .catch { cause ->
                 _state.update { stateUpdated ->
                     stateUpdated.copy(
-                        loading = false,
-                        error = cause.toCustomErrorFlow(),
-                        citiesFavorites = emptyList()
+                        content = FavoritesContent.Error(cause.toCustomErrorFlow())
                     )
                 }
             }
             .collect { listOfCities ->
                 _state.update { stateUpdated ->
                     stateUpdated.copy(
-                        loading = false,
-                        error = null,
-                        citiesFavorites = listOfCities.filter { it.favorite }
+                        content = FavoritesContent.Success(listOfCities.filter { it.favorite })
                     )
                 }
-
             }
     }
 
-    suspend fun removeCityFromFavorites() {
+    fun removeCityFromFavorites() {
+        viewModelScope.launch {
+            favoritesInteractors.removeCityAsFavoriteUseCase.invoke(_state.value.cityToUnMarkAsFavorite)
 
-        favoritesInteractors.removeCityAsFavoriteUseCase.invoke(_state.value.cityToUnMarkAsFavorite)
-
-        _state.update { stateUpdated ->
-            stateUpdated.copy(
-                cityToUnMarkAsFavorite = ""
-            )
+            _state.update { stateUpdated ->
+                stateUpdated.copy(
+                    cityToUnMarkAsFavorite = ""
+                )
+            }
         }
-
     }
 
     fun userClickedOnDeleteFavoriteCity(cityName: String) {
@@ -97,10 +89,6 @@ class FavoritesViewModel @Inject constructor(
             )
         }
 
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 
 }

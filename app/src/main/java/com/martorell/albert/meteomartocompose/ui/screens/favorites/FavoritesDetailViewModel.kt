@@ -4,8 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import arrow.core.Either
-import com.martorell.albert.meteomartocompose.data.ResultResponse
+import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.ui.navigation.FavoritesScreens
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
@@ -22,54 +21,45 @@ class FavoritesDetailViewModel @Inject constructor(
     private val favoriteDetailInteractors: FavoriteDetailInteractors
 ) : ViewModel() {
 
-    /*Els arguments que passem a una pantalla, en aquest cas FavoritesDetailViewModel, es passen a través del seu navBackStackEntry el qual
-   també defeinx el scope del viewmodel que injectem a  la pantalla. Per tant, a través del savedstatehandle se li passarà
-   al ViewModel tots els arguments que estan en el navBackStackEntry (per més info anar a favoriteSubGraph)
-    */
+    /**
+     * Arguments passed to a screen (FavoritesDetailViewModel in this case) are provided via its NavBackStackEntry,
+     * which also defines the scope of the injected ViewModel. Therefore, the SavedStateHandle will contain
+     * all arguments present in the NavBackStackEntry (refer to favoriteSubGraph for more details).
+     */
     private val cityName =
         savedStateHandle.toRoute<FavoritesScreens.FavoritesDetail>().cityName
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
 
     data class UiState(
-        val loading: Boolean = false,
-        val city: ResultResponse<CityWeatherDomain?> = Either.Right(null)
+        val content: DetailContent = DetailContent.Loading
     )
 
-    init {
+    sealed interface DetailContent {
+        data object Loading : DetailContent
+        data class Success(val city: CityWeatherDomain?) : DetailContent
+        data class Error(val error: CustomError) : DetailContent
+    }
 
+    fun onStart() {
         viewModelScope.launch {
-
             loadCityWeather()
-
         }
-
     }
 
     suspend fun loadCityWeather() {
-
-        _state.update {
-            it.copy(
-                loading = true
-            )
-        }
+        _state.update { it.copy(content = DetailContent.Loading) }
 
         val result =
             favoriteDetailInteractors.loadCityWeatherByNameUseCase.invoke(cityName = cityName)
 
         _state.update {
             it.copy(
-                loading = false,
-                city = result
+                content = result.fold(
+                    { error -> DetailContent.Error(error) },
+                    { city -> DetailContent.Success(city) }
+                )
             )
         }
-
     }
-
-    override fun onCleared() {
-
-        super.onCleared()
-
-    }
-
 }
