@@ -201,6 +201,13 @@ Slot-based dialog component that wraps Material 3 `AlertDialog`.
 - **Testing Resilience**: Uses an internal `MmDialogPreviewLayout` to allow Roborazzi captures without multi-window overhead.
 - **Theme Integrity**: Force-propagates `onSurface` color to ensure readability in Dark Mode regardless of parent context.
 
+### MmSnackbar
+The official Snackbar strategy that strictly separates "Drawing UI" from "Executing Actions".
+- **Dual-Mode Access**:
+    - **Declarative (@Composable)**: Used for persistent UI states (e.g., "Offline Mode") where the message belongs to the composition tree.
+    - **Imperative (suspend extension)**: The preferred way for one-shot events (Errors, Confirmations) via `snackbarHostState.showMmSnackbar()`.
+- **Rationale**: Using the `suspend` extension for events avoids "state-clearing boilerplate" and respects the technical requirement of not calling `@Composable` functions inside non-composable asynchronous blocks like `LaunchedEffect`.
+
 ---
 
 ## Integration & Migration Strategy (Phase 5)
