@@ -35,8 +35,7 @@ class CityWeatherScreenshotTest {
     fun cityWeatherScreen_successState() {
         composeTestRule.setContent {
             val state = CityWeatherViewModel.UiState(
-                loadedForecast = true,
-                city = dummyCity,
+                content = CityWeatherViewModel.CityContent.Success(dummyCity),
                 isHighTempAlertActive = false
             )
             MeteoMartoTheme {
@@ -61,8 +60,7 @@ class CityWeatherScreenshotTest {
     fun cityWeatherScreen_highTempAlertState() {
         composeTestRule.setContent {
             val state = CityWeatherViewModel.UiState(
-                loadedForecast = true,
-                city = dummyCity,
+                content = CityWeatherViewModel.CityContent.Success(dummyCity),
                 isHighTempAlertActive = true
             )
             MeteoMartoTheme {
@@ -86,7 +84,7 @@ class CityWeatherScreenshotTest {
     @Test
     fun cityWeatherScreen_loadingState() {
         composeTestRule.setContent {
-            val state = CityWeatherViewModel.UiState(loading = true)
+            val state = CityWeatherViewModel.UiState(isLoading = true)
             MeteoMartoTheme {
                 CityWeatherContent(
                     state = state,
@@ -103,5 +101,29 @@ class CityWeatherScreenshotTest {
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/snapshots/city_weather_loading.png")
+    }
+
+    @Test
+    fun cityWeatherScreen_needsLocationState() {
+        composeTestRule.setContent {
+            val state = CityWeatherViewModel.UiState(
+                content = CityWeatherViewModel.CityContent.NeedsLocation
+            )
+            MeteoMartoTheme {
+                CityWeatherContent(
+                    state = state,
+                    locationRationale = false,
+                    notificationRationale = false,
+                    onOpenSettings = {},
+                    onOpenLocationSettings = {},
+                    onRefresh = {},
+                    onHideGpsDialog = {},
+                    onHideRationale = {},
+                    onLogoutConfirm = {},
+                    onLogoutCancel = {}
+                )
+            }
+        }
+        composeTestRule.onRoot().captureRoboImage("src/test/snapshots/city_weather_needs_location.png")
     }
 }

@@ -62,6 +62,8 @@ class CityWeatherViewModelTest {
         Dispatchers.setMain(testDispatcher)
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
+        // Default answer for monitoring to avoid crashes in setup/initialization
+        every { checkTemperatureThresholdUseCase() } returns flowOf()
         viewModel = CityWeatherViewModel(interactors)
     }
 
@@ -74,10 +76,50 @@ class CityWeatherViewModelTest {
     @Test
     fun `initial state is correct and passive`() {
         val state = viewModel.state.value
-        assertFalse(state.loading)
-        assertFalse(state.loadedForecast)
-        assertNull(state.city)
+        assertEquals(CityWeatherViewModel.CityContent.Initial, state.content)
+        assertFalse(state.isLoading)
         verify { checkTemperatureThresholdUseCase wasNot Called }
+    }
+
+    @Test
+    fun `onStart only triggers load if initial state`() = runTest {
+        val city = CityWeatherDomain(name = "Barcelona", justAdded = true, temperature = 25.0, temperatureMin = 20.0, temperatureMax = 30.0, pressure = 1013)
+        coEvery { checkLocationPermissionsUseCase() } returns true
+        coEvery { checkNotificationPermissionUseCase() } returns true
+        coEvery { isGPSEnableUseCase() } returns true
+        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(41.38, 2.17).right()
+        coEvery { saveLocationUseCase(any(), any()) } just Runs
+        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
+        coEvery { getAllCitiesUseCase() } returns flowOf(listOf(city)) // Return a city to move out of Initial state
+
+        // 1. Initial call triggers load
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+        
+        coVerify(exactly = 1) { currentLocationUseCase() }
+
+        // 2. Second call (e.g. rotation) does NOT trigger load again
+        // because state is now Success, not Initial.
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+        
+        coVerify(exactly = 1) { currentLocationUseCase() }
+    }
+
+    @Test
+    fun `onRefresh always triggers load`() = runTest {
+        coEvery { checkLocationPermissionsUseCase() } returns true
+        coEvery { checkNotificationPermissionUseCase() } returns true
+        coEvery { isGPSEnableUseCase() } returns true
+        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(41.38, 2.17).right()
+        coEvery { saveLocationUseCase(any(), any()) } just Runs
+        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
+        coEvery { getAllCitiesUseCase() } returns flowOf(emptyList())
+
+        viewModel.onRefresh()
+        viewModel.onRefresh()
+
+        coVerify(exactly = 2) { currentLocationUseCase() }
     }
 
     @Test
@@ -99,16 +141,11 @@ class CityWeatherViewModelTest {
         coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
         coEvery { getAllCitiesUseCase() } returns flowOf(listOf(mockCity))
 
-        viewModel.getCurrentLocationStarted()
-        
-        // With UnconfinedTestDispatcher, it runs until suspension.
-        // But since mocked use cases might return immediately, it might have finished already.
-        // So we check the final state.
+        viewModel.onStart()
         
         val finalState = viewModel.state.value
-        assertFalse(finalState.loading)
-        assertTrue(finalState.loadedForecast)
-        assertEquals("Barcelona", finalState.city?.name)
+        assertTrue(finalState.content is CityWeatherViewModel.CityContent.Success)
+        assertEquals("Barcelona", (finalState.content as CityWeatherViewModel.CityContent.Success).city.name)
         
         coVerify { currentLocationUseCase() }
         coVerify { loadCityWeatherByCoordinatesUseCase("41.38", "2.17") }
@@ -120,12 +157,11 @@ class CityWeatherViewModelTest {
         coEvery { checkNotificationPermissionUseCase() } returns true
         coEvery { isGPSEnableUseCase() } returns false
 
-        viewModel.getCurrentLocationStarted()
+        viewModel.onStart()
 
         val state = viewModel.state.value
         assertTrue(state.showGPSDialog)
         assertTrue(state.locationChecked)
-        assertFalse(state.loading)
     }
 
     @Test
@@ -164,7 +200,7 @@ class CityWeatherViewModelTest {
         coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
         coEvery { getAllCitiesUseCase() } returns flowOf(listOf(city))
 
-        viewModel.getCurrentLocationStarted()
+        viewModel.onStart()
         
         coEvery { switchFavoriteUseCase(any()) } just Runs
 
