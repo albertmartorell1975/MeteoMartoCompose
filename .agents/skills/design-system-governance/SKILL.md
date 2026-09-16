@@ -32,7 +32,8 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 
 ## 4. Verification & Testing Protocol
 - **JDK 21**: Mandatory for projects targeting SDK 36+ (Robolectric/Roborazzi simulation).
-- **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `@MMPreview`) for common configurations.
+- **Multipreview Mandate**: Every `@Composable` preview MUST be annotated with both `@MmPreview` (for theme/font variations) AND `@MmDevicePreview` (for screen size/orientation variations) to ensure full adaptive coverage.
+- **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `@MmPreview`) for common configurations.
 - **Pragmatic Snapshots**: Do not blindly follow a 16-permutation rule. Determine significant behavioral dimensions per component for Roborazzi verification to avoid snapshot bloat.
 - **Snapshot Regeneration Trigger**: New snapshots MUST be generated (`recordRoborazzi*` tasks) whenever:
     - A Design Token (Color, Spacing, Typography, Dimension) is modified.
@@ -40,6 +41,18 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
     - A new screen is migrated to the Design System.
     - The visual regression pipeline fails in CI due to intentional changes.
 - **Stateless Previews**: `@Preview` functions MUST be stateless and must not instantiate infrastructure-dependent components.
+- **AsyncImage in Previews**: To avoid network calls and potential crashes in Previews or Roborazzi tests, any preview containing an `AsyncImage` MUST be wrapped in a `CompositionLocalProvider` providing a fake image handler (e.g., `LocalAsyncImagePreviewHandler provides previewAsyncImageCoil`). This ensures consistent visual regression without external dependencies.
+  ```kotlin
+  @Preview
+  @Composable
+  fun MyComponentPreview() {
+      MeteoMartoTheme {
+          CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageCoil) {
+              MyComponentWithAsyncImage()
+          }
+      }
+  }
+  ```
 - **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs MUST NOT use the actual `AlertDialog` or `Dialog` components. Instead, they MUST use an internal layout (e.g., `MmDialogPreviewLayout`) that mimics the dialog's visual structure (Surface, shape, elevation) to ensure capture within the main test window.
 
 ## 5. Behavioral Matrix (Version Compliance)

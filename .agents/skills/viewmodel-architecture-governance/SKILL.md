@@ -108,8 +108,11 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 
 ### Mandate: Separate "Base Content" from "Additive UI Layers"
 
-1. **Mutually Exclusive States** (Loading, Success, Error): Use a `sealed interface`.
-2. **Additive States** (Dialogs, Overlays, FAB visibility): Use `Boolean` flags in the parent `data class`.
+1. **Mutually Exclusive Phases** (Initial, Success, Error, NeedsPermission): Use a `sealed interface`.
+2. **Additive/Overlay States** (isLoading, Dialogs, FAB visibility): Use `Boolean` flags in the parent `data class`.
+
+### Rationale for additive `isLoading`:
+Using a boolean flag for loading instead of a branch in the `sealed interface` allows for **Data Continuity**. It ensures that if the user refreshes data (e.g., Pull-to-refresh), the existing data remains visible in the `Success` branch while a loader overlay is shown on top.
 
 ### Detailed Implementation Example
 
@@ -117,19 +120,28 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 ```kotlin
 data class ScreenUiState(
     // 1. The primary phase of the screen (Exclusive)
-    val content: MainContent = MainContent.Loading,
+    val content: MainContent = MainContent.Initial,
     
     // 2. Transitory or overlapping UI elements (Additive)
+    val isLoading: Boolean = false,
     val isLoggingOut: Boolean = false,
-    val showFab: Boolean = false
 )
 
 sealed interface MainContent {
-    object Loading : MainContent
-    data class Success(val city: CityWeatherDomain) : MainContent
+    data object Initial : MainContent
+    data object NeedsLocation : MainContent
+    data class Success(val data: DomainModel) : MainContent
     data class Error(val type: CustomError) : MainContent
 }
 ```
+
+### Hybrid Pattern Flexibility Clause
+
+To ensure pragmatism without sacrificing architectural integrity, follow these rules when deciding how to structure your UI State:
+
+1. **Mandatory Sealed Content**: If a screen involves an asynchronous lifecycle with mutually exclusive states (e.g., *Initial* phase, *Success* when data arrives, or *Error* if it fails), you **MUST** use a `sealed interface` for the `content` property.
+2. **Root Data Class Recommendation**: Even if a screen currently lacks additive states (like dialogs or FABs), the root state should remain a `data class` wrapping the `content`. This ensures that adding additive UI layers in the future does not require a breaking change in the UI-ViewModel contract.
+3. **Static Screens (KISS)**: For 100% static screens that do not load external data and only represent a single phase (e.g., a simple "About" screen or a purely local "Settings" form), a plain `data class` without a `sealed interface` is preferred to avoid overengineering.
 
 #### B. Implementation at the UI (Stateless Content)
 ```kotlin
@@ -200,16 +212,6 @@ Button(onClick = { viewModel.deleteItem(id) }) { ... }
 ### Testing Benefits
 By moving the scope to the ViewModel, your unit tests can use `StandardTestDispatcher` to precisely control execution and verify intermediate states (like `isDeleting = true`).
 
-### Common Pitfalls & Considerations
-
-While ViewModel-managed coroutines are preferred, be aware of the following:
-
-- **One-shot UI Effects (Navigation/Snackbars)**: Since the UI doesn't "await" the result, you must use an "Event" stream (e.g., `Channel<Event>`) to signal the UI layer to perform these actions after an async task completes.
-    - **Note on Snackbars**: To maintain the Design System identity while respecting the async nature of events, use the `suspend` extensions provided by the system (e.g., `snackbarHostState.showMmSnackbar(...)`). 
-      - *Why?*: Events like errors are not persistent state. Using the `suspend` extension prevents "state-clearing boilerplate" (manually resetting flags) and avoids the technical prohibition of calling `@Composable` functions inside non-composable asynchronous blocks like `LaunchedEffect`.
-- **Critical Background Work**: `viewModelScope` is cancelled when the user navigates away. For tasks that MUST complete (e.g., database synchronization), delegate the work to a Repository using an `applicationScope` or `WorkManager`.
-- **UI Responsiveness**: Since the function is non-suspending, you must be diligent in updating the `isLoading` state immediately within the launched coroutine to provide visual feedback.
-
 ### Final Verdict: Why it's worth it
 
 Moving coroutine management to the ViewModel is a trade-off that favors **long-term stability** over initial simplicity.
@@ -219,3 +221,45 @@ Moving coroutine management to the ViewModel is a trade-off that favors **long-t
 2. **Zombie-Bug Prevention**: `viewModelScope` automatically prevents memory leaks and crashes from outdated UI updates.
 3. **KISS UI**: Screen composables are focused 100% on layout and tokens, free of "plumbing" code.
 4. **Scalability**: New requirements (analytics, side-effects) can be added entirely within the ViewModel.
+
+---
+
+## 4. Action Idempotency & Job Guarding
+
+To prevent redundant work, resource leaks, or double side-effects (like showing a dialog twice), the ViewModel MUST ensure that its actions are **idempotent**. 
+
+When a non-suspending action starts a coroutine that performs a long-running task (like a `Flow.collect` or a large upload), use a **Job Guard**.
+
+### The Two Guard Patterns:
+
+#### A. The "Restart" Pattern (Last one wins)
+Use this when you want to cancel the previous work and start fresh (e.g., search-as-you-type, or a manual refresh).
+```kotlin
+private var fetchJob: Job? = null
+
+fun onRefresh() {
+    fetchJob?.cancel() // Cancel previous if still running
+    fetchJob = viewModelScope.launch {
+        // ... perform work
+    }
+}
+```
+
+#### B. The "First One Wins" Pattern (Guarded)
+Use this for "engines" or monitors that should only be started once (e.g., location tracking, temperature monitoring).
+```kotlin
+private var monitorJob: Job? = null
+
+fun startMonitoring() {
+    if (monitorJob?.isActive == true) return // Already running, ignore
+
+    monitorJob = viewModelScope.launch {
+        repository.observeData().collect { /* ... */ }
+    }
+}
+```
+
+### Rationale
+- **Efficiency**: Avoids duplicate CPU/Battery usage for identical tasks.
+- **Predictability**: Guarantees that side-effect channels (like navigation or alerts) don't receive duplicate events.
+- **Stability**: Prevents race conditions where two coroutines might try to update the same state in conflicting ways.

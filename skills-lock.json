@@ -119,7 +119,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/design-system-governance/SKILL.md",
-      "computedHash": "ef6976240547729a636259e1d1b5fa5158a01c73033a7c9aaa30e57ac3c6115f"
+      "computedHash": "50ad5fa9d7b6190848c653e563f83df4131185dc6e61fbaf6f78d6679956956b"
     },
     "display-glasses-with-jetpack-compose-glimmer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -197,7 +197,7 @@
       "source": "albertmartorell1975/android-ai-workflow-foundation",
       "sourceType": "github",
       "skillPath": ".agents/skills/kotlin-style/SKILL.md",
-      "computedHash": "fa1774b69232e9981be6cb510548521ae291907ad289150a7eb982f557225e35"
+      "computedHash": "a3e3c3329a6a77ad56dd36622b32de948025c41035a7ee37e5fc6879fce32c59"
     },
     "kotlin-functions": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -305,7 +305,7 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
-      "computedHash": "6fb305a5027e9b3b88bbe4ebbfc35b09564c01a6e0c956f0aa53c5317be4e3de"
+      "computedHash": "00dcf7cc359bac4c7c6817f7a7f10165f89cd74c2a6b452dd44125f74c250a7d"
     },
     "workflow-feature": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",

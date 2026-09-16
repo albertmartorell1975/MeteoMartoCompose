@@ -1,6 +1,6 @@
 # UI State Management Patterns: Data Class vs. Sealed Class
 
-This document summarizes the two primary approaches for managing UI State in modern Android applications with Jetpack Compose, along with the recommendation of the hybrid model for production-grade apps.
+This document summarizes the two primary approaches for managing UI State in modern Android applications with Jetpack Compose, along with the recommendation of the **Hybrid Model** for production-grade apps.
 
 ---
 
@@ -8,49 +8,45 @@ This document summarizes the two primary approaches for managing UI State in mod
 The state is defined as a single immutable object with multiple properties representing every element on the screen.
 
 ### ✅ Pros
-- **Partial Updates**: Thanks to the `.copy()` method, it is very easy to change a single property (e.g., `isLoading = true`) without affecting the rest of the state.
-- **Data Continuity**: Existing data (like a list of cities) is preserved while the state transitions to "loading", preventing UI flickers.
-- **Additive States**: Ideal for screens where multiple elements can coexist (e.g., background data + alert dialog + loading overlay).
+- **Partial Updates**: Easy to change a single property without affecting the rest.
+- **Additive States**: Ideal for overlapping UI (data + dialog + loader).
 
 ### ❌ Cons
-- **Impossible States**: It allows invalid combinations, such as having `error != null` and `isLoading = true` simultaneously.
-- **Logic in UI**: The view becomes cluttered with checks like `if (state.property != null)` or `if (state.isLoading)`.
+- **Impossible States**: Allows invalid combinations (e.g., `error != null` AND `isLoading = true`).
 
 ---
 
 ## 2. Sealed Class Approach (State Machine)
-The state is defined as a set of mutually exclusive situations. You are either in one or the other.
+The state is defined as a set of mutually exclusive situations.
 
 ### ✅ Pros
-- **Type Safety**: Guarantees that only one main state is displayed at a time. No risk of impossible states.
-- **Clean UI**: The view uses a single `when(state)` block that the compiler forces to be exhaustively handled.
-- **Single Source of Truth (Logic)**: All decisions about the screen's phase reside entirely within the ViewModel.
-
-### ❌ Cons
-- **Verbosity**: You must rebuild the entire object for any change. There is no `.copy()` between different branches of a `sealed class`.
-- **Loss of Context**: When moving from `Success` to `Loading`, the data in the `Success` branch is lost.
-- **Rigidity**: Hard to manage when you want to show a temporary dialog without closing the background state.
+- **Type Safety**: Guarantees only one main state is displayed. No impossible states.
+- **Clean UI**: Uses a single `when(state)` block.
 
 ---
 
-## 3. The Hybrid Approach (Senior Recommendation)
+## 3. The Hybrid Approach (MeteoMarto Standard)
 
-This model combines the best of both worlds: it uses a **`data class`** for global flags and a **`sealed interface`** for the main content.
+This model combines the best of both worlds: it uses a **`data class`** for global coordination and a **`sealed interface`** for the mutually exclusive content phases.
+
+### Mandate: Data Continuity
+Following the `viewmodel-architecture-governance` skill, **`isLoading` must be an additive boolean flag**, not a branch of the sealed interface. This ensures that when data is refreshed, the existing content remains visible while a loader overlay is shown on top.
 
 ### Modeling Example
 ```kotlin
 data class CityWeatherUiState(
-    // Mutually exclusive main content (Loading, Success, Error)
-    val content: CityContent = CityContent.Loading,
+    // 1. Mutually exclusive primary phases (Sealed Interface)
+    val content: CityContent = CityContent.Initial,
     
-    // Additive flags (can happen anytime without closing the main content)
+    // 2. Additive layers and global coordination (Data Class properties)
+    val isLoading: Boolean = false,
     val isLoggingOut: Boolean = false,
-    val showFab: Boolean = false,
     val highTempAlert: Boolean = false
 )
 
 sealed interface CityContent {
-    object Loading : CityContent
+    data object Initial : CityContent
+    data object NeedsLocation : CityContent
     data class Success(val city: CityWeatherDomain) : CityContent
     data class Error(val error: CustomError) : CityContent
 }
@@ -60,17 +56,18 @@ sealed interface CityContent {
 ```kotlin
 @Composable
 fun CityWeatherContent(state: CityWeatherUiState) {
-    Box {
+    MmScaffold {
         // 1. Main Content Management (Clean and safe)
         when (val content = state.content) {
-            is CityContent.Loading -> CircularProgress()
+            is CityContent.Initial -> { /* Splash */ }
+            is CityContent.NeedsLocation -> LocationWarning()
             is CityContent.Success -> WeatherLayout(content.city)
             is CityContent.Error -> ErrorLayout(content.error)
         }
 
-        // 2. Additive Layers (Simple with booleans)
+        // 2. Additive Overlays (Always on top)
+        if (state.isLoading) MmLoadingOverlay()
         if (state.isLoggingOut) LogoutDialog()
-        if (state.highTempAlert) AlertIcon()
     }
 }
 ```
@@ -81,9 +78,8 @@ fun CityWeatherContent(state: CityWeatherUiState) {
 
 | Situation | Suggested Approach |
 | :--- | :--- |
-| Very simple screens (single button or text) | `sealed class` |
-| Screens with persistent data and background loading | `data class` |
-| **Complex Production Applications** | **Hybrid Model** |
+| Very simple screens | `sealed class` |
+| Screens with data continuity needs | **Hybrid Model** |
 
 > [!TIP]
-> For the **MeteoMartoCompose** project, the hybrid model is the best choice to clean up the climate screen UI without losing the ease of managing GPS and logout dialogs.
+> Use the **Hybrid Model** with `isLoading: Boolean` to ensure a professional UX where data doesn't "flicker" out of existence during refresh cycles.
