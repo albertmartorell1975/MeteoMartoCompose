@@ -2,37 +2,25 @@ package com.martorell.albert.meteomartocompose.ui.screens.city
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -41,13 +29,18 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDoma
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDialog
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmLoadingOverlay
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmScaffold
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPrimaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSecondaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTertiaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
-import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmWeatherInfo
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 import com.martorell.albert.meteomartocompose.utils.AppConstants
+import com.martorell.albert.meteomartocompose.utils.previewAsyncImageCoil
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.LocalAsyncImagePreviewHandler
 
 /**
  * Stateful entry point for the City Weather screen.
@@ -78,8 +71,7 @@ fun CityWeatherScreen(
     val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentLocationStarted()
-        viewModel.startMonitoring()
+        viewModel.onStart()
     }
 
     LaunchedEffect(Unit) {
@@ -100,7 +92,7 @@ fun CityWeatherScreen(
         if (uiState.locationChecked) {
             if (permissionState.allPermissionsGranted) {
                 if (!uiState.permissionsGranted) {
-                    viewModel.getCurrentLocationStarted()
+                    viewModel.onStart()
                 }
             } else if (!uiState.showRationale && !uiState.showGPSDialog) {
                 if (permissionState.shouldShowRationale) {
@@ -115,17 +107,17 @@ fun CityWeatherScreen(
     CityWeatherContent(
         state = uiState,
         locationRationale = permissionState.permissions.any {
-            ((it.permission == AppConstants.PERMISSION_FINE_LOCATION ||
-                    it.permission == AppConstants.PERMISSION_COARSE_LOCATION) &&
-                    (it.status as? PermissionStatus.Denied)?.shouldShowRationale == true)
+            (((it.permission == AppConstants.PERMISSION_FINE_LOCATION) ||
+                    (it.permission == AppConstants.PERMISSION_COARSE_LOCATION)) &&
+                    ((it.status as? PermissionStatus.Denied)?.shouldShowRationale == true))
         },
         notificationRationale = permissionState.permissions.any {
-            (it.permission == AppConstants.PERMISSION_POST_NOTIFICATIONS &&
-                    (it.status as? PermissionStatus.Denied)?.shouldShowRationale == true)
+            ((it.permission == AppConstants.PERMISSION_POST_NOTIFICATIONS) &&
+                    ((it.status as? PermissionStatus.Denied)?.shouldShowRationale == true))
         },
         onOpenSettings = viewModel::onOpenAppSettingsClicked,
         onOpenLocationSettings = viewModel::onOpenLocationSettingsClicked,
-        onRefresh = viewModel::getCurrentLocationStarted,
+        onRefresh = viewModel::onRefresh,
         onHideGpsDialog = viewModel::gpsDialogHid,
         onHideRationale = viewModel::rationaleDialogHid,
         onLogoutConfirm = {
@@ -134,10 +126,9 @@ fun CityWeatherScreen(
             goToLogin()
         },
         onLogoutCancel = viewModel::hideLogOutDialog,
-        modifier = modifier
-            .then(
-                if (nestedScrollConnection != null) Modifier.nestedScroll(nestedScrollConnection) else Modifier,
-            )
+        modifier = modifier.then(
+            if (nestedScrollConnection != null) Modifier.nestedScroll(nestedScrollConnection) else Modifier,
+        ),
     )
 }
 
@@ -173,13 +164,71 @@ fun CityWeatherContent(
     onLogoutCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    MmScaffold(modifier = modifier) {
+        // 1. Main Content Management (Mutually Exclusive Phases)
+        when (val content = state.content) {
+            is CityWeatherViewModel.CityContent.Initial -> {
+                // Empty or splash placeholder
+            }
+
+            is CityWeatherViewModel.CityContent.NeedsLocation -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(MeteoMartoTheme.spacing.medium),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    MmText.HeadlineMedium(
+                        text = stringResource(R.string.location_request_title),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
+                    MmText.BodyMedium(
+                        text = stringResource(R.string.location_request_explanation),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(MeteoMartoTheme.spacing.large))
+                    RefreshButton(onRefresh)
+                }
+            }
+
+            is CityWeatherViewModel.CityContent.Success -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    MmWeatherInfo(
+                        city = content.city,
+                        isHighTempAlertActive = state.isHighTempAlertActive,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    RefreshButton(onRefresh)
+                }
+            }
+
+            is CityWeatherViewModel.CityContent.Error -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    MmText.HeadlineMedium(
+                        text = stringResource(R.string.city_forecast_error),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
+                    )
+                    RefreshButton(onRefresh)
+                }
+            }
+        }
+
+        // 2. Additive UI Layers (Dialogs)
         if (state.logOut) {
             MmDialog(
                 onDismissRequest = onLogoutCancel,
@@ -217,12 +266,14 @@ fun CityWeatherContent(
                 title = { MmText.HeadlineMedium(stringResource(titleRes)) },
                 text = { MmText.BodyMedium(stringResource(contentRes)) },
                 confirmButton = {
-                    MmSecondaryButton(onClick = {
+                    MmSecondaryButton(
+                    onClick = {
                         onOpenSettings()
                         onHideRationale()
-                    }) {
-                        MmText.BodyLarge(stringResource(R.string.permissions_rationale_action))
                     }
+                ) {
+                    MmText.BodyLarge(stringResource(R.string.permissions_rationale_action))
+                }
                 },
                 dismissButton = {
                     MmTertiaryButton(onClick = onHideRationale) {
@@ -253,148 +304,57 @@ fun CityWeatherContent(
             )
         }
 
-        if (state.loadedForecast) {
-            if (state.errorLocation != null || state.errorForecast != null) {
-                MmText.HeadlineMedium(
-                    text = stringResource(R.string.city_forecast_error),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
-                )
-            } else {
-                state.city?.let { city ->
-                    WeatherInfo(
-                        city = city,
-                        isHighTempAlertActive = state.isHighTempAlertActive,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+        if (state.isLoading) {
+            MmLoadingOverlay()
         }
-
-        MmPrimaryButton(
-            onClick = onRefresh,
-            modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
-        ) {
-            MmText.BodyLarge(text = stringResource(R.string.update_forecast))
-        }
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
     }
-
-    if (state.loading) MmLoadingOverlay()
 }
 
 @Composable
-private fun WeatherInfo(
-    city: CityWeatherDomain,
-    isHighTempAlertActive: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
+private fun RefreshButton(onRefresh: () -> Unit) {
+    MmPrimaryButton(
+        onClick = onRefresh,
+        modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
     ) {
-        MmText.DisplayLarge(
-            text = city.name,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
-
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(city.weatherIcon).crossfade(enable = true).build(),
-            contentDescription = stringResource(R.string.weather_icon_description),
-            modifier = Modifier.size(dimensionResource(R.dimen.weather_icon_size)),
-            contentScale = ContentScale.Crop
-        )
-
-        city.weatherDescription?.let {
-            MmText.HeadlineMedium(
-                text = it,
-                textAlign = TextAlign.Center
-            )
-        }
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            MmText.BodyLarge(
-                text = stringResource(R.string.city_current_temperature, city.temperature.toString()),
-                textAlign = TextAlign.Center
-            )
-            if (isHighTempAlertActive) {
-                Spacer(Modifier.width(MeteoMartoTheme.spacing.small))
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = stringResource(R.string.high_temp_alert_icon_description),
-                    tint = Color.Red,
-                    modifier = Modifier.size(MeteoMartoTheme.spacing.large)
-                )
-            }
-        }
-
-        MmText.BodyMedium(
-            text = stringResource(R.string.city_max_temperature, city.temperatureMax.toString()),
-            color = Color.Red,
-            textAlign = TextAlign.Center
-        )
-
-        MmText.BodyMedium(
-            text = stringResource(R.string.city_min_temperature, city.temperatureMin.toString()),
-            color = Color.Blue,
-            textAlign = TextAlign.Center
-        )
-
-        MmText.BodyMedium(
-            text = stringResource(R.string.city_pressure, city.pressure.toString()),
-            textAlign = TextAlign.Center
-        )
-
-        MmText.BodyMedium(
-            text = stringResource(R.string.city_rain, city.rain.toString()),
-            color = Color.Blue,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
+        MmText.BodyLarge(text = stringResource(R.string.update_forecast))
     }
+    Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @MmPreview
 @MmDevicePreview
 @Composable
 private fun CityWeatherScreenPreview() {
     val dummyState = CityWeatherViewModel.UiState(
-        loadedForecast = true,
-        city = CityWeatherDomain(
-            name = "Sabadell",
-            temperature = 30.5,
-            temperatureMax = 32.0,
-            temperatureMin = 22.0,
-            weatherDescription = "Sunny",
-            pressure = 1012,
-            rain = 0.0
+        content = CityWeatherViewModel.CityContent.Success(
+            city = CityWeatherDomain(
+                name = "Sabadell",
+                temperature = 30.5,
+                temperatureMax = 32.0,
+                temperatureMin = 22.0,
+                weatherDescription = "Sunny",
+                pressure = 1012,
+                rain = 0.0
+            )
         ),
         isHighTempAlertActive = true
     )
 
     MeteoMartoTheme {
-        CityWeatherContent(
-            state = dummyState,
-            locationRationale = false,
-            notificationRationale = false,
-            onOpenSettings = {},
-            onOpenLocationSettings = {},
-            onRefresh = {},
-            onHideGpsDialog = {},
-            onHideRationale = {},
-            onLogoutConfirm = {},
-            onLogoutCancel = {}
-        )
+        CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageCoil) {
+            CityWeatherContent(
+                state = dummyState,
+                locationRationale = false,
+                notificationRationale = false,
+                onOpenSettings = {},
+                onOpenLocationSettings = {},
+                onRefresh = {},
+                onHideGpsDialog = {},
+                onHideRationale = {},
+                onLogoutConfirm = {},
+                onLogoutCancel = {}
+            )
+        }
     }
 }

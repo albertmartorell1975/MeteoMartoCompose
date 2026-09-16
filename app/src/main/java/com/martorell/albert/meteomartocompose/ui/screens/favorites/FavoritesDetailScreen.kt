@@ -4,43 +4,38 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.martorell.albert.meteomartocompose.R
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.LocalAsyncImagePreviewHandler
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmErrorState
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmLoadingOverlay
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
-import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmScaffold
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmWeatherInfo
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
+import com.martorell.albert.meteomartocompose.utils.previewAsyncImageCoil
 
 @Composable
 fun FavoritesDetailScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
-    viewModel: FavoritesDetailViewModel = hiltViewModel<FavoritesDetailViewModel>()
+    viewModel: FavoritesDetailViewModel = hiltViewModel<FavoritesDetailViewModel>(),
 ) {
 
     val state = viewModel.state.collectAsState()
@@ -56,8 +51,9 @@ fun FavoritesDetailScreen(
     FavoritesDetailContent(
         modifier = modifier,
         state = state,
-        onRetry = { viewModel.onStart() }
-    )
+    ) {
+        viewModel.onStart()
+    }
 
 }
 
@@ -67,11 +63,7 @@ fun FavoritesDetailContent(
     state: State<FavoritesDetailViewModel.UiState>,
     onRetry: () -> Unit
 ) {
-
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    MmScaffold(modifier = modifier) {
         when (val content = state.value.content) {
             is FavoritesDetailViewModel.DetailContent.Loading -> {
                 MmLoadingOverlay()
@@ -85,72 +77,33 @@ fun FavoritesDetailContent(
             }
 
             is FavoritesDetailViewModel.DetailContent.Success -> {
-                FavoritesDetailInfo(cityInfo = content.city)
+                content.city?.let { city ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .padding(MeteoMartoTheme.spacing.medium),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            MmWeatherInfo(
+                                city = city,
+                                isHighTempAlertActive = false, // TODO: Enrich city domain with this info
+                                modifier = Modifier.fillMaxWidth(),
+                                titleFontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-@Composable
-private fun FavoritesDetailInfo(
-    cityInfo: CityWeatherDomain?,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(MeteoMartoTheme.spacing.medium),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MmText.DisplayLarge(
-            text = cityInfo?.name ?: stringResource(R.string.weather_not_available),
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
-
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(cityInfo?.weatherIcon).crossfade(true).build(),
-            contentDescription = stringResource(R.string.weather_icon_description),
-            modifier = Modifier
-                .height(dimensionResource(R.dimen.weather_icon_size))
-                .width(dimensionResource(R.dimen.weather_icon_size)),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-        cityInfo?.weatherDescription?.let { weatherDescription ->
-            MmText.HeadlineMedium(text = weatherDescription)
-        }
-
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.large))
-
-        MmText.BodyLarge(
-            text = stringResource(R.string.city_current_temperature, cityInfo?.temperature.toString())
-        )
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-        MmText.BodyLarge(
-            text = stringResource(R.string.city_max_temperature, cityInfo?.temperatureMax.toString()),
-            color = MeteoMartoTheme.colors.error
-        )
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-        MmText.BodyLarge(
-            text = stringResource(R.string.city_min_temperature, cityInfo?.temperatureMin.toString()),
-            color = MeteoMartoTheme.colors.primary // Using primary for cold as fallback if no blue token
-        )
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-        MmText.BodyLarge(
-            text = stringResource(R.string.city_pressure, cityInfo?.pressure.toString())
-        )
-        Spacer(Modifier.height(MeteoMartoTheme.spacing.small))
-        MmText.BodyLarge(
-            text = stringResource(R.string.city_rain, cityInfo?.rain.toString())
-        )
-    }
-}
-
+@OptIn(ExperimentalCoilApi::class)
 @MmPreview
 @MmDevicePreview
 @Composable
@@ -172,9 +125,11 @@ private fun FavoritesDetailScreenPreview() {
     }
 
     MeteoMartoTheme {
-        FavoritesDetailContent(
-            state = dummyState,
-            onRetry = { }
-        )
+        CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageCoil) {
+            FavoritesDetailContent(
+                state = dummyState,
+                onRetry = { }
+            )
+        }
     }
 }

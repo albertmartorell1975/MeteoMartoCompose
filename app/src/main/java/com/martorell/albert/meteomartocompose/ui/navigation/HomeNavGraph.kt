@@ -18,6 +18,7 @@ import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherScreen
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.city.HighTemperatureAlertScreen
 import com.martorell.albert.meteomartocompose.ui.screens.favorites.FavoritesScreen
+import com.martorell.albert.meteomartocompose.utils.AppConstants
 
 fun NavGraphBuilder.dashboardGraph(
     appState: AppState,
@@ -66,7 +67,7 @@ fun NavGraphBuilder.dashboardGraph(
         dialog<DashboardScreens.HighTemperatureAlert>(
             deepLinks = listOf(
                 navDeepLink<DashboardScreens.HighTemperatureAlert>(
-                    basePath = "meteomarto://alert/high-temperature"
+                    basePath = AppConstants.DEEP_LINK_BASE
                 )
             ),
             dialogProperties = DialogProperties(

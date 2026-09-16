@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.martorell.albert.meteomartocompose.MainActivity
@@ -17,6 +16,7 @@ import com.martorell.albert.meteomartocompose.utils.AppConstants
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 class NotificationServiceImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -49,7 +49,7 @@ class NotificationServiceImpl @Inject constructor(
         val content = context.getString(R.string.high_temp_notif_content, temperature)
 
         // Create the deep link intent
-        val deepLinkUri = Uri.parse("${AppConstants.DEEP_LINK_BASE}/$temperature")
+        val deepLinkUri = "${AppConstants.DEEP_LINK_BASE}/$temperature".toUri()
         val deepLinkIntent = Intent(
             Intent.ACTION_VIEW,
             deepLinkUri,
