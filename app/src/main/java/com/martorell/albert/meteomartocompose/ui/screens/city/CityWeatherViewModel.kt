@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 /**
@@ -42,6 +43,9 @@ class CityWeatherViewModel @Inject constructor(
 
     private val _events = Channel<TemperatureAlertResult>(Channel.BUFFERED)
     val events: Flow<TemperatureAlertResult> = _events.receiveAsFlow()
+
+    private val loadMutex = Mutex()
+    private val monitoringMutex = Mutex()
 
     data class UiState(
         val content: CityContent = CityContent.Initial,
@@ -66,22 +70,18 @@ class CityWeatherViewModel @Inject constructor(
     // --- Public Functions ---
 
     fun onStart() {
-        // Atomic check and update using the state itself as a guard.
-        // This prevents double entry during rapid recomposition or rotation.
-        var shouldLaunch = false
-        _state.update { current ->
-            if ((current.content is CityContent.Initial) && !current.isLoading) {
-                shouldLaunch = true
-                current.copy(isLoading = true)
-            } else {
-                current
-            }
-        }
+        // Mutex-based idempotency guard. 
+        // If already loading, tryLock returns false, and we avoid duplicate work.
+        if (!loadMutex.tryLock()) return
 
-        if (shouldLaunch) {
-            viewModelScope.launch {
-                performInitialLoad()
-                startMonitoring()
+        viewModelScope.launch {
+            try {
+                if (state.value.content is CityContent.Initial) {
+                    performInitialLoad()
+                    startMonitoring()
+                }
+            } finally {
+                loadMutex.unlock()
             }
         }
     }
@@ -90,9 +90,16 @@ class CityWeatherViewModel @Inject constructor(
      * Public refresh action, always forces a reload regardless of current state.
      */
     fun onRefresh() {
-        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            performInitialLoad()
+            // In a refresh, we might want to wait if another load is active, 
+            // or just bypass the guard if it's a manual user action.
+            // Using withLock ensures we don't overlap, but we definitely execute.
+            loadMutex.lock()
+            try {
+                performInitialLoad()
+            } finally {
+                loadMutex.unlock()
+            }
         }
     }
 
@@ -173,7 +180,9 @@ class CityWeatherViewModel @Inject constructor(
      * This function should be called by the UI when it's ready to receive alerts.
      */
     fun startMonitoring() {
-        // We rely on the onStart() guard to ensure this is only called once.
+        // Guard to ensure only one collection is active for the lifetime of the VM.
+        if (!monitoringMutex.tryLock()) return
+
         viewModelScope.launch {
             cityWeatherInteractors.checkTemperatureThresholdUseCase()
                 .collect { result ->

@@ -305,7 +305,7 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
-      "computedHash": "00dcf7cc359bac4c7c6817f7a7f10165f89cd74c2a6b452dd44125f74c250a7d"
+      "computedHash": "8735032fde7a8670b3795a6dd3542b85d3353e65f3ba33c9cd19684da69a6e9e"
     },
     "workflow-feature": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
