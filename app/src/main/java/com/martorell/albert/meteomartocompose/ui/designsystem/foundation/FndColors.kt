@@ -21,6 +21,8 @@ data class FndColors(
     val onErrorContainer: Color,
     val success: Color,
     val onSuccess: Color,
+    val hot: Color,
+    val cold: Color,
     val isLight: Boolean
 )
 
@@ -37,6 +39,8 @@ val FndColorsLight = FndColors(
     onErrorContainer = Color(0xFF410E0B),
     success = Color(0xFF2E7D32),
     onSuccess = Color.White,
+    hot = Color(0xFFD32F2F),
+    cold = Color(0xFF1976D2),
     isLight = true
 )
 
@@ -53,6 +57,8 @@ val FndColorsDark = FndColors(
     onErrorContainer = Color(0xFFF9DEDC),
     success = Color(0xFF81C784),
     onSuccess = Color(0xFF003300),
+    hot = Color(0xFFFF8A80), // Material Red A100 (Lighter for dark mode)
+    cold = Color(0xFF82B1FF), // Material Blue A100 (Lighter for dark mode)
     isLight = false
 )
 

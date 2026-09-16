@@ -2,10 +2,12 @@ package com.martorell.albert.meteomartocompose.ui.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +21,11 @@ fun MmLoadingOverlay(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .clickable(enabled = true, onClick = {})
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null, // Removes the ripple effect
+                onClick = {} // Blocks clicks to underlying layers
+            )
             .background(backgroundColor),
         contentAlignment = Alignment.Center,
     ) {
@@ -30,6 +36,7 @@ fun MmLoadingOverlay(
 }
 
 @MmPreview
+@MmDevicePreview
 @Composable
 private fun MmLoadingOverlayPreview() {
     MeteoMartoTheme {
