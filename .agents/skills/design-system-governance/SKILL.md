@@ -21,6 +21,7 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 
 ## 2. Accessibility (A11y), Adaptive & Scaling
 - **Universal RTL**: Use `start/end` exclusively. No `left/right`. Directional icons MUST be mirrored.
+- **Minimum Font Size**: The minimum allowed font size for any text, label, pill, badge, or caption is **`12.sp`**. Font sizes below 12sp (e.g., 10sp, 11sp) are strictly forbidden to ensure legibility and accessibility across tablet and high-density screens.
 - **Scaling**: Support 200% font scaling via `sp`. Use `wrapContentHeight()` or `minHeight` in containers.
 - **Touch Targets**: Minimum 48x48dp via `Modifier.minimumInteractiveComponentSize()`.
 - **Adaptive Navigation**: Use `NavigationSuiteScaffold` to handle Bar/Rail transitions based on Window Size Classes.
@@ -29,11 +30,26 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 ## 3. Visual Excellence & Motion
 - **Typography**: Use variable font axes (weight) for interaction feedback via **Roboto Flex**.
 - **Motion**: Use **Spring Physics** (`MMMotion.SpringExpressive`) for consistent, tactile transitions.
+- **UI Design Assets & Resource Conversion**:
+    - **Screen Reference Layouts**: Full-screen mockups and layout blueprints must be stored in `docs/ui/<feature-id>/screens/` (or root `docs/ui/screens/`) as visual reference layout guides only (PNG/HTML). They must NOT be converted to drawables.
+    - **Graphic Assets**: Raw graphic assets, icons, and logos must be stored in `docs/ui/<feature-id>/resources/` (or root `docs/ui/resources/`) (PNG/JPEG) and converted to optimized `.webp` format in `app/src/main/res/drawable/ic_<name>.webp`.
 
 ## 4. Verification & Testing Protocol
 - **JDK 21**: Mandatory for projects targeting SDK 36+ (Robolectric/Roborazzi simulation).
-- **Multipreview Mandate**: Every `@Composable` preview MUST be annotated with both `@MmPreview` (for theme/font variations) AND `@MmDevicePreview` (for screen size/orientation variations) to ensure full adaptive coverage.
-- **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `@MmPreview`) for common configurations.
+- **Multipreview Mandate**: Every `@Composable` preview MUST be annotated with both `@<Prefix>ThemePreview` (for theme/font variations) AND `@<Prefix>DevicePreview` (for screen size/orientation variations) to ensure full adaptive coverage.
+- **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `Previews.kt` in `ui/theme/`) for common configurations in every project.
+  ```kotlin
+  // Example Previews.kt
+  @Preview(name = "Light Mode", group = "Themes", showBackground = true)
+  @Preview(name = "Dark Mode", group = "Themes", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+  @Preview(name = "RTL", group = "Layout", locale = "ar")
+  @Preview(name = "Large Font", group = "Accessibility", fontScale = 2.0f)
+  annotation class AppThemePreview
+
+  @Preview(name = "Phone", device = "spec:width=411dp,height=891dp")
+  @Preview(name = "Tablet", device = "spec:width=1280dp,height=800dp,dpi=240")
+  annotation class AppDevicePreview
+  ```
 - **Pragmatic Snapshots**: Do not blindly follow a 16-permutation rule. Determine significant behavioral dimensions per component for Roborazzi verification to avoid snapshot bloat.
 - **Snapshot Regeneration Trigger**: New snapshots MUST be generated (`recordRoborazzi*` tasks) whenever:
     - A Design Token (Color, Spacing, Typography, Dimension) is modified.
@@ -41,19 +57,19 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
     - A new screen is migrated to the Design System.
     - The visual regression pipeline fails in CI due to intentional changes.
 - **Stateless Previews**: `@Preview` functions MUST be stateless and must not instantiate infrastructure-dependent components.
-- **AsyncImage in Previews**: To avoid network calls and potential crashes in Previews or Roborazzi tests, any preview containing an `AsyncImage` MUST be wrapped in a `CompositionLocalProvider` providing a fake image handler (e.g., `LocalAsyncImagePreviewHandler provides previewAsyncImageCoil`). This ensures consistent visual regression without external dependencies.
+- **AsyncImage in Previews**: To avoid network calls and potential crashes in Previews or visual regression tests, any preview containing an `AsyncImage` MUST be wrapped in a `CompositionLocalProvider` providing a fake image handler. This ensures consistent visual regression without external dependencies.
   ```kotlin
   @Preview
   @Composable
   fun MyComponentPreview() {
-      MeteoMartoTheme {
-          CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageCoil) {
+      DSTheme {
+          CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageHandler) {
               MyComponentWithAsyncImage()
           }
       }
   }
   ```
-- **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs MUST NOT use the actual `AlertDialog` or `Dialog` components. Instead, they MUST use an internal layout (e.g., `MmDialogPreviewLayout`) that mimics the dialog's visual structure (Surface, shape, elevation) to ensure capture within the main test window.
+- **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs MUST NOT use the actual `AlertDialog` or `Dialog` components. Instead, they MUST use an internal layout (e.g., `DSDialogPreviewLayout`) that mimics the dialog's visual structure (Surface, shape, elevation) to ensure capture within the main test window.
 
 ## 5. Behavioral Matrix (Version Compliance)
 

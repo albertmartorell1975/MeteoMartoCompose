@@ -23,10 +23,7 @@ This skill serves as the project's quality gateway. It ensures that any code cha
 As a Skill, `compiler` provides both standalone actions and a complete verification suite:
 
 ### 1. Standalone Actions (Immediate Execution)
-- **Environment Validation (MANDATORY)**: Before any compilation, the agent MUST verify that the local environment matches requirements:
-  - Check that `java -version` matches the `jvmToolchain` defined in `build.gradle.kts`.
-  - Check that the IDE's Gradle JDK (from `.idea/gradle.xml`) is correctly aligned.
-  - If a mismatch is detected, the agent MUST stop and report the configuration error to the user before attempting any build.
+- **Environment Validation (MANDATORY)**: Before any compilation, the agent MUST verify that the local environment matches requirements (Java version, Gradle JDK).
 - **Structural Sync (MANDATORY)**: Any modification to `.gradle.kts`, `libs.versions.toml`, or `gradle.properties` MUST be immediately followed by a `gradle_sync` call.
 - **Static Analysis**: To be executed on specific files during development via `analyze_file`.
 - **Code Cleanliness**: Agents MUST remove all unused imports, variables, and functions.
@@ -34,28 +31,34 @@ As a Skill, `compiler` provides both standalone actions and a complete verificat
 ### 2. Full Verification Suite (Final "Definition of Done")
 To be executed in order BEFORE finalizing any task:
 1. **Lint & Analysis**: Run `analyze_file` on all modified files and clean up unused code.
-2. **Logic Verification**: Run Unit Tests for modified modules (e.g., `./gradlew :usecases:test`).
+2. **Logic Verification**: Run Unit Tests for modified modules (e.g., `./gradlew :feature:test`).
 3. **Deployment & Final Build**: Run `android run` (or `render_compose_preview` for UI).
-4. **Reports & Assets Generation**:
-   - **Visual Snapshots (Roborazzi)**: `./gradlew recordRoborazziPreDebug` to update "Golden Images".
-   - **Code Coverage (Jacoco)**: `./gradlew jacocoTestReport` to generate coverage reports.
-   - **Technical Documentation (Dokka)**: `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` for Styleguide or `./gradlew :dokkaGenerateHtml -PgenerateDocs` for full reference.
-5. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified, update `skills-lock.json` with the new hashes and then execute the `foundation-evolve` skill to promote changes to the central repository.
-6. **Room Schema Verification**: If any `@Entity` class was modified, verify that the `MeteoMartoDatabase` version has been incremented and all entities are correctly registered with trailing commas.
+4. **Reports & Assets Generation (Conditional / Optional)**:
+   - **Visual Snapshots (Roborazzi)**: Execute `./gradlew recordRoborazziDebug` ONLY if Roborazzi is configured in the project. Otherwise, skip.
+   - **Code Coverage (Jacoco)**: Execute `./gradlew jacocoTestReport` ONLY if Jacoco is configured in the project. Otherwise, skip.
+   - **Technical Documentation (Dokka)**: Execute `./gradlew :dokkaGenerateHtml -PgenerateDocs` ONLY if Dokka is configured in the project. Otherwise, skip.
+5. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified, update hashes and execute `foundation-evolve`.
+6. **Database Schema Verification (Conditional)**: If a database (such as Room) is used and any `@Entity` or schema file was modified, verify that the Database version has been incremented and all entities/tables are correctly registered. Otherwise, skip.
 7. **Skill Lock Integrity**: Verify that `skills-lock.json` is synchronized with the actual content of the `.agents/skills/` directory.
+
+### 3. Canonical Deterministic Gate Command (Console & CI Baseline)
+When executing a deterministic, non-interactive project verification gate (such as during `workflow-implementer` baseline check, `workflow-orchestrator` Stage 5 consolidation, `git-governance` rebase validation, or GitHub Actions CI in `.github/workflows/gate.yml`), agents and CI runners MUST execute the exact canonical command:
+
+```bash
+./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache
+```
+
+* **Deterministic Binary Contract**:
+  - `exit_code == 0` (`BUILD SUCCESSFUL`) ➔ **PASS**. Verification succeeds.
+  - `exit_code != 0` (`BUILD FAILED`) ➔ **FAIL**. Immediately blocks marking a feature as `passing`, blocks Validator `accept`, and strictly refuses `publish`.
 
 ## Build Performance Guidelines (MANDATORY)
 
-1. **Modular Verification**: Use targeted Gradle tasks instead of full project builds (e.g., `./gradlew :domain:test`).
-2. **On-Demand Documentation**: Dokka documentation tasks are disabled by default; use `-PgenerateDocs` only when needed.
+1. **Modular Verification**: Use targeted Gradle tasks instead of full project builds.
+2. **Conditional Reports**: Only execute Roborazzi, Jacoco, or Dokka tasks if explicitly configured in the project's build files.
 3. **Optimization Flags**: Use `--parallel`, `--build-cache`, and `--configuration-cache` for shell-based commands.
-4. **KSP Optimization Check**: Ensure the project uses the optimized KSP configuration in `build.gradle.kts`:
-   ```kotlin
-   ksp {
-       arg("dagger.formatGeneratedSource", "disabled")
-   }
-   ```
-5. **Incremental Sync**: Only trigger `gradle_sync` when changes to `libs.versions.toml` or `build.gradle.kts` are completed and verified.
+4. **KSP Optimization Check**: Ensure the project uses the optimized KSP configuration in build files.
+5. **Incremental Sync**: Only trigger `gradle_sync` when changes to `libs.versions.toml` or build files are completed.
 
 ## Operational Rules
 - Agents MUST invoke this skill before finalizing any task.
