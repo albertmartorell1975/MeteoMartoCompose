@@ -32,8 +32,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -51,7 +51,7 @@ ksp {
 
 // Add or modify this block
 kotlin {
-    jvmToolchain(11) // Set your desired JVM target version here
+    jvmToolchain(17) // Set your desired JVM target version here
 }
 
 dependencies {
