@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Meteo Marto - Splash Screen</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- BEGIN: Custom Styling -->
+<style data-purpose="typography">
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+<style data-purpose="animations">
+    @keyframes gentlePulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.65;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 0.95;
+      }
+    }
+
+    @keyframes weatherIconFloat {
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+      }
+      50% {
+        transform: translateY(-6px) scale(1.02);
+      }
+    }
+
+    @keyframes subtleProgress {
+      0% {
+        width: 15%;
+        transform: translateX(-10%);
+      }
+      50% {
+        width: 55%;
+        transform: translateX(60%);
+      }
+      100% {
+        width: 25%;
+        transform: translateX(260%);
+      }
+    }
+
+    .pulse-halo {
+      animation: gentlePulse 3.8s ease-in-out infinite;
+    }
+
+    .floating-icon {
+      animation: weatherIconFloat 4.2s ease-in-out infinite;
+    }
+
+    .loading-shimmer {
+      animation: subtleProgress 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  </style>
+<style data-purpose="gradients">
+    .bg-atmospheric {
+      background: radial-gradient(circle at 50% 45%, #ffffff 0%, #fafafb 50%, #f4f5f8 100%);
+    }
+    
+    .glow-aura {
+      background: radial-gradient(circle, rgba(254, 240, 138, 0.28) 0%, rgba(255, 237, 213, 0.2) 40%, rgba(248, 250, 252, 0) 72%);
+    }
+  </style>
+<!-- END: Custom Styling -->
+</head>
+<body class="bg-atmospheric min-h-screen w-full flex items-center justify-center p-0 m-0 overflow-hidden text-neutral-900 select-none">
+<!-- BEGIN: MobileDeviceFrame -->
+<main class="relative w-full max-w-[430px] h-[100dvh] flex flex-col justify-between overflow-hidden bg-white/40 shadow-2xl md:border md:border-neutral-200 md:rounded-[48px]" data-purpose="mobile-canvas">
+<!-- Atmospheric Ambient Glows in Background -->
+<div aria-hidden="true" class="absolute -top-24 -left-20 w-80 h-80 rounded-full bg-amber-100/40 blur-3xl pointer-events-none"></div>
+<div aria-hidden="true" class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-sky-100/35 blur-3xl pointer-events-none"></div>
+<div aria-hidden="true" class="absolute -bottom-20 left-1/4 w-72 h-72 rounded-full bg-orange-100/30 blur-3xl pointer-events-none"></div>
+<!-- BEGIN: AndroidStatusBar -->
+<header class="relative z-20 w-full px-7 pt-4.5 pb-2 flex items-center justify-between text-neutral-800 text-sm font-semibold tracking-tight" data-purpose="status-bar">
+<!-- Left side: Clock and notification icons -->
+<div class="flex items-center gap-1.5 pl-0.5">
+<span class="text-[14px] font-bold text-neutral-900 tracking-tight">2:28</span>
+<!-- Optional status notification glyph matching screenshot -->
+<svg class="w-3.5 h-3.5 ml-1 text-neutral-700" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+</div>
+<!-- Right side: Android connectivity and battery status icons -->
+<div class="flex items-center gap-2.5 pr-0.5 text-neutral-900">
+<!-- Signal / Cellular Icon -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path class="opacity-0" d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.54-.5 2.97-1.35 4.14L12 19.66l-5.65-3.52C5.5 14.97 5 13.54 5 12c0-3.87 3.13-7 7-7z"></path>
+<rect height="6" rx="0.8" width="3" x="2" y="16"></rect>
+<rect height="10" rx="0.8" width="3" x="7" y="12"></rect>
+<rect height="14" rx="0.8" width="3" x="12" y="8"></rect>
+<rect height="18" rx="0.8" width="3" x="17" y="4"></rect>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3.3c3.7 0 7.07 1.4 9.61 3.72L12 19.34 2.39 11.02C4.93 8.7 8.3 7.3 12 7.3z"></path>
+</svg>
+<!-- Battery Icon with full charge pill -->
+<div class="flex items-center">
+<div class="w-5.5 h-3 border-[2px] border-neutral-900 rounded-[4px] p-[1.5px] flex items-center">
+<div class="h-full w-full bg-neutral-900 rounded-[1.5px]"></div>
+</div>
+<div class="w-0.5 h-1.5 bg-neutral-900 rounded-r-[1px] ml-[0.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: AndroidStatusBar -->
+<!-- BEGIN: BrandHeroCenter -->
+<section class="relative z-10 flex-1 flex flex-col items-center justify-center -mt-6 px-6" data-purpose="hero-content">
+<!-- Halo Aura and Circular Weather Emblem -->
+<div class="relative flex items-center justify-center mb-7">
+<!-- Soft Circular Pulse Glow Aura (as seen in screenshot 4) -->
+<div class="absolute w-52 h-52 rounded-full glow-aura pulse-halo pointer-events-none"></div>
+<div class="absolute w-40 h-40 rounded-full bg-neutral-100/60 blur-md pointer-events-none"></div>
+<!-- Meteo Marto Weather Icon Container -->
+<div class="relative z-10 w-28 h-28 flex items-center justify-center floating-icon" data-purpose="brand-icon">
+<!-- Vector Weather Graphic recreated faithfully with bold stroke geometry -->
+<svg class="w-24 h-24 filter drop-shadow-sm" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<!-- Sun Rays -->
+<g stroke="#1F2421" stroke-linecap="round" stroke-width="3.6">
+<line x1="50" x2="50" y1="12" y2="18"></line>
+<line x1="68" x2="64" y1="19.5" y2="24"></line>
+<line x1="80" x2="74.5" y1="36" y2="37.5"></line>
+<line x1="32" x2="36" y1="19.5" y2="24"></line>
+<line x1="20" x2="25.5" y1="36" y2="37.5"></line>
+<line x1="77" x2="72" y1="54" y2="52"></line>
+</g>
+<!-- Warm Amber Sun Body -->
+<circle cx="50" cy="38" fill="#F5A623" r="17" stroke="#1F2421" stroke-width="3.8"></circle>
+<!-- Atmospheric Soft Cloud Shape (Layered over sun) -->
+<path d="M38.5 61.5
+                     C33 61.5 28.5 57 28.5 51.5
+                     C28.5 46.5 32 42.4 36.8 41.7
+                     C38.6 34.6 45 29.5 52.8 29.5
+                     C61.8 29.5 69.2 36.2 70.2 45
+                     C74.6 45.7 78 49.5 78 54
+                     C78 59 74 63 69 63
+                     L41 63" fill="#EEF2F6" stroke="#1F2421" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.8"></path>
+<!-- Electric Energy Lightning Bolt -->
+<path d="M54.5 49
+                     L45 61
+                     H52.5
+                     L47.5 73.5
+                     L61.5 57
+                     H54
+                     L58 49 Z" fill="#FCD34D" stroke="#1F2421" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.4"></path>
+</svg>
+</div>
+</div>
+<!-- Welcome Typography Heading -->
+<div class="text-center max-w-xs transition-all duration-300">
+<h1 class="text-[27px] sm:text-[29px] font-extrabold tracking-tight text-neutral-950 leading-tight">
+          Welcome to Meteo Marto
+        </h1>
+<p class="text-neutral-500 text-xs mt-2 font-medium tracking-wide uppercase opacity-75">
+          Dynamic Forecasts &amp; Radar
+        </p>
+</div>
+</section>
+<!-- END: BrandHeroCenter -->
+<!-- BEGIN: BottomIndicatorSection -->
+<footer class="relative z-10 w-full flex flex-col items-center pb-3 pt-6" data-purpose="app-loading-footer">
+<!-- Fluid Material Loading Progress Indicator -->
+<div aria-label="Loading application" class="w-28 h-1 bg-neutral-200/70 rounded-full overflow-hidden mb-6">
+<div class="h-full bg-neutral-900 rounded-full loading-shimmer"></div>
+</div>
+<!-- Modern Android Home Gesture Handle Bar -->
+<div aria-hidden="true" class="w-36 h-1 bg-neutral-900 rounded-full mb-1 opacity-90" data-purpose="gesture-indicator"></div>
+</footer>
+<!-- END: BottomIndicatorSection -->
+</main>
+<!-- END: MobileDeviceFrame -->
+</body></html>

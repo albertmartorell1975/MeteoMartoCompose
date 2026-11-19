@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MeteoMarto - Terms and Conditions</title>
+<!-- Tailwind CSS v3 CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atmospheric: {
+              bg: '#F5F6FA',
+              card: 'rgba(255, 255, 255, 0.72)',
+              primaryText: '#2D3142',
+              secondaryText: '#696E82',
+              accentPurple: '#6B66A6',
+              accentGlow: '#9089DE',
+              border: 'rgba(255, 255, 255, 0.85)',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<!-- Custom Styles for Atmospheric Backdrop Blur & Scrollbar -->
+<style data-purpose="atmospheric-effects">
+    .glass-surface {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(240, 243, 255, 0.6) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 10px 32px 0 rgba(107, 102, 166, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    }
+    
+    .scrollable-legal::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .scrollable-legal::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .scrollable-legal::-webkit-scrollbar-thumb {
+      background: rgba(107, 102, 166, 0.25);
+      border-radius: 9999px;
+    }
+
+    .scrollable-legal::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 102, 166, 0.45);
+    }
+  </style>
+</head>
+<body class="bg-[#EFF2F9] text-atmospheric-primaryText antialiased flex justify-center items-center min-h-screen p-0 sm:p-4">
+<!-- BEGIN: MobileContainer -->
+<!-- Container scaled to mobile device proportions -->
+<div class="relative w-full max-w-[420px] h-[100dvh] max-h-[920px] bg-gradient-to-b from-[#F3F4FB] via-[#EDF0F8] to-[#E5E9F4] flex flex-col justify-between overflow-hidden sm:rounded-[44px] shadow-2xl border-[1px] border-white/60" data-purpose="device-viewport">
+<!-- Atmospheric Ambient Lighting Elements -->
+<div class="absolute -top-24 -left-20 w-72 h-72 rounded-full bg-purple-300/30 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-blue-300/25 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-20 left-10 w-64 h-64 rounded-full bg-indigo-200/40 blur-3xl pointer-events-none"></div>
+<!-- BEGIN: StatusBar -->
+<!-- Android / iOS Style System Status Bar -->
+<div class="relative z-20 flex items-center justify-between px-6 pt-3 pb-1 text-xs font-semibold text-atmospheric-primaryText tracking-tight" data-purpose="system-status-bar">
+<span class="pl-1">2:08</span>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal Indicator -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 14.5c-3.04 0-5.5-2.46-5.5-5.5s2.46-5.5 5.5-5.5 5.5 2.46 5.5 5.5-2.46 5.5-5.5 5.5z"></path>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3.5c3.2 0 6.13 1.15 8.44 3.06L12 18.91 3.56 10.56A13.38 13.38 0 0 1 12 7.5z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-5 h-2.5 border border-current rounded-sm p-0.5 flex items-center">
+<div class="bg-current w-full h-full rounded-[1px]"></div>
+</div>
+</div>
+</div>
+<!-- END: StatusBar -->
+<!-- BEGIN: AppHeader -->
+<!-- Top Action Bar with dismiss and centered title matching IMAGE_18 -->
+<header class="relative z-20 px-6 pt-2 pb-3 flex items-center justify-between" data-purpose="app-header">
+<!-- Back / Dismiss Action -->
+<button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-atmospheric-primaryText/70 hover:text-atmospheric-primaryText hover:bg-white/40 active:scale-95 transition-all" type="button">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<line x1="19" x2="5" y1="12" y2="12"></line>
+<polyline points="12 19 5 12 12 5"></polyline>
+</svg>
+</button>
+<!-- Atmospheric Purple Centered Header Title -->
+<h1 class="text-xl font-medium tracking-tight text-atmospheric-accentPurple text-center flex-1 pr-8">
+        Terms and conditions
+      </h1>
+</header>
+<!-- END: AppHeader -->
+<!-- BEGIN: ContentArea -->
+<!-- Main Scrollable Legal Content with Glass Surface Container -->
+<main class="relative z-10 flex-1 px-4 pb-2 pt-1 overflow-hidden flex flex-col" data-purpose="legal-document-container">
+<div class="glass-surface border border-white/70 rounded-3xl p-6 sm:p-7 flex-1 overflow-y-auto scrollable-legal shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+<!-- Document Meta Tagging -->
+<div class="mb-4 pb-3 border-b border-atmospheric-accentPurple/10 flex items-center justify-between text-[11px] font-medium text-atmospheric-secondaryText">
+<span>Version 2.4</span>
+<span>Last Updated: November 2026</span>
+</div>
+<!-- Section 1 / Text Block 1 matching IMAGE_18 -->
+<article class="space-y-5 text-[15px] leading-relaxed text-[#4A4E63] font-normal">
+<p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur elementum eget augue ut commodo. Praesent tincidunt vitae lorem et efficitur. In posuere volutpat sapien, at semper lacus vestibulum eu. In sagittis egestas orci. Maecenas vel suscipit leo. Vivamus quis orci vitae metus viverra imperdiet gravida id augue. Nulla facilisi. Ut nulla mi, rhoncus eget quam vitae, dictum vehicula nisl. Ut pretium lacus eget nisi porttitor, nec finibus erat hendrerit. Nam semper a turpis vitae hendrerit. Morbi sit amet congue sem. Cras arcu dolor, faucibus at aliquam in, varius venenatis justo. Vivamus id magna justo. Curabitur congue sodales arcu.
+          </p>
+<!-- Section 2 / Text Block 2 matching IMAGE_18 -->
+<p>
+            Praesent accumsan augue ut eleifend tristique. Nulla quam augue, accumsan maximus pulvinar eu, hendrerit ut quam. In hac habitasse platea dictumst. Morbi vel eros tristique, congue massa sed, ultricies ligula. Maecenas elementum ipsum ac rhoncus mattis. Nunc imperdiet fringilla velit at blandit. Sed hendrerit turpis vitae rhoncus venenatis. Fusce sem nulla, congue gravida vestibulum eu, bibendum ac leo. Etiam sed venenatis lorem, nec maximus libero. Morbi efficitur lorem quis ex aliquam sollicitudin a in ex. Morbi quis lectus egestas, faucibus est vitae, ultrices nunc. Vestibulum eu nibh arcu. Nullam scelerisque mauris nunc, eu fringilla erat pulvinar id. Vestibulum nec arcu mauris. Sed dictum massa in lectus blandit, eget condimentum nisl tincidunt. Ut odio dui, venenatis ac imperdiet et, vulputate at lorem.
+          </p>
+<!-- Additional Atmospheric Terms Continuity -->
+<p>
+            Sed posuere tristique nulla, in mollis leo scelerisque sed. Cras eu justo non est aliquet tempus. In id libero eget felis hendrerit eleifend nec non sem. Morbi ac ipsum vitae massa convallis tincidunt. Integer dignissim, metus ac lacinia convallis, ipsum massa pretium lorem, at feugiat turpis lorem in velit. Integer at pulvinar metus. Quisque molestie mi id ultrices convallis.
+          </p>
+</article>
+</div>
+</main>
+<!-- END: ContentArea -->
+<!-- BEGIN: BottomNavigationArea -->
+<!-- Action controls and Android Navigation Gesture pill -->
+<footer class="relative z-20 px-6 pt-3 pb-2 flex flex-col items-center" data-purpose="actions-and-gesture-bar">
+<!-- Primary / Secondary Action Buttons -->
+<div class="w-full flex items-center space-x-3 mb-2">
+<button class="flex-1 py-3 px-4 rounded-2xl bg-white/70 hover:bg-white text-atmospheric-secondaryText hover:text-atmospheric-primaryText font-medium text-sm transition-all border border-white/80 active:scale-[0.98] shadow-sm" type="button">
+          Decline
+        </button>
+<button class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-atmospheric-accentPurple to-[#555092] hover:opacity-95 text-white font-medium text-sm transition-all shadow-[0_4px_16px_rgba(107,102,166,0.35)] active:scale-[0.98]" type="button">
+          Accept &amp; Continue
+        </button>
+</div>
+<!-- Android / iOS Gesture Navigation Bar -->
+<div class="w-full flex justify-center py-2">
+<div class="w-32 h-1 bg-atmospheric-primaryText/40 rounded-full"></div>
+</div>
+</footer>
+<!-- END: BottomNavigationArea -->
+</div>
+<!-- END: MobileContainer -->
+</body></html>

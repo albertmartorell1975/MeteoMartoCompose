@@ -1,0 +1,70 @@
+# MeteoMarto - Contracte Directe per a Subagents (MM-02 KISS)
+
+Guia definitiva i font única de veritat (Single Source of Truth) perquè els subagents executin la implementació sense fricció, sense ambigüitats i amb el mínim codi possible.
+
+---
+
+## 1. Principi de Dinamisme: Quines pantalles canvien de tema i quines no?
+
+Per respectar el patró **KISS** i evitar una interfície caòtica o inconsistències de color, s'estableixen regles deterministes segons el context de cada pantalla:
+
+* **Pantalles d'Autenticació (`Splash`, `Login`, `Register`, `Terms`):**  
+  Com que l'usuari encara no s'ha autenticat ni s'ha consultat cap ciutat/clima, **no s'aplica cap tema climàtic dinàmic**. Consumeixen **sempre i de forma immutable** la paleta estàtica neutra: `DayBaselinePalette`.
+* **Llista de Favorits (`FavoritesScreen`):**  
+  **Pantalla Estàtica Neutra (`DayBaselinePalette`).**  
+  *Motiu arquitectònic i UX:* Una llista conté múltiples ciutats amb climes potencialment diferents (p. ex., Londres plovent, Barcelona assolellada, Nova York de nit). Intentar pintar el fons general segons una ciutat o barrejar fons crearia conflicte. Per tant, el contenidor i la pantalla de favorits fan servir `DayBaselinePalette`. Dins de cada element (card) de la llista es mostra el temps mitjançant la seva icona i dades, sense tenyir la pantalla sencera.
+* **Detall d'un Favorit / Previsió de Ciutat (`CityForecastScreen`):**  
+  **Pantalla 100% Dinàmica.**  
+  Tant si s'accedeix a la ciutat principal com si es fa clic sobre una ciutat de la llista de favorits per veure el seu detall, es reutilitza el `CityForecastScreen`. Com que aquí **ja tenim una ciutat concreta amb dades meteorològiques i horari definits**, la pantalla reacciona immediatament aplicant la paleta de la condició corresponent (`Sunny`, `Rain`, `Night`, `DayBaseline` o `ExtremeAlert`).
+* **Alerta Extrema (`HighTemperatureAlertScreen`):**  
+  Estat d'alerta puntual (>35ºC o risc sever) que aplica `ExtremeAlertPalette`.
+
+---
+
+## 2. Fitxer i Arquitectura de Tema (`Theme.kt`)
+
+Ubicació canònica de referència: `com.meteomarto.ui.theme.Theme.kt`
+
+* **Model mínim de 4 colors (`SimpleWeatherPalette`):**
+  * `background`: Fons general de la pantalla.
+  * `surface`: Fons de targetes, diàlegs i contenidors.
+  * `onSurface`: Text i icones principals.
+  * `primary`: Botons d'acció principal i accents visuals.
+* **Estats meteorològics finits (`WeatherCondition`):**
+  * `BASELINE`: Ennuvolat, variable, boira o pantalles neutres.
+  * `SUNNY`: Sol / clar (codis WMO `0..1`).
+  * `RAIN`: Pluja, ruixats, tempesta o neu (codis WMO `50..82`, `200..232`, `300..321`, `500..531`).
+* **Prioritat d'avaluació al tema mestre:**
+  1. Si `isExtremeAlert == true` $\rightarrow$ `ExtremeAlertPalette`
+  2. Si `isNight == true` $\rightarrow$ `NightPalette`
+  3. Si `condition == WeatherCondition.SUNNY` $\rightarrow$ `SunnyPalette`
+  4. Si `condition == WeatherCondition.RAIN` $\rightarrow$ `RainPalette`
+  5. En qualsevol altre cas $\rightarrow$ `DayBaselinePalette`
+
+---
+
+## 3. Matriu de Colors en Funció del Temps
+
+| Condició / Estat | Exemples reals de temps | Background | Surface | OnSurface (Text) | Primary (Acció) | Ús canònic |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **DayBaseline** | Ennuvolat, variable, boira | `#F8F9FA` | `#FFFFFF` | `#1A1C1E` | `#4A627A` | Auth, **Llista Favorits** i ciutat ennuvolada |
+| **Sunny** | Sol radiant, cel serè | `#FFF8F0` | `#FFFFFF` | `#2D2314` | `#E68A00` | Previsió / Detall ciutat amb sol |
+| **Rain** | Pluja, ruixats, tempesta, neu | `#EBF2F7` | `#F4F8FB` | `#13202C` | `#2C5282` | Previsió / Detall ciutat plujosa o nevada |
+| **Night** | Horari nocturn (`isNight == true`) | `#0E1419` | `#161C21` | `#E1E2E5` | `#9D8DF1` | Previsió / Detall ciutat de nit |
+| **ExtremeAlert** | Onada de calor (>35ºC) o temporal | `#701A1A` | `#8B2323` | `#FFFFFF` | `#B5C4FF` | Diàleg / pantalla d'alerta d'alta temperatura |
+
+---
+
+## 4. Mapa Canònic de Pantalles i Paleta Associada
+
+| Pantalla | Comportament | Paleta assignada | Raonament KISS |
+| :--- | :--- | :--- | :--- |
+| `SplashScreen` | **Estàtica** | `DayBaselinePalette` | Sense sessió ni ubicació inicial |
+| `LoginScreen` | **Estàtica** | `DayBaselinePalette` | Formulari auth estable |
+| `RegisterScreen` | **Estàtica** | `DayBaselinePalette` | Formulari auth estable |
+| `TermsScreen` | **Estàtica** | `DayBaselinePalette` | Document legal neutre |
+| `FavoritesScreen` (Llista) | **Estàtica** | `DayBaselinePalette` | Conté múltiples ciutats amb oratges diferents; el marc ha de ser neutre |
+| `CityForecastScreen` (Principal o Detall de Favorit) | **Dinàmica** | `DayBaseline` / `Sunny` / `Rain` / `Night` | Consulta d'una ciutat concreta; reacciona al seu estat i horari |
+| `LogoutDialog` | **Heretada** | Paleta de la pantalla actual | S'obre com a modal sobre la pantalla activa |
+| `ErrorForecastScreen` | **Estàtica** | `DayBaselinePalette` | Fallada de xarxa o dades no disponibles |
+| `HighTemperatureAlertScreen` | **Dinàmica (Alerta)** | `ExtremeAlertPalette` (`#701A1A`) | Alerta d'onada de calor (>35ºC) |

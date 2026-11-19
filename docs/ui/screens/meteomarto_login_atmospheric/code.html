@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="ca"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MeteoMarto - Login</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              title: '#54528c',
+              primary: '#6b63b5',
+              accent: '#4f46e5',
+              border: '#3b4369',
+              muted: '#717899',
+              lightBg: '#f8fafc',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="atmospheric-theme">
+    /* Fons atmosfèric matinal inspirat en temps i boira suau */
+    .weather-gradient-bg {
+      background: radial-gradient(circle at 10% 20%, rgba(224, 238, 255, 0.95) 0%, rgba(238, 233, 254, 0.85) 45%, rgba(248, 246, 255, 0.95) 85%);
+    }
+
+    /* Targeta Glassmorphism subtil estil Android Compose Material 3 */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 12px 36px -10px rgba(99, 102, 241, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Suau efecte de camp d'entrada OutlinedTextField */
+    .m3-input-field:focus-within label {
+      color: #54528c;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="weather-gradient-bg min-h-screen text-slate-800 flex justify-center items-center selection:bg-purple-200">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="relative w-full max-w-[420px] h-[915px] max-h-screen bg-transparent flex flex-col justify-between overflow-hidden shadow-2xl sm:rounded-[44px] border border-white/60" data-purpose="mobile-viewport-container">
+<!-- BEGIN: AndroidStatusBar -->
+<header class="w-full pt-3 px-7 flex justify-between items-center z-20 text-slate-800 select-none" data-purpose="android-status-bar">
+<!-- Hora local Android -->
+<span class="text-sm font-semibold tracking-tight text-slate-800">2:07</span>
+<!-- Icones d'estat d'Android (Senyal, Wi-Fi, Bateria) -->
+<div class="flex items-center space-x-2 text-slate-700">
+<!-- Icona de cobertura / dades -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.2"></path>
+<path d="M2 22h20L12 2 2 22z"></path>
+</svg>
+<!-- Icona de Wi-Fi -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3.32c3.41 0 6.64 1.25 9.17 3.34L12 19.4 2.83 10.66A13.84 13.84 0 0 1 12 7.32z"></path>
+</svg>
+<!-- Icona de bateria amb càrrega completa -->
+<div class="flex items-center">
+<div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+<div class="h-full w-full bg-slate-800 rounded-2xs"></div>
+</div>
+<div class="w-0.5 h-1 bg-slate-700 rounded-r-xs"></div>
+</div>
+</div>
+</header>
+<!-- END: AndroidStatusBar -->
+<!-- BEGIN: AtmosphericFloatingMenuButton -->
+<!-- Botó flotant circular hamburguesa (exacte al disseny original) -->
+<div class="absolute left-4 top-[48%] -translate-y-1/2 z-30" data-purpose="floating-menu">
+<button aria-label="Obrir menú lateral" class="w-12 h-12 rounded-full bg-white/85 backdrop-blur-md shadow-lg border border-white flex flex-col justify-center items-center gap-[4.5px] text-slate-700 hover:bg-white active:scale-95 transition-all" type="button">
+<span class="w-4 h-[2px] bg-slate-700 rounded-full"></span>
+<span class="w-4 h-[2px] bg-slate-700 rounded-full"></span>
+<span class="w-4 h-[2px] bg-slate-700 rounded-full"></span>
+</button>
+</div>
+<!-- END: AtmosphericFloatingMenuButton -->
+<!-- BEGIN: MainContentArea -->
+<main class="w-full px-7 flex flex-col justify-center items-center flex-grow -mt-4" data-purpose="login-form-wrapper">
+<!-- Títol de l'aplicació -->
+<h1 class="text-3xl font-medium tracking-tight text-[#54528c] text-center mb-10" data-purpose="app-title">
+        Welcome to Meteo Marto
+      </h1>
+<!-- Contenidor del formulari -->
+<form class="w-full flex flex-col space-y-5" data-purpose="login-form" onsubmit="event.preventDefault();">
+<!-- Camp: Email (Material Outlined) -->
+<div class="relative w-full">
+<div class="relative rounded-[6px] border-[1.5px] border-[#3b4369] bg-white/40 focus-within:border-[#54528c] focus-within:ring-1 focus-within:ring-[#54528c] transition-all">
+<!-- Etiqueta sobreposada Outlined -->
+<label class="absolute -top-2.5 left-3 px-1.5 text-xs font-medium text-slate-700 bg-white/95 rounded" for="email">
+              Email
+            </label>
+<input autocomplete="email" class="w-full bg-transparent px-3.5 py-3.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none border-0 focus:ring-0" id="email" name="email" placeholder="Type your wonderful e-mail" type="email"/>
+</div>
+</div>
+<!-- Camp: Password (Material Outlined amb visibilitat alternable) -->
+<div class="relative w-full">
+<div class="relative rounded-[6px] border-[1.5px] border-[#3b4369] bg-white/40 focus-within:border-[#54528c] focus-within:ring-1 focus-within:ring-[#54528c] transition-all">
+<!-- Etiqueta sobreposada Outlined -->
+<label class="absolute -top-2.5 left-3 px-1.5 text-xs font-medium text-slate-700 bg-white/95 rounded" for="password">
+              Password
+            </label>
+<input autocomplete="current-password" class="w-full bg-transparent pl-3.5 pr-11 py-3.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none border-0 focus:ring-0" id="password" name="password" placeholder="Password" type="password"/>
+<!-- Botó per mostrar/ocultar contrasenya -->
+<button aria-label="Alternar visibilitat de la contrasenya" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-800 p-1" id="togglePassword" type="button">
+<!-- Icona Ull barrat (Eye-slash) -->
+<svg class="w-5 h-5 fill-current" id="eyeSlashIcon" viewbox="0 0 24 24">
+<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- Botó Principal Login -->
+<div class="pt-6 w-full">
+<button class="w-full py-3.5 px-4 bg-[#e2e2ea]/90 hover:bg-[#d8d8e2] active:bg-[#c9c9d6] text-slate-500 font-medium text-base rounded-full transition duration-150 ease-in-out text-center shadow-sm" type="submit">
+            Login
+          </button>
+</div>
+</form>
+<!-- BEGIN: NavigationLinks -->
+<footer class="mt-12 flex flex-col items-center space-y-6" data-purpose="secondary-actions">
+<!-- Enllaç de termes i condicions -->
+<a class="text-sm font-normal text-[#54528c]/80 hover:text-[#54528c] hover:underline transition-colors" href="#terms">
+          Terms and conditions
+        </a>
+<!-- Enllaç per crear un nou compte -->
+<a class="text-sm font-normal text-[#54528c]/80 hover:text-[#54528c] hover:underline transition-colors" href="#register">
+          Create a new user
+        </a>
+</footer>
+<!-- END: NavigationLinks -->
+</main>
+<!-- END: MainContentArea -->
+<!-- BEGIN: AndroidHomeIndicator -->
+<div class="w-full pb-3 flex justify-center items-center select-none z-20" data-purpose="android-navigation-bar">
+<div class="w-36 h-1 bg-slate-600 rounded-full"></div>
+</div>
+<!-- END: AndroidHomeIndicator -->
+</div>
+<!-- END: MobileDeviceFrame -->
+<!-- BEGIN: InteractiveHandlers -->
+<script data-purpose="password-toggle">
+    const toggleButton = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    toggleButton.addEventListener('click', () => {
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    });
+  </script>
+<!-- END: InteractiveHandlers -->
+</body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="ca"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Meteo Marto - Alerta de Temperatura Extrema</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            alert: {
+              base: '#871b1b',
+              dark: '#580d0d',
+              accent: '#ff5c5c',
+              soft: '#f8b4b4',
+              btn: '#a9c7ff',
+              btnText: '#0d2d5e'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          },
+          animation: {
+            'heat-pulse': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float-subtle': 'floatSubtle 6s ease-in-out infinite',
+          },
+          keyframes: {
+            floatSubtle: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: CSS Stylesheets -->
+<style data-purpose="atmospheric-effects">
+    /* Fons dinàmic d'alta temperatura amb ones tèrmiques */
+    .bg-thermal-heat {
+      background: radial-gradient(circle at 50% 30%, #a42020 0%, #7e1616 50%, #460808 100%);
+    }
+
+    .heat-shimmer {
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 99, 71, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(220, 20, 60, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.08) 0%, transparent 60%);
+    }
+  </style>
+<style data-purpose="dialog-glassmorphism">
+    /* Estil suau per al diàleg Material You / Glassmorphism */
+    .modal-surface {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.45);
+    }
+  </style>
+<!-- END: CSS Stylesheets -->
+</head>
+<body class="bg-black text-white font-sans antialiased min-h-screen flex items-center justify-center p-0 m-0 overflow-x-hidden selection:bg-alert-soft selection:text-alert-dark">
+<!-- BEGIN: MobileFrameContainer -->
+<!-- Contenidor ajustat a proporció mòbil iOS/Android fidel a la captura original -->
+<main class="relative w-full max-w-[430px] h-[932px] max-h-screen overflow-hidden bg-thermal-heat flex flex-col justify-between shadow-2xl md:rounded-[48px] md:border-[10px] md:border-neutral-900" data-purpose="app-viewport">
+<!-- Capa de textura ambiental atmosfèrica -->
+<div aria-hidden="true" class="absolute inset-0 heat-shimmer pointer-events-none"></div>
+<div aria-hidden="true" class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-600/10 via-transparent to-black/30 pointer-events-none"></div>
+<!-- BEGIN: TopBar -->
+<!-- Barra superior amb botó de tancar segons la captura de l'Alerta -->
+<header class="relative z-20 flex justify-between items-center px-6 pt-12 pb-4">
+<!-- Indicador o títol contextual subtil -->
+<span class="text-xs font-semibold tracking-wider uppercase text-red-200/60 pl-1">
+        Meteo Marto
+      </span>
+<!-- Botó de tancar idèntic al botó X de la captura IMAGE_11 -->
+<button aria-label="Tancar alerta" class="w-11 h-11 rounded-full bg-black/25 hover:bg-black/40 active:scale-95 transition-all flex items-center justify-center text-white/90 backdrop-blur-md shadow-md focus:outline-none" data-purpose="close-button" id="dismiss-alert-btn" type="button">
+<svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: AlertContent -->
+<!-- Secció central de contingut de l'alerta extrema de temperatura -->
+<section class="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center -mt-6">
+<!-- Icona d'alerta triangular de perill de temperatura -->
+<div class="mb-7 animate-float-subtle" data-purpose="alert-icon-container">
+<div class="relative flex items-center justify-center">
+<!-- Aura lluminosa de perill -->
+<div class="absolute w-28 h-28 bg-red-400/20 rounded-full blur-2xl animate-heat-pulse"></div>
+<!-- Icona triangular d'advertència precisa segons IMAGE_11 -->
+<div class="relative w-20 h-20 text-[#f5a7a7] flex items-center justify-center">
+<svg class="w-full h-full drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" fill="currentColor" viewbox="0 0 100 90">
+<!-- Triangle suau amb exclamació -->
+<path d="M42.4 9.2C45.8 3.3 54.2 3.3 57.6 9.2L96.2 76C99.6 81.9 95.4 89.3 88.6 89.3H11.4C4.6 89.3 0.4 81.9 3.8 76L42.4 9.2Z"></path>
+<!-- Barra d'admiració -->
+<rect fill="#6d1212" height="24" rx="4" width="8" x="46" y="34"></rect>
+<!-- Punt d'admiració -->
+<circle cx="50" cy="68" fill="#6d1212" r="4.5"></circle>
+</svg>
+</div>
+</div>
+</div>
+<!-- Títol de l'alerta exacte -->
+<h1 class="text-[31px] leading-tight font-medium text-white tracking-tight mb-4 drop-shadow-md">
+        High Temperature Alert!
+      </h1>
+<!-- Text descriptiu de l'alerta exacte -->
+<p class="text-[17px] leading-relaxed text-red-100/90 font-normal max-w-[280px] mb-9">
+        Current temperature is 35,5°C, exceeding the threshold.
+      </p>
+<!-- Botó primari 'Understood' amb cantonades de píndola idèntic a IMAGE_11 -->
+<button class="w-auto min-w-[146px] h-12 px-7 bg-[#a8c7fa] hover:bg-[#bed6fd] active:scale-95 text-[#00325b] font-medium text-[16px] rounded-full transition-all duration-150 shadow-[0_4px_14px_rgba(0,0,0,0.25)] flex items-center justify-center" data-purpose="primary-action-button" id="understood-action-btn" type="button">
+        Understood
+      </button>
+<!-- Botó addicional auxiliar per provar el diàleg de Logout (IMAGE_3) -->
+<div class="mt-8">
+<button class="text-xs text-red-200/50 hover:text-red-100 flex items-center gap-1.5 transition-colors underline-offset-4 hover:underline" id="trigger-logout-modal" type="button">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" x2="9" y1="12" y2="12"></line>
+</svg>
+<span>Previsualitzar Diàleg Log out</span>
+</button>
+</div>
+</section>
+<!-- END: AlertContent -->
+<!-- BEGIN: AtmosphericFooterInfo -->
+<!-- Petit indicador ambiental a la base per reforçar la impressió de sistema viu -->
+<footer class="relative z-10 py-6 px-6 text-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/20 text-red-200/70 text-xs backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
+<span>Sensor d'estació: MeteoMarto Actiu</span>
+</div>
+<!-- Barra d'inici iOS per a fidelitat de renderitzat mòbil -->
+<div class="w-32 h-1 bg-white/20 rounded-full mx-auto mt-5"></div>
+</footer>
+<!-- END: AtmosphericFooterInfo -->
+<!-- BEGIN: LogoutModalDialog -->
+<!-- Diàleg de sortida/confirmació fidel a la captura IMAGE_3 ('Log out') integrat com a overlay interactiu -->
+<div aria-labelledby="logout-title" aria-modal="true" class="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 transition-opacity duration-300 opacity-0 pointer-events-none" data-purpose="confirmation-modal" id="logout-modal" role="dialog">
+<!-- Caixa del diàleg en estil Android M3 / iOS Glassmorphic de la captura IMAGE_3 -->
+<div class="modal-surface w-full max-w-[340px] rounded-[32px] p-7 text-neutral-900 shadow-2xl transform transition-transform duration-300 scale-95 flex flex-col">
+<!-- Títol del diàleg -->
+<h2 class="text-2xl font-normal text-neutral-900 mb-3 tracking-normal" id="logout-title">
+          Log out
+        </h2>
+<!-- Text d'advertència del diàleg -->
+<p class="text-neutral-700 text-sm leading-relaxed mb-8">
+          Are you sure to want to log out?
+        </p>
+<!-- Botons d'acció (Cancel i Continue) de la captura IMAGE_3 -->
+<div class="flex items-center justify-end gap-3 font-medium">
+<button class="px-5 py-2.5 rounded-full text-blue-600 hover:bg-blue-50/70 text-sm active:scale-95 transition-all" id="cancel-logout-btn" type="button">
+            Cancel
+          </button>
+<button class="px-6 py-2.5 rounded-full bg-[#dbe5f7] hover:bg-[#cbdaf5] text-[#1b3459] text-sm active:scale-95 transition-all font-medium" id="continue-logout-btn" type="button">
+            Continue
+          </button>
+</div>
+</div>
+</div>
+<!-- END: LogoutModalDialog -->
+</main>
+<!-- END: MobileFrameContainer -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="modal-and-feedback-handlers">
+    // Control interactiu d'obertura i tancament del diàleg de Logout i botons d'alerta
+    const logoutModal = document.getElementById('logout-modal');
+    const triggerLogout = document.getElementById('trigger-logout-modal');
+    const cancelLogout = document.getElementById('cancel-logout-btn');
+    const continueLogout = document.getElementById('continue-logout-btn');
+    const dismissAlert = document.getElementById('dismiss-alert-btn');
+    const understoodBtn = document.getElementById('understood-action-btn');
+
+    function openModal() {
+      logoutModal.classList.remove('opacity-0', 'pointer-events-none');
+      logoutModal.classList.add('opacity-100', 'pointer-events-auto');
+      const dialogCard = logoutModal.querySelector('.modal-surface');
+      if (dialogCard) {
+        dialogCard.classList.remove('scale-95');
+        dialogCard.classList.add('scale-100');
+      }
+    }
+
+    function closeModal() {
+      logoutModal.classList.add('opacity-0', 'pointer-events-none');
+      logoutModal.classList.remove('opacity-100', 'pointer-events-auto');
+      const dialogCard = logoutModal.querySelector('.modal-surface');
+      if (dialogCard) {
+        dialogCard.classList.add('scale-95');
+        dialogCard.classList.remove('scale-100');
+      }
+    }
+
+    triggerLogout.addEventListener('click', openModal);
+    cancelLogout.addEventListener('click', closeModal);
+    continueLogout.addEventListener('click', () => {
+      alert("Sessió tancada correctament a Meteo Marto.");
+      closeModal();
+    });
+
+    understoodBtn.addEventListener('click', () => {
+      // Feedback suau de conformitat
+      understoodBtn.innerText = 'Acknowledged ✓';
+      understoodBtn.classList.add('bg-green-100', 'text-green-900');
+      setTimeout(() => {
+        understoodBtn.innerText = 'Understood';
+        understoodBtn.classList.remove('bg-green-100', 'text-green-900');
+      }, 1800);
+    });
+
+    dismissAlert.addEventListener('click', () => {
+      openModal();
+    });
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

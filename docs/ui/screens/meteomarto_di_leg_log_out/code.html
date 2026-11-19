@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Meteo Marto - Log out</title>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts for Roboto / Inter styling -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Roboto', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            meteo: {
+              surface: '#F8FAFC',
+              primary: '#3F51B5',
+              btnPill: '#E0EAFF',
+              textPrimary: '#1E293B',
+              textSecondary: '#64748B',
+            }
+          },
+          borderRadius: {
+            'dialog': '28px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-utilities">
+    /* Prevent selection and mimic native mobile viewport */
+    body {
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Roboto', sans-serif;
+    }
+    /* Android home gesture pill indicator */
+    .home-indicator {
+      width: 134px;
+      height: 4px;
+      background-color: #FFFFFF;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-black flex justify-center items-center min-h-screen p-0 m-0">
+<!-- BEGIN: PhoneDeviceContainer -->
+<!-- Mimicking native 1080x2400 aspect ratio on mobile viewports -->
+<div class="relative w-full max-w-[420px] h-[890px] bg-[#E8EEF5] overflow-hidden flex flex-col justify-between shadow-2xl" data-purpose="mobile-viewport">
+<!-- BEGIN: UnderlayingForecastScreen -->
+<!-- Content is intentionally dimmed as seen in Screenshot_20261119_150932.png -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none select-none" data-purpose="background-content">
+<!-- Top Status Bar and Header -->
+<div>
+<!-- System Status Bar -->
+<div class="w-full pt-3 px-6 pb-2 flex justify-between items-center text-xs font-medium text-slate-800" data-purpose="status-bar">
+<span class="text-sm font-semibold tracking-tight">2:09</span>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.2.2-.2.51 0 .71.1.1.23.15.35.15.13 0 .26-.05.35-.15l1.83-1.83C8.42 19.34 10.12 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z" opacity="0"></path></svg>
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path d="M2 22h20V2z"></path></svg>
+<!-- Battery Icon -->
+<div class="w-5 h-2.5 border border-slate-700 rounded-sm p-[1px] flex items-center">
+<div class="h-full w-full bg-slate-700 rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- App Bar -->
+<header class="px-6 py-3 flex justify-between items-center" data-purpose="app-bar">
+<h1 class="text-2xl font-bold tracking-tight text-slate-900">Meteo Marto</h1>
+<button aria-label="Sign out" class="text-slate-800 p-1" type="button">
+<!-- Log out icon -->
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</header>
+<!-- Main Forecast Presentation -->
+<main class="mt-14 flex flex-col items-center justify-center text-center px-4">
+<h2 class="text-5xl font-medium tracking-tight text-slate-950 mb-10">Mountain View</h2>
+<!-- Weather Icon Placeholder Illustration -->
+<div class="w-28 h-20 mb-8 flex justify-center items-center opacity-70" data-purpose="weather-art">
+<svg class="w-24 h-24 fill-slate-700" viewbox="0 0 24 24">
+<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path>
+</svg>
+</div>
+<!-- Rain metric -->
+<p class="text-sm font-medium text-sky-800 mb-6">Rain: 0.0</p>
+<!-- Update Forecast Button -->
+<div class="px-7 py-3 rounded-full bg-slate-800 text-slate-200 text-sm font-medium shadow-md">
+            Update forecast
+          </div>
+</main>
+</div>
+<!-- Floating Favorite FAB Button and Bottom Navigation -->
+<div>
+<div class="flex justify-end px-6 mb-4">
+<div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center shadow-lg">
+<svg class="w-6 h-6 fill-slate-950 stroke-none" viewbox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+</svg>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="w-full bg-[#DFE6EE] py-3.5 px-12 flex justify-around items-center border-t border-slate-300/40" data-purpose="bottom-navigation">
+<div class="flex flex-col items-center space-y-1">
+<div class="px-5 py-1 bg-slate-300/80 rounded-full flex items-center justify-center">
+<svg class="w-5 h-5 fill-slate-800" viewbox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-800">City</span>
+</div>
+<div class="flex flex-col items-center space-y-1">
+<div class="px-5 py-1 rounded-full flex items-center justify-center">
+<svg class="w-5 h-5 fill-slate-700" viewbox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+</div>
+<span class="text-xs font-medium text-slate-700">Favorites</span>
+</div>
+</nav>
+</div>
+</div>
+<!-- END: UnderlayingForecastScreen -->
+<!-- BEGIN: ModalScrimBackdrop -->
+<!-- Atmospheric dimming layer replicating jetpack compose modal backdrop -->
+<div class="absolute inset-0 bg-black/65 backdrop-blur-[0.5px] z-20 flex items-center justify-center p-6" data-purpose="scrim-overlay">
+<!-- BEGIN: LogoutDialogCard -->
+<!-- Material 3 Rounded Alert Dialog with 28dp smooth corners -->
+<section aria-describedby="dialog-desc" aria-labelledby="dialog-title" aria-modal="true" class="w-full max-w-[340px] bg-white rounded-[28px] p-6 shadow-2xl border border-white/20 transform transition-all" data-purpose="confirmation-dialog" role="dialog">
+<!-- Dialog Header / Title -->
+<h2 class="text-[26px] font-bold text-slate-900 tracking-tight leading-snug mb-3" id="dialog-title">
+          Log out
+        </h2>
+<!-- Dialog Content Body -->
+<p class="text-[15px] font-normal text-slate-800 leading-normal mb-8" id="dialog-desc">
+          Are you sure to want to log out?
+        </p>
+<!-- Dialog Action Buttons Group -->
+<div class="flex items-center justify-end space-x-3" data-purpose="dialog-actions">
+<!-- Cancel Button: Flat, accessible text button -->
+<button class="px-5 py-2.5 text-[15px] font-semibold text-[#4F5D7E] hover:text-slate-900 active:bg-slate-100 rounded-full transition-colors duration-150" data-purpose="cancel-button" id="btn-cancel" type="button">
+            Cancel
+          </button>
+<!-- Continue Button: Atmospheric soft blue pill button matching exact screenshot -->
+<button class="px-6 py-2.5 bg-[#E1EAFF] hover:bg-[#D4E2FF] active:bg-[#C2D6FF] text-[#2C3E6B] text-[15px] font-semibold rounded-full shadow-sm transition-all duration-150" data-purpose="confirm-button" id="btn-continue" type="button">
+            Continue
+          </button>
+</div>
+</section>
+<!-- END: LogoutDialogCard -->
+</div>
+<!-- END: ModalScrimBackdrop -->
+<!-- BEGIN: AndroidHomeIndicator -->
+<!-- Android bottom navigation bar line indicator -->
+<div class="absolute bottom-2 left-0 right-0 z-30 flex justify-center pointer-events-none" data-purpose="gesture-nav-bar">
+<div class="home-indicator"></div>
+</div>
+<!-- END: AndroidHomeIndicator -->
+</div>
+<!-- END: PhoneDeviceContainer -->
+<!-- BEGIN: InteractiveHandlers -->
+<script data-purpose="event-handlers">
+    // Add smooth feedback handlers for user confirmation and dismissal
+    document.getElementById('btn-cancel').addEventListener('click', () => {
+      console.log('Log out cancelled');
+    });
+
+    document.getElementById('btn-continue').addEventListener('click', () => {
+      console.log('Logging out user...');
+    });
+  </script>
+<!-- END: InteractiveHandlers -->
+</body></html>

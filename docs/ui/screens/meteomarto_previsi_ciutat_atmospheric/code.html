@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="ca"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Meteo Marto - Previsió de Ciutat</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#f8fafc',
+              primary: '#435585',
+              primaryHover: '#36456c',
+              accentRed: '#ef4444',
+              accentBlue: '#3b82f6',
+              navBg: '#f1f4f9',
+              navActivePill: '#dce4f7',
+              fabBg: '#b9cbfb',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          },
+          boxShadow: {
+            'floating': '0 8px 24px -4px rgba(67, 85, 133, 0.25), 0 4px 12px -2px rgba(67, 85, 133, 0.15)',
+            'glass': '0 12px 36px 0 rgba(100, 116, 139, 0.08), 0 2px 8px 0 rgba(100, 116, 139, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom styles for atmospheric enhancements -->
+<style data-purpose="atmospheric-effects">
+    /* Dynamic atmospheric background animation */
+    .atmospheric-gradient {
+      background: radial-gradient(circle at 50% 25%, #edf3fb 0%, #f7f9fd 60%, #eef2f8 100%);
+    }
+
+    .cloud-glow {
+      filter: drop-shadow(0 14px 20px rgba(71, 85, 105, 0.15));
+    }
+
+    /* iOS safe areas handling */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 12px);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 flex justify-center items-center min-h-screen p-0 sm:p-4 antialiased select-none">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="relative w-full max-w-md h-[100dvh] sm:h-[844px] bg-white sm:rounded-[44px] overflow-hidden shadow-2xl flex flex-col justify-between border-slate-800 sm:border-[8px]" data-purpose="mobile-viewport">
+<!-- Atmospheric subtle floating shapes -->
+<div class="absolute -top-24 -left-20 w-72 h-72 rounded-full bg-blue-100/60 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-slate-200/50 blur-3xl pointer-events-none"></div>
+<div class="absolute bottom-10 left-10 w-64 h-64 rounded-full bg-indigo-50/50 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col flex-grow">
+<!-- BEGIN: StatusBar -->
+<div class="w-full pt-safe px-7 pt-3 pb-1 flex justify-between items-center text-xs font-semibold text-slate-800" data-purpose="ios-status-bar">
+<span class="tracking-tight text-sm font-medium">2:08</span>
+<!-- Status Icons -->
+<div class="flex items-center gap-1.5 opacity-90">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"></path>
+</svg>
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.64 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"></path>
+</svg>
+<div class="w-5 h-2.5 border border-slate-700 rounded-sm p-0.5 flex items-center">
+<div class="w-full h-full bg-slate-800 rounded-2xs"></div>
+</div>
+</div>
+</div>
+<!-- END: StatusBar -->
+<!-- BEGIN: TopAppBar -->
+<header class="px-6 py-3 flex justify-between items-center bg-transparent" data-purpose="top-app-bar">
+<h1 class="text-xl font-normal text-slate-900 tracking-tight">Meteo Marto</h1>
+<!-- Logout action icon -->
+<button aria-label="Tancar sessió" class="p-2 -mr-2 text-slate-700 hover:text-slate-900 active:scale-95 transition-transform">
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" x2="9" y1="12" y2="12"></line>
+</svg>
+</button>
+</header>
+<!-- END: TopAppBar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow flex flex-col justify-center items-center px-6 -mt-8" data-purpose="weather-forecast-display">
+<!-- City Name Title -->
+<h2 class="text-4xl sm:text-[42px] font-normal tracking-tight text-slate-900 text-center mb-6">
+          Mountain View
+        </h2>
+<!-- Atmospheric Condition Graphic & Status -->
+<div class="flex flex-col items-center mb-6">
+<!-- Broken Clouds SVG Asset matching screenshot iconography -->
+<div class="relative w-28 h-20 mb-2 flex items-center justify-center cloud-glow">
+<!-- Back darker cloud component -->
+<path d="">
+<svg class="w-24 h-16 drop-shadow-sm" fill="none" viewbox="0 0 96 64" xmlns="http://www.w3.org/2000/svg">
+<!-- Dark cloud element behind -->
+<path d="M52 24C52 18.477 56.477 14 62 14C63.14 14 64.23 14.19 65.25 14.54C67.4 9.54 72.44 6 78.33 6C86.43 6 93 12.57 93 20.67C93 21.6 92.91 22.5 92.75 23.38C94.72 25.1 96 27.65 96 30.5C96 35.75 91.75 40 86.5 40H52V24Z" fill="#3f4a56"></path>
+<!-- Front soft cloud element -->
+<path d="M22 62C12.06 62 4 53.94 4 44C4 35.1 10.45 27.7 19.03 26.25C21.8 17.03 30.34 10.33 40.5 10.33C51.68 10.33 60.9 18.42 62.63 29C63.4 28.87 64.19 28.8 65 28.8C73.28 28.8 80 35.52 80 43.8C80 52.08 73.28 58.8 65 58.8H22Z" fill="#f1f5f9"></path>
+<path d="M22 60C13.16 60 6 52.84 6 44C6 36.17 7.74 30.5 17.5 28C20.5 19 29.5 13 39.5 13C50.5 13 58.5 20.5 60.5 29.5C62 29.2 63.5 29 65 29C72.18 29 78 34.82 78 42C78 49.18 72.18 55 65 55H22V60Z" fill="#e2e8f0" opacity="0.6"></path>
+</svg>
+</path></div>
+<!-- Weather Condition Label -->
+<p class="text-2xl sm:text-[26px] font-normal text-slate-800 tracking-tight">
+            broken clouds
+          </p>
+</div>
+<!-- Metric Details List -->
+<div class="flex flex-col items-center gap-1.5 text-center mb-8" data-purpose="metrics-summary">
+<p class="text-base text-slate-800 font-normal">
+            Temperature: <span class="font-medium text-slate-900">28.3</span>
+</p>
+<p class="text-base font-normal text-app-accentRed">
+            Max: 28.4
+          </p>
+<p class="text-base font-normal text-app-accentBlue">
+            Min: 28.3
+          </p>
+<p class="text-base text-slate-800 font-normal mt-0.5">
+            Pressure: <span class="font-normal text-slate-900">1007</span>
+</p>
+<p class="text-base font-normal text-app-accentBlue">
+            Rain: 0.0
+          </p>
+</div>
+<!-- Primary Action Button: Update forecast -->
+<button class="w-56 py-3 px-6 bg-app-primary hover:bg-app-primaryHover active:scale-95 text-white font-medium text-base rounded-full shadow-md transition-all duration-150 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-app-primary" data-purpose="action-update-forecast" id="btn-update-forecast">
+          Update forecast
+        </button>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: FloatingActionButton -->
+<!-- Floating heart favorite button positioned just above bottom navigation -->
+<div class="px-6 flex justify-end pb-3">
+<button aria-label="Afegeix als preferits" class="w-14 h-14 rounded-2xl bg-app-fabBg text-slate-800 flex items-center justify-center shadow-lg active:scale-90 transition-transform focus:outline-none" data-purpose="floating-favorites-button" id="btn-favorite-toggle">
+<svg class="w-6 h-6 stroke-slate-800 stroke-[2] fill-none transition-colors" viewbox="0 0 24 24">
+<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- END: FloatingActionButton -->
+</div>
+<!-- BEGIN: BottomNavigation -->
+<nav class="relative z-20 bg-app-navBg border-t border-slate-200/50 pt-2 pb-safe" data-purpose="bottom-navigation-bar">
+<div class="grid grid-cols-2 max-w-xs mx-auto">
+<!-- Tab 1: City (Active) -->
+<a class="flex flex-col items-center justify-center py-1 group focus:outline-none" href="#city">
+<div class="w-16 h-8 bg-app-navActivePill rounded-full flex items-center justify-center transition-all">
+<!-- Material City / Buildings Icon -->
+<svg class="w-5 h-5 text-slate-800 fill-current" viewbox="0 0 24 24">
+<path d="M19 4h-2V2h-2v2h-2V2H9v2H7V2H5v2H3v18h18V4zm-8 16H5v-2h6v2zm0-4H5v-2h6v2zm0-4H5v-2h6v2zm0-4H5V6h6v2zm8 12h-6v-2h6v2zm0-4h-6v-2h6v2zm0-4h-6v-2h6v2z"></path>
+</svg>
+</div>
+<span class="text-xs font-medium text-slate-800 mt-1">City</span>
+</a>
+<!-- Tab 2: Favorites (Inactive) -->
+<a class="flex flex-col items-center justify-center py-1 group focus:outline-none" href="#favorites">
+<div class="w-16 h-8 rounded-full flex items-center justify-center transition-all group-hover:bg-slate-200/50">
+<!-- Favorite Filled Icon -->
+<svg class="w-5 h-5 text-slate-600 fill-current" viewbox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+</svg>
+</div>
+<span class="text-xs font-medium text-slate-600 mt-1">Favorites</span>
+</a>
+</div>
+<!-- Android/iOS Bottom Home Indicator -->
+<div class="flex justify-center mt-2 pb-1">
+<div class="w-32 h-1 bg-slate-800/80 rounded-full"></div>
+</div>
+</nav>
+<!-- END: BottomNavigation -->
+</div>
+<!-- END: MobileDeviceFrame -->
+<!-- JavaScript for Interactive States -->
+<script data-purpose="toggle-interactions">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle favorites button fill
+      const favBtn = document.getElementById('btn-favorite-toggle');
+      if (favBtn) {
+        favBtn.addEventListener('click', () => {
+          const heartPath = favBtn.querySelector('svg');
+          heartPath.classList.toggle('fill-current');
+        });
+      }
+
+      // Refresh feedback simulation
+      const updateBtn = document.getElementById('btn-update-forecast');
+      if (updateBtn) {
+        updateBtn.addEventListener('click', () => {
+          const originalText = updateBtn.innerText;
+          updateBtn.innerText = 'Updating...';
+          updateBtn.classList.add('opacity-80');
+          setTimeout(() => {
+            updateBtn.innerText = originalText;
+            updateBtn.classList.remove('opacity-80');
+          }, 800);
+        });
+      }
+    });
+  </script>
+</body></html>
