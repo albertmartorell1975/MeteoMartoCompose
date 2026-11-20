@@ -1,12 +1,10 @@
 package com.martorell.albert.meteomartocompose.usecases.cityweather
 
 import app.cash.turbine.test
-import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
-import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.flow.flowOf
+import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
+import com.martorell.albert.meteomartocompose.usecases.fakes.FakeCityWeatherRepository
+import com.martorell.albert.meteomartocompose.usecases.fakes.FakeRemoteConfigRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -15,111 +13,97 @@ import org.junit.Test
 
 class CheckTemperatureThresholdUseCaseTest {
 
-    private val cityWeatherRepository: CityWeatherRepository = mockk()
-    private val remoteConfigRepository: RemoteConfigRepository = mockk()
+    private val cityWeatherRepository = FakeCityWeatherRepository()
+    private val remoteConfigRepository = FakeRemoteConfigRepository(initialThreshold = 30.0)
     private val useCase = CheckTemperatureThresholdUseCase(cityWeatherRepository, remoteConfigRepository)
 
     @Test
-    fun `when temperature exceeds threshold and not notified, showAlert should be true`() = runTest {
-        // Given
-        val threshold = 30.0
-        val currentTemp = 35.0
-        val cities = listOf(
-            CityWeatherDomain(name = "City1", temperature = currentTemp, justAdded = true, isAlertNotified = false, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0)
-        )
-        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
-        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
+    fun `when temperature meets or exceeds threshold emits active alert and suppresses showAlert once notified`() =
+        runTest {
+            val equalThresholdCity = CityWeatherDomain(
+                name = "City1",
+                temperature = 30.0,
+                justAdded = true,
+                isAlertNotified = false,
+                pressure = 1013,
+                temperatureMin = 30.0,
+                temperatureMax = 30.0,
+            )
+            cityWeatherRepository.setCities(listOf(equalThresholdCity))
 
-        // When & Then
-        useCase().test {
-            val result = awaitItem()
-            assertTrue(result.showAlert)
-            assertTrue(result.isPersistentAlertActive)
-            assertEquals(currentTemp, result.currentTemperature, 0.0)
-            assertEquals(threshold, result.threshold, 0.0)
-            awaitComplete()
+            useCase().test {
+                val atThreshold = awaitItem()
+                assertTrue(atThreshold.showAlert)
+                assertTrue(atThreshold.isPersistentAlertActive)
+                assertEquals(30.0, atThreshold.currentTemperature, 0.0)
+                assertEquals(30.0, atThreshold.threshold, 0.0)
+
+                cityWeatherRepository.setCities(
+                    listOf(equalThresholdCity.copy(temperature = 35.0, temperatureMax = 40.0))
+                )
+                val aboveThreshold = awaitItem()
+                assertTrue(aboveThreshold.showAlert)
+                assertTrue(aboveThreshold.isPersistentAlertActive)
+                assertEquals(35.0, aboveThreshold.currentTemperature, 0.0)
+
+                cityWeatherRepository.updateAlertStatus(name = "City1", isNotified = true)
+                val alreadyNotified = awaitItem()
+                assertFalse(alreadyNotified.showAlert)
+                assertTrue(alreadyNotified.isPersistentAlertActive)
+
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `when temperature exceeds threshold but already notified, showAlert should be false`() = runTest {
-        // Given
-        val threshold = 30.0
-        val currentTemp = 35.0
-        val cities = listOf(
-            CityWeatherDomain(name = "City1", temperature = currentTemp, justAdded = true, isAlertNotified = true, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0)
+    fun `when temperature is below threshold emits inactive alert`() = runTest {
+        cityWeatherRepository.setCities(
+            listOf(
+                CityWeatherDomain(
+                    name = "City1",
+                    temperature = 25.0,
+                    justAdded = true,
+                    isAlertNotified = false,
+                    pressure = 1013,
+                    temperatureMin = 20.0,
+                    temperatureMax = 30.0,
+                )
+            )
         )
-        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
-        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
 
-        // When & Then
-        useCase().test {
-            val result = awaitItem()
-            assertFalse(result.showAlert)
-            assertTrue(result.isPersistentAlertActive)
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `when temperature is exactly equal to threshold, showAlert should be true`() = runTest {
-        // Given
-        val threshold = 30.0
-        val currentTemp = 30.0
-        val cities = listOf(
-            CityWeatherDomain(name = "City1", temperature = currentTemp, justAdded = true, isAlertNotified = false, pressure = 1013, temperatureMin = 30.0, temperatureMax = 30.0)
-        )
-        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
-        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
-
-        // When & Then
-        useCase().test {
-            val result = awaitItem()
-            assertTrue(result.showAlert)
-            assertTrue(result.isPersistentAlertActive)
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `when temperature is below threshold, showAlert and persistent alert should be false`() = runTest {
-        // Given
-        val threshold = 30.0
-        val currentTemp = 25.0
-        val cities = listOf(
-            CityWeatherDomain(name = "City1", temperature = currentTemp, justAdded = true, isAlertNotified = false, pressure = 1013, temperatureMin = 20.0, temperatureMax = 30.0)
-        )
-        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
-        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
-
-        // When & Then
         useCase().test {
             val result = awaitItem()
             assertFalse(result.showAlert)
             assertFalse(result.isPersistentAlertActive)
-            assertEquals(currentTemp, result.currentTemperature, 0.0)
-            assertEquals(threshold, result.threshold, 0.0)
-            awaitComplete()
+            assertEquals(25.0, result.currentTemperature, 0.0)
+            assertEquals(30.0, result.threshold, 0.0)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `when no city is justAdded, temperature should be 0 and showAlert false`() = runTest {
-        // Given
-        val threshold = 30.0
-        val cities = listOf(
-            CityWeatherDomain(name = "City1", temperature = 35.0, justAdded = false, isAlertNotified = false, pressure = 1013, temperatureMin = 30.0, temperatureMax = 40.0)
+    fun `when no city is justAdded emits empty alert result`() = runTest {
+        cityWeatherRepository.setCities(
+            listOf(
+                CityWeatherDomain(
+                    name = "City1",
+                    temperature = 35.0,
+                    justAdded = false,
+                    isAlertNotified = false,
+                    pressure = 1013,
+                    temperatureMin = 30.0,
+                    temperatureMax = 40.0,
+                )
+            )
         )
-        every { remoteConfigRepository.getTemperatureThreshold() } returns flowOf(threshold)
-        every { cityWeatherRepository.listOfCities } returns flowOf(cities)
 
-        // When & Then
         useCase().test {
             val result = awaitItem()
+            assertEquals(TemperatureAlertResult.EMPTY, result)
             assertFalse(result.showAlert)
             assertFalse(result.isPersistentAlertActive)
             assertEquals(0.0, result.currentTemperature, 0.0)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
