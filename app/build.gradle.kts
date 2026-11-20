@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.roborazzi)
     alias(libs.plugins.dokka)
     alias(libs.plugins.jacoco)
@@ -33,9 +34,6 @@ android {
             isIncludeAndroidResources = true
             all {
                 it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
-                it.systemProperties["roborazzi.test.record"] = "true"
-                it.systemProperties["roborazzi.test.compare"] = "true"
-                it.systemProperties["roborazzi.test.verify"] = "true"
             }
         }
     }
@@ -58,6 +56,12 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+secrets {
+    propertiesFileName = "local.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
+    ignoreList.add("sdk.*")
 }
 
 roborazzi {
@@ -91,11 +95,7 @@ tasks.withType<org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask>().configureEa
                     suppress.set(true)
                 }
                 perPackageOption {
-                    matchingRegex.set("com\\.martorell\\.albert\\.meteomartocompose\\.ui\\.components\\.designsystem.*")
-                    suppress.set(false)
-                }
-                perPackageOption {
-                    matchingRegex.set("com\\.martorell\\.albert\\.meteomartocompose\\.ui\\.theme.*")
+                    matchingRegex.set("com\\.martorell\\.albert\\.meteomartocompose\\.ui\\.designsystem.*")
                     suppress.set(false)
                 }
             }
@@ -188,10 +188,12 @@ dependencies {
     testImplementation(libs.roborazzi.composable.scanner)
 
     // Instrumented Tests
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
     // Roborazzi also needs these in unit tests for Preview scanning
+    testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.ui.test.junit4)
 
     // Debugging Tools
