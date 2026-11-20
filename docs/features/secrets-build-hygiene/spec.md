@@ -6,7 +6,7 @@
 * **`id`:** `secrets-build-hygiene`
 * **`area`:** `infrastructure`
 * **`depends_on`:** `[]`
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`module_topology`:** `Layer-Based (:domain, :usecases, :data, :app)`
 * **Objective:** Remove the hardcoded OpenWeather API key from `flavors.gradle` by adopting Google's `secrets-gradle-plugin` paired with a committed `local.defaults.properties` fallback file (`dependency-manager` Rule 12), align pure-JVM module Java/Kotlin targets (`:domain`, `:usecases`, `:data`) with `:app` on JDK/JVM 21 (`CONSTRAINTS.md` & `module-architecture-governance`), and fix outdated Design System trigger/Dokka paths in `.github/workflows/design-system-ci.yml` and `app/build.gradle.kts`.
 * **Identified Ambiguities / Assumptions:**
@@ -15,6 +15,7 @@
   * **Plugin version verified (`2.0.1`):** `com.google.android.libraries.mapsplatform.secrets-gradle-plugin` latest stable version is `2.0.1` (hosted on `google()`, already matched by `includeGroupByRegex("com\\.google.*")` in `settings.gradle.kts`).
   * **JVM target alignment (`21`):** `:app` already enforces `JavaVersion.VERSION_21` and `kotlin { jvmToolchain(21) }`, and `CONSTRAINTS.md` mandates JDK 21 locally (`jbr-21`) and in GitHub Actions CI. Aligning `:domain`, `:usecases`, and `:data` from JVM `17` to `21` eliminates mixed bytecode/toolchain targets across the repository.
   * **Configuration-cache verification risk:** `secrets-gradle-plugin:2.0.1` is known on some Gradle 8.x setups to surface configuration-cache or AGP variant warnings. Per `dependency-manager` Update Protocol §3 (Fail-and-Revert Policy), `workflow-implementer` must apply the plugin atomically and immediately verify both `assemblePreDebug` and the canonical `--configuration-cache` gate; if a plugin/AGP/Gradle incompatibility blocks the gate, roll back and report the exact log rather than adding forbidden imperative `java.util.Properties` I/O.
+  * **Pre-existing `app/build.gradle.kts` gate blockers (Scope Amendment approved by developer):** During Stage 2 verification, two pre-existing `app/build.gradle.kts` regressions on `feature/MM-02-design-system` blocked the canonical `@compiler` gate: (a) missing `platform(libs.androidx.compose.bom)` in `androidTestImplementation` / `testImplementation` causing `:app:generatePreDebugAndroidTestLintModel` (`lintPreDebug`) to fail resolving `libs.androidx.ui.test.junit4`; and (b) hardcoded `roborazzi.test.record/compare/verify = "true"` in `testOptions.unitTests.all`, forcing `testPreDebugUnitTest` to run Roborazzi snapshot verification/recording instead of restricting visual regression to `:app:verifyRoborazziPreDebug`. Both are resolved within `secrets-build-hygiene` to restore a green canonical gate locally and in CI.
   * **Key rotation note (human follow-up):** Because a real OpenWeather API key previously lived in git history (`flavors.gradle`), rotating that key in the OpenWeather dashboard is recommended separately by the maintainer.
 * **Necessary Questions:** None — all requirements clarified.
 
@@ -83,7 +84,7 @@ so I can prevent secret exposure, avoid mixed-JVM build drift, and ensure visual
 * `build.gradle.kts` — modify; declare `alias(libs.plugins.secrets.gradle.plugin) apply false` in root `plugins {}`.
 * `local.defaults.properties` — create; committed root fallback file defining `API_KEY_VALUE=DEFAULT_OPENWEATHER_API_KEY`.
 * `flavors.gradle` — modify; remove the hardcoded `API_KEY_VALUE` `buildConfigField` from both `pre` and `pro` flavors while preserving `APP_ID_PARAM`, `API_WB_BASE`, `OPEN_WEATHER_ICON_URL`, and `app_name`.
-* `app/build.gradle.kts` — modify; apply `alias(libs.plugins.secrets.gradle.plugin)`, add declarative `secrets { propertiesFileName = "local.properties"; defaultPropertiesFileName = "local.defaults.properties"; ignoreList.add("sdk.*") }` block, and update Dokka `isDesignSystemMode` `perPackageOption` regex from `ui\.components\.designsystem.*` / `ui\.theme.*` to `com\.martorell\.albert\.meteomartocompose\.ui\.designsystem.*`.
+* `app/build.gradle.kts` — modify; apply `alias(libs.plugins.secrets.gradle.plugin)`, add declarative `secrets { propertiesFileName = "local.properties"; defaultPropertiesFileName = "local.defaults.properties"; ignoreList.add("sdk.*") }` block, update Dokka `isDesignSystemMode` `perPackageOption` regex from `ui\.components\.designsystem.*` / `ui\.theme.*` to `com\.martorell\.albert\.meteomartocompose\.ui\.designsystem.*`, restore `androidTestImplementation(platform(libs.androidx.compose.bom))` and `testImplementation(platform(libs.androidx.compose.bom))` for `libs.androidx.ui.test.junit4` resolution in `lintPreDebug`, and remove hardcoded `roborazzi.test.record/compare/verify = "true"` from `testOptions.unitTests.all` (retaining `robolectric.pixelCopyRenderMode = "hardware"` per `docs/testing_strategy_guide.md`).
 * `domain/build.gradle.kts` — modify; align `java` compatibility and `kotlin` toolchain/`jvmTarget` to `21` (`JavaVersion.VERSION_21`, `jvmToolchain(21)`, `JvmTarget.JVM_21`).
 * `usecases/build.gradle.kts` — modify; align `java` compatibility and `kotlin` toolchain/`jvmTarget` to `21`.
 * `data/build.gradle.kts` — modify; align `java` compatibility and `kotlin` toolchain/`jvmTarget` to `21`.
@@ -111,29 +112,31 @@ No persistence changes required.
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `dependency-manager` (Rules 1, 2, 7, 10, 12, and Update Protocol §3 Fail-and-Revert Policy), and `module-architecture-governance`. Confirm active Java runtime is **JDK 21** (`jbr-21`), not JDK 25.
-- [ ] **Database / Models:** N/A — no database or model changes.
-- [ ] **Domain (`:domain`) — Build Target Alignment:**
+- [x] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `dependency-manager` (Rules 1, 2, 7, 10, 12, and Update Protocol §3 Fail-and-Revert Policy), and `module-architecture-governance`. Confirm active Java runtime is **JDK 21** (`jbr-21`), not JDK 25.
+- [x] **Database / Models:** N/A — no database or model changes.
+- [x] **Domain (`:domain`) — Build Target Alignment:**
   - Update `domain/build.gradle.kts` to `JavaVersion.VERSION_21`, `kotlin { jvmToolchain(21); compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) } }`.
-- [ ] **UseCase (`:usecases`) — Build Target Alignment:**
+- [x] **UseCase (`:usecases`) — Build Target Alignment:**
   - Update `usecases/build.gradle.kts` to `JavaVersion.VERSION_21`, `kotlin { jvmToolchain(21); compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) } }`.
-- [ ] **Data (`:data`) — Build Target Alignment:**
+- [x] **Data (`:data`) — Build Target Alignment:**
   - Update `data/build.gradle.kts` to `JavaVersion.VERSION_21`, `kotlin { jvmToolchain(21); compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) } }`.
-- [ ] **Secrets Provisioning (Atomic Step per `dependency-manager` Rules 10 & 12):**
+- [x] **Secrets Provisioning (Atomic Step per `dependency-manager` Rules 10 & 12):**
   - Add `secrets-gradle-plugin = "2.0.1"` to `[versions]` and `secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets-gradle-plugin" }` to `[plugins]` in `gradle/libs.versions.toml`.
   - Register `alias(libs.plugins.secrets.gradle.plugin) apply false` in root `build.gradle.kts`.
   - Create committed `local.defaults.properties` at repository root containing `API_KEY_VALUE=DEFAULT_OPENWEATHER_API_KEY` (zero real secrets).
   - Remove hardcoded `buildConfigField "String", "API_KEY_VALUE", ...` from both `pre` and `pro` flavors in `flavors.gradle`.
   - Apply `alias(libs.plugins.secrets.gradle.plugin)` in `app/build.gradle.kts` and configure the `secrets { propertiesFileName = "local.properties"; defaultPropertiesFileName = "local.defaults.properties"; ignoreList.add("sdk.*") }` block without any imperative `java.util.Properties` / `File.inputStream()` calls.
   - Immediately run `./gradlew assemblePreDebug` to verify plugin resolution, `BuildConfig.API_KEY_VALUE` generation, and `sdk.dir` exclusion. If plugin resolution or configuration cache fails, immediately roll back per `dependency-manager` §3 and escalate the exact error log.
-- [ ] **CI & Dokka Path Alignment:**
+- [x] **CI & Dokka Path Alignment + Canonical Gate Hygiene:**
   - Update `.github/workflows/design-system-ci.yml` (`on.push.paths` and `on.pull_request.paths`) to watch `'app/src/main/java/com/martorell/albert/meteomartocompose/ui/designsystem/**'` instead of `ui/components/designsystem/**` and `ui/theme/**`.
   - Update `app/build.gradle.kts` Dokka `isDesignSystemMode` `perPackageOption` regex to `com\.martorell\.albert\.meteomartocompose\.ui\.designsystem.*`.
-- [ ] **UI / Presentation & Assets:** N/A — zero UI or asset changes.
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+  - Restore `androidTestImplementation(platform(libs.androidx.compose.bom))` and `testImplementation(platform(libs.androidx.compose.bom))` in `app/build.gradle.kts` so `:app:generatePreDebugAndroidTestLintModel` resolves `libs.androidx.ui.test.junit4`.
+  - Remove hardcoded `roborazzi.test.record/compare/verify = "true"` from `testOptions.unitTests.all` in `app/build.gradle.kts` (keeping `robolectric.pixelCopyRenderMode = "hardware"` per `docs/testing_strategy_guide.md`) so `testPreDebugUnitTest` does not mutate snapshots or enforce visual verification outside `:app:verifyRoborazziPreDebug`.
+- [x] **UI / Presentation & Assets:** N/A — zero UI or asset changes.
+- [x] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: **0 new `@Test` methods** across all layers (pure build/CI infrastructure slice with zero Kotlin branching, calculation, or state-transition changes; per `testing-setup`, do not invent filler tests).
   - *Planned `*Test.kt` files*: `0 tests` (existing unit test suite across `:domain`, `:data`, `:usecases`, and `:app` must continue passing without regression).
-- [ ] **Compiler Self-Verification (MANDATORY):**
+- [x] **Compiler Self-Verification (MANDATORY):**
   - Execute `./gradlew assemblePreDebug` and verify generated `app/build/generated/source/buildConfig/pre/debug/.../BuildConfig.java` exposes `API_KEY_VALUE` (from `local.defaults.properties` / `local.properties`) and does NOT expose `sdk.dir`.
   - Execute `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (canonical gate) and confirm zero errors.
   - Execute `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` to verify the updated Dokka Design System package filter succeeds.
@@ -142,8 +145,8 @@ No persistence changes required.
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `secrets-build-hygiene` scope (`WIP=1`) and `CONSTRAINTS.md` (no imperative `Properties` I/O, no `:data` module-type rewrite, no UI changes).
-- [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior: `flavors.gradle` has zero hardcoded API key literals, `local.defaults.properties` is committed with non-empty placeholder, `secrets-gradle-plugin:2.0.1` is wired via `libs.versions.toml`, generated `BuildConfig.java` contains `API_KEY_VALUE` without leaking `sdk.dir`, all 4 modules align on JVM 21, and `.github/workflows/design-system-ci.yml` + Dokka target `ui/designsystem`.
-- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`), `dependency-manager` Rules 1/2/7/10/12, and security rules (`android-intent-security`, zero committed secrets) are respected across all layers.
-- [ ] `@compiler` verification evidence (`assemblePreDebug`, `testPreDebugUnitTest`, `lintPreDebug` with `--configuration-cache`, plus `dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs`) is present and valid; `0` filler tests added per `testing-setup`.
-- [ ] Structured validation report written to `docs/features/secrets-build-hygiene/validator/validation-report.md`.
+- [x] Implementation stays strictly within `secrets-build-hygiene` scope (`WIP=1`) and `CONSTRAINTS.md` (no imperative `Properties` I/O, no `:data` module-type rewrite, no UI changes).
+- [x] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior: `flavors.gradle` has zero hardcoded API key literals, `local.defaults.properties` is committed with non-empty placeholder, `secrets-gradle-plugin:2.0.1` is wired via `libs.versions.toml`, generated `BuildConfig.java` contains `API_KEY_VALUE` without leaking `sdk.dir`, all 4 modules align on JVM 21, and `.github/workflows/design-system-ci.yml` + Dokka target `ui/designsystem`.
+- [x] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`), `dependency-manager` Rules 1/2/7/10/12, and security rules (`android-intent-security`, zero committed secrets) are respected across all layers.
+- [x] `@compiler` verification evidence (`assemblePreDebug`, `testPreDebugUnitTest`, `lintPreDebug` with `--configuration-cache`, plus `dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs`) is present and valid; `0` filler tests added per `testing-setup`.
+- [x] Structured validation report written to `docs/features/secrets-build-hygiene/validator/validation-report.md`.
