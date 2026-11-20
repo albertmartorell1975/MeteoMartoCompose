@@ -2,11 +2,11 @@
 
 ## Current Verified State
 
-- Repository root: `c:\Projectes\AI\MeteoMartoCompose` (working branch: `feature/MM-02-design-system`)
+- Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
 - Current next ready feature: `secrets-build-hygiene`
-- Current blocker: None for planning/implementation; note that `gh auth login -h github.com` is needed before automated PR creation in `publish` mode, and `develop` has 5 recent JVM/IDE commits pending rebase/reconciliation.
+- Current blocker: None (`develop` merged at `2d881ff`, `gh` CLI authenticated as `albertmartorell1975`, `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
 - Last verified at: `2026-11-20` (harness JSON, `AGENTS.md` size/path checks, and feature directory structure verified; Gradle gate pending execution on first slice)
 
 ## Session Log
