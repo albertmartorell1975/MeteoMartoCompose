@@ -13,6 +13,7 @@ skills:
   - skills/repository-pattern-governance
   - skills/hilt
   - skills/compose-modifier-and-layout-style
+  - skills/compose-navigation-architecture
   - skills/testing-setup
 ---
 

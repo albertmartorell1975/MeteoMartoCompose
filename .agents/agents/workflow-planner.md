@@ -14,6 +14,7 @@ skills:
   - skills/design-system-governance
   - skills/compose-state-hoisting
   - skills/compose-modifier-and-layout-style
+  - skills/compose-navigation-architecture
   - skills/adaptive
   - skills/navigation-3
   - skills/edge-to-edge
