@@ -5,8 +5,8 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `domain-error-contract` (blocked only until `secrets-build-hygiene` PR is reviewed & merged into `feature/MM-02-design-system`)
-- Current blocker: None (`secrets-build-hygiene` accepted by `workflow-validator` across all 4 levels; `develop` merged at `2d881ff`, `gh` CLI authenticated as `albertmartorell1975`, `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
+- Current next ready feature: `pragmatic-testing-cleanup` (status: `in_progress`, awaiting human spec review after `workflow-planner`)
+- Current blocker: None (`secrets-build-hygiene` merged into `feature/MM-02-design-system` @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
 - Last verified at: `2026-11-20` (`secrets-build-hygiene` independent 4-level validation passed on JDK `21.0.11`, `120/120` `:app` unit tests, `6/6` `:usecases` unit tests, `lintPreDebug`, `assemblePreDebug`, `dokkaGenerateHtml`, and `emulator-5554` cold launch)
 
 ## Session Log
@@ -70,3 +70,13 @@
 - Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (cold + warm config cache), `:app:testPreDebugUnitTest --rerun-tasks` (`120/120`), `:domain:test :usecases:test :data:test` (`:usecases:test` `6/6`), `dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs`, `generateProDebugBuildConfig`, and live `emulator-5554` launch (`0` crashes).
 - Files or artifacts updated: `docs/features/secrets-build-hygiene/spec.md`, `docs/features/secrets-build-hygiene/validator/validation-report.md`, `CONSTRAINTS.md`, `README.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review & merge of the `secrets-build-hygiene` PR into `feature/MM-02-design-system`, then start `domain-error-contract`.
+
+### Session 006
+
+- Date: `2026-11-20`
+- Agent: 🔵 `[PLANNER · workflow-planner]`
+- Goal: Produce the unified implementation specification for `pragmatic-testing-cleanup` (Issue `#4`).
+- Completed: Audited `app/build.gradle.kts`, `usecases/build.gradle.kts`, `data/build.gradle.kts`, `gradle/libs.versions.toml`, `.github/workflows/design-system-ci.yml`, `MmPreview.kt`, all `ui/designsystem/components/*.kt` previews, all 81 snapshots under `app/src/test/snapshots/`, `ExampleInstrumentedTest.kt`, `TestMeteoMartoApp.kt`, `docs/testing_strategy_guide.md`, and all 10 existing unit test classes plus their underlying production classes/interfaces. Authored `docs/features/pragmatic-testing-cleanup/spec.md` with an exact before/after Closed Test Plan (`63` manual `@Test` + `81` PNGs -> `25` pure JVM `@Test` across `9` classes `<= 3`/class with `0` MockK & `0` Robolectric unit tests + `36` deterministic Design System Roborazzi PNGs). Updated `feature_list.json` (`pragmatic-testing-cleanup.status` -> `"in_progress"`).
+- Verification run: Read-only repository inspection, JSON validity verification, and spec completeness review (no executable, build, or snapshot files modified).
+- Files or artifacts updated: `docs/features/pragmatic-testing-cleanup/spec.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review of `docs/features/pragmatic-testing-cleanup/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
