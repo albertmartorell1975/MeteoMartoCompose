@@ -5,7 +5,7 @@
     "title": "Migrate OpenWeather API credentials to secrets-gradle-plugin",
     "user_visible_behavior": "The app builds and fetches weather data cleanly using secrets-gradle-plugin and local.defaults.properties with zero hardcoded API keys in flavors.gradle, and Design System CI watches the real ui/designsystem paths.",
     "depends_on": [],
-    "status": "not_started",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/secrets-build-hygiene/spec.md",
     "validation_path": "docs/features/secrets-build-hygiene/validator/validation-report.md",
@@ -13,7 +13,12 @@
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
       "Verify clean assemblePreDebug succeeds using local.defaults.properties without hardcoded API_KEY_VALUE in flavors.gradle."
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug (JDK 21.0.11) -> BUILD SUCCESSFUL in 16s; BuildConfig.java exposes API_KEY_VALUE = \"DEFAULT_OPENWEATHER_API_KEY\" and omits sdk.dir.",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 37s (Configuration cache entry stored); :app:testPreDebugUnitTest 120/120 tests passed (0 failed, 0 skipped); :app:lintPreDebug passed.",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 21s; :usecases:test 6/6 tests passed (0 failed, 0 skipped); Dokka generated app/build/dokka/design-system (ui.designsystem.components & ui.designsystem.foundation).",
+      "PASS: git grep -n \"API_KEY_VALUE\" flavors.gradle -> 0 matches."
+    ],
     "notes": "Follow dependency-manager Rule 12 (secrets-gradle-plugin + local.defaults.properties). Also fix outdated trigger paths in .github/workflows/design-system-ci.yml and align JVM module targets."
   },
   {

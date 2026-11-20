@@ -34,6 +34,12 @@ The project follows Clean Architecture and SOLID principles, with a focus on sep
 - Firebase
 - OpenWeather API
 
+### Local Configuration (`local.properties`)
+OpenWeather credentials are injected declaratively via `secrets-gradle-plugin` with a committed placeholder fallback in `local.defaults.properties` (`API_KEY_VALUE=DEFAULT_OPENWEATHER_API_KEY`) so CI and fresh clones compile cleanly. To fetch live weather data locally, add your personal key to git-ignored `local.properties`:
+```properties
+API_KEY_VALUE=your_openweather_api_key
+```
+
 ---
 
 ## 🔐 Demo Access
