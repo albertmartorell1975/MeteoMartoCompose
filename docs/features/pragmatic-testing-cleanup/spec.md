@@ -6,7 +6,7 @@
 * **`id`:** `pragmatic-testing-cleanup`
 * **`area`:** `testing`
 * **`depends_on`:** `["secrets-build-hygiene"]` (status: `accepted`, merged into `feature/MM-02-design-system` @ `0e08818`)
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`github_issue`:** `#4` (`https://github.com/albertmartorell1975/MeteoMartoCompose/issues/4`)
 * **`module_topology`:** `Layer-Based (:domain -> :usecases <- :data -> :app)`
 * **Objective:** Bring the entire unit test suite, Gradle test dependencies, Design System Roborazzi preview baseline, and testing documentation into full compliance with `testing-setup` v2.4.0 and `design-system-governance` §4 before starting `domain-error-contract` and the rest of the modernization backlog.
@@ -169,32 +169,32 @@ No persistence changes required.
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `testing-setup`, `design-system-governance`, `dependency-manager`, and `kotlin-coroutines-structured-concurrency`. Keep `TestMeteoMartoApp.kt` and `app/src/test/resources/robolectric.properties` intact for Roborazzi.
-- [ ] **Step 1 — Retire Forbidden Legacy Tests & Screen Snapshots:**
+- [x] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `testing-setup`, `design-system-governance`, `dependency-manager`, and `kotlin-coroutines-structured-concurrency`. Keep `TestMeteoMartoApp.kt` and `app/src/test/resources/robolectric.properties` intact for Roborazzi.
+- [x] **Step 1 — Retire Forbidden Legacy Tests & Screen Snapshots:**
   - Delete `app/src/androidTest/java/com/martorell/albert/meteomartocompose/ExampleInstrumentedTest.kt` (and empty `app/src/androidTest/` tree).
   - Delete all 7 legacy screen `*ScreenshotTest.kt` files under `app/src/test/java/.../ui/screens/`.
   - Delete all 17 legacy screen golden PNGs under `app/src/test/snapshots/`.
   - Delete trivial `usecases/src/test/java/.../usecases/cityweather/MarkCityAlertNotifiedUseCaseTest.kt`.
-- [ ] **Step 2 — Minimal Production Testability Refactors (Zero Test-Induced Design Damage):**
+- [x] **Step 2 — Minimal Production Testability Refactors (Zero Test-Induced Design Damage):**
   - **`FavoritesDetailViewModel.kt`**: Replace `savedStateHandle.toRoute<FavoritesScreens.FavoritesDetail>().cityName` with `savedStateHandle.get<String>(CITY_NAME_ARG).orEmpty()` (`companion object { internal const val CITY_NAME_ARG = "cityName" }`) and remove unused `toRoute` / `FavoritesScreens` imports.
   - **`CityWeatherViewModel.kt`**: Remove the stray debug `Log.d("TempAlert", ...)` call in `startMonitoring()` and unused `import android.util.Log`.
   - **`TemperatureCheckCoordinator.kt` + `TemperatureCheckWorker.kt`**:
     - Create `TemperatureCheckCoordinator @Inject constructor(getAllCitiesUseCase, loadCityWeatherByCoordinatesUseCase, checkTemperatureThresholdUseCase, markCityAlertNotifiedUseCase, notificationService, permissionChecker)` with `suspend fun execute(): TemperatureCheckOutcome` (`enum class TemperatureCheckOutcome { COMPLETED, RETRY }`).
     - Implement exact existing flow (permission check -> `justAdded` city lookup -> refresh by coordinates -> threshold check -> show notification & mark notified OR reset notified when `!isPersistentAlertActive`), explicitly rethrowing `CancellationException` before catching non-cancellation `Exception` and returning `TemperatureCheckOutcome.RETRY`.
     - Simplify `TemperatureCheckWorker` to inject `TemperatureCheckCoordinator` and map `COMPLETED -> Result.success()`, `RETRY -> Result.retry()` while keeping Android `Log.d`/`Log.e` strictly in the Worker shell.
-- [ ] **Step 3 — Design System Preview Cleanup & Deterministic Roborazzi Baseline:**
+- [x] **Step 3 — Design System Preview Cleanup & Deterministic Roborazzi Baseline:**
   - **`MmPreview.kt`**: Trim `@MmDevicePreview` to 2 devices (`Phone` = `"spec:width=411dp,height=891dp"`, `Tablet` = `"spec:width=1280dp,height=800dp,dpi=240"`) and remove unused device constants.
   - **`MmButton.kt`**: Remove `MmPrimaryButtonPreview`, `MmSecondaryButtonPreview`, and `MmTertiaryButtonPreview`; update `MmButtonStatesPreview` to render Primary (enabled/disabled), Secondary (enabled/disabled), and Tertiary (enabled/disabled) in a single `@MmPreview` `Column`.
   - **`MmWeatherInfo.kt`**: Use `val isInspectionMode = LocalInspectionMode.current` and set `.crossfade(enable = !isInspectionMode)` on Coil `ImageRequest.Builder`.
   - Delete the 28 obsolete Design System PNGs under `app/src/test/snapshots/` (legacy `Mm{Primary,Secondary,Tertiary}ButtonPreview.*` and all `Foldable`/`Foldable_Landscape`/`Phone_Landscape`/`Tablet_Portrait` PNGs).
   - Run `./gradlew :app:recordRoborazziPreDebug --no-daemon` to cleanly record/refresh the **36** Design System golden PNGs, then verify immediately with `./gradlew :app:verifyRoborazziPreDebug --no-daemon` (`36/36` pass, `0` diffs, exact count `36` PNGs under `app/src/test/snapshots/`).
   - Update `.github/workflows/design-system-ci.yml` to include `'app/src/test/snapshots/**'` in `push.paths` and `pull_request.paths`.
-- [ ] **Step 4 — Pure JVM Test Infrastructure (`MainDispatcherRule` & Manual Fakes):**
+- [x] **Step 4 — Pure JVM Test Infrastructure (`MainDispatcherRule` & Manual Fakes):**
   - Create `app/src/test/java/com/martorell/albert/meteomartocompose/testutil/MainDispatcherRule.kt` (`TestWatcher` setting `Dispatchers.setMain(UnconfinedTestDispatcher())` in `starting()` and `Dispatchers.resetMain()` in `finished()`).
   - Create `app/src/test/java/com/martorell/albert/meteomartocompose/testutil/fakes/FakeAuthSources.kt` (`FakeAccountService`, `FakeAuthLocalDataSource`, `FakeAuthRepository`).
   - Create `app/src/test/java/com/martorell/albert/meteomartocompose/testutil/fakes/FakeCityWeatherDependencies.kt` (`FakeCityWeatherRepository`, `FakeRemoteConfigRepository`, `FakeLocationRepository`, `FakePermissionRepository`, `FakePermissionChecker`, `FakeNotificationService`, `FakeSystemService`).
   - Create `usecases/src/test/java/com/martorell/albert/meteomartocompose/usecases/fakes/FakeUseCaseRepositories.kt` (`FakeCityWeatherRepository`, `FakeRemoteConfigRepository`).
-- [ ] **Step 5 — Refactor All 9 Retained Unit Test Classes (Closed Test Plan — Strict `<= 3` `@Test` Per Class, Zero MockK, Zero Robolectric):**
+- [x] **Step 5 — Refactor All 9 Retained Unit Test Classes (Closed Test Plan — Strict `<= 3` `@Test` Per Class, Zero MockK, Zero Robolectric):**
   - *Closed Test Plan Summary (Before -> After)*:
 
     | Module | Before Test File (`@Test` count) | Action | After Test File (`@Test` count) | Exact `@Test` Methods & Covered Behavior |
@@ -213,14 +213,14 @@ No persistence changes required.
     | `:app` | `FavoritesDetailViewModelTest.kt` (`3`, Robolectric) | **Refactor (Pure JVM)** | `FavoritesDetailViewModelTest.kt` (`3`) | 1. `initial state is Loading and passive before onStart`<br>2. `onStart loads city weather into Success state`<br>3. `onStart updates Error state when repository fails` |
 
   - **Totals**: Before = `63` manual `@Test` + `64` DS Roborazzi previews (`81` PNGs) -> After = `25` pure JVM `@Test` (`22` `:app` + `3` `:usecases`, max `3`/class, `0` MockK, `0` Robolectric unit tests) + `36` deterministic DS Roborazzi previews (`36` PNGs).
-- [ ] **Step 6 — Atomic Gradle & Version Catalog Cleanup (`dependency-manager` Rule 10):**
+- [x] **Step 6 — Atomic Gradle & Version Catalog Cleanup (`dependency-manager` Rule 10):**
   - Remove `androidTestImplementation(platform(libs.androidx.compose.bom))`, `androidTestImplementation(libs.androidx.junit)`, `androidTestImplementation(libs.androidx.ui.test.junit4)`, `testImplementation(libs.mockk)`, `testImplementation(libs.androidx.work.testing)`, and `testImplementation(libs.androidx.test.core)` from `app/build.gradle.kts` (verify Roborazzi preview compilation; keep `androidx.test.core` only if Roborazzi generated code explicitly fails without it).
   - Remove `testImplementation(libs.mockk)` from `usecases/build.gradle.kts` and `data/build.gradle.kts`.
   - Remove unused `mockk`, `androidx-junit`, `androidx-work-testing` (and `androidx-test-core` if unused) entries from `gradle/libs.versions.toml`; update the `# Robolectric` comment in `gradle/libs.versions.toml` to reflect Roborazzi-only usage.
   - Run `./gradlew assemblePreDebug --no-daemon` immediately after dependency edits to verify clean sync, Hilt DI graph, and resource compilation.
-- [ ] **Step 7 — Align Testing Documentation:**
+- [x] **Step 7 — Align Testing Documentation:**
   - Rewrite `docs/testing_strategy_guide.md` to reflect `testing-setup` v2.4.0 (`1–3` `@Test` per class, `0–6` per feature slice, Manual Fakes First, `MainDispatcherRule`, Zero MockK, Zero Robolectric UI/unit tests, Zero `androidTest`, Design-System-only Roborazzi `@Preview` with `verifyRoborazziPreDebug`/`recordRoborazziPreDebug`, and `@android-cli` black-box E2E).
-- [ ] **Step 8 — Compiler Self-Verification (MANDATORY):**
+- [x] **Step 8 — Compiler Self-Verification (MANDATORY):**
   - Run `./gradlew assemblePreDebug --no-daemon`
   - Run `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`
   - Run `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
@@ -230,10 +230,10 @@ No persistence changes required.
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `pragmatic-testing-cleanup` scope (`WIP=1`) and `CONSTRAINTS.md` (zero unrelated feature changes).
-- [ ] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no hardcoded stubs, no disabled tests, `MmWeatherInfo` preserves runtime crossfade).
-- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`) and coroutine structured concurrency (`CancellationException` rethrow in `TemperatureCheckCoordinator`) are respected.
-- [ ] Exact hygiene invariants verified: `0` `*ScreenshotTest.kt`, `0` screen PNGs, `0` `src/androidTest/` files, `0` `androidTestImplementation` lines, `0` `io.mockk` imports/dependencies, `0` `RobolectricTestRunner` in unit tests, `<= 3` `@Test` methods in every retained test class (`22` in `:app` + `3` in `:usecases` = `25` total), and exactly `36` Design System PNGs passing `:app:verifyRoborazziPreDebug`.
-- [ ] Canonical `@compiler` gate (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`), `:app:assemblePreDebug`, `:app:verifyRoborazziPreDebug`, and `:domain:test :usecases:test :data:test` all pass cleanly on JDK 21.
-- [ ] `docs/testing_strategy_guide.md` accurately matches `testing-setup` v2.4.0 and `design-system-governance` §4.
-- [ ] Structured validation report written to `docs/features/pragmatic-testing-cleanup/validator/validation-report.md`.
+- [x] Implementation stays strictly within `pragmatic-testing-cleanup` scope (`WIP=1`) and `CONSTRAINTS.md` (zero unrelated feature changes).
+- [x] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no hardcoded stubs, no disabled tests, `MmWeatherInfo` preserves runtime crossfade).
+- [x] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`) and coroutine structured concurrency (`CancellationException` rethrow in `TemperatureCheckCoordinator`) are respected.
+- [x] Exact hygiene invariants verified: `0` `*ScreenshotTest.kt`, `0` screen PNGs, `0` `src/androidTest/` files, `0` `androidTestImplementation` lines, `0` `io.mockk` imports/dependencies, `0` `RobolectricTestRunner` in unit tests, `<= 3` `@Test` methods in every retained test class (`22` in `:app` + `3` in `:usecases` = `25` total), and exactly `36` Design System PNGs passing `:app:verifyRoborazziPreDebug`.
+- [x] Canonical `@compiler` gate (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`), `:app:assemblePreDebug`, `:app:verifyRoborazziPreDebug`, and `:domain:test :usecases:test :data:test` all pass cleanly on JDK 21.
+- [x] `docs/testing_strategy_guide.md` accurately matches `testing-setup` v2.4.0 and `design-system-governance` §4.
+- [x] Structured validation report written to `docs/features/pragmatic-testing-cleanup/validator/validation-report.md`.

@@ -29,7 +29,7 @@
     "depends_on": [
       "secrets-build-hygiene"
     ],
-    "status": "in_progress",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
     "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
@@ -38,7 +38,14 @@
       "./gradlew :app:verifyRoborazziPreDebug --no-daemon",
       "./gradlew :domain:test :usecases:test :data:test --no-daemon"
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 2m 57s (Hilt DI graph, resources, and APK verified).",
+      "PASS: ./gradlew :app:recordRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 19s (36 deterministic Design System PNGs recorded).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 48s (36/36 Design System snapshots passed, 0 diffs).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 9s (Configuration cache entry stored; :app:testPreDebugUnitTest 58/58 passed = 22 pure JVM unit tests across 8 classes <= 3/class + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 23s (:usecases:test 3/3 passed, 0 failed, 0 skipped).",
+      "PASS: Hygiene invariants -> 0 io.mockk matches across app/usecases/data/domain; 0 RobolectricTestRunner in app/src/test/; 0 androidTestImplementation lines; 0 files in app/src/androidTest/; 0 *ScreenshotTest.kt files; exactly 36 PNGs in app/src/test/snapshots/."
+    ],
     "notes": "Promoted right after secrets-build-hygiene: (1) retire the 7 legacy screen *ScreenshotTest.kt files + 17 screen PNGs + ExampleInstrumentedTest.kt + unused androidTestImplementation deps; (2) reduce @MmDevicePreview from 6 devices to 2 (Phone + Tablet), eliminate non-deterministic crossfade in MmWeatherInfo preview, and regenerate clean Design System Roborazzi snapshots; (3) refactor existing unit tests (:app and :usecases) to 1-3 cohesive @Test per class with Manual Fakes, MainDispatcherRule, and zero Robolectric in ViewModel/unit tests; (4) align docs/testing_strategy_guide.md with testing-setup v2.4.0."
   },
   {

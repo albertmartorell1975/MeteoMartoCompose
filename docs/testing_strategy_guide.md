@@ -1,127 +1,107 @@
 # MeteoMartoCompose Testing Strategy Guide
 
-This document is the **Single Source of Truth (SSOT)** for the project's testing strategy, infrastructure, and execution standards.
+This document is the **Single Source of Truth (SSOT)** for the project's testing strategy, infrastructure, and execution standards, aligned with `.agents/skills/testing-setup/SKILL.md` (`v2.4.0`) and `.agents/skills/design-system-governance/SKILL.md` (§4).
 
 ## 1. Pragmatic Testing Stack
 
-The project uses a tiered testing approach designed for speed, reliability, and measurable quality.
+MeteoMartoCompose uses a lean, fast, three-tier verification strategy optimized for pure JVM execution, minimal maintenance overhead, and high signal:
 
-| Type | Tools | Runner | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Unit Testing** | JUnit 4, MockK, Turbine | JUnit | **The Brain**: Business logic, ViewModels, UseCases, and Repositories. |
-| **Visual Regression** | Roborazzi | Robolectric | **The Body**: Visual stability, design, and UI states (screenshots). |
-| **Code Coverage** | Jacoco | Gradle Plugin | **The Metric**: Measures the % of logic actually verified by tests. |
+| Tier | Scope | Tools | Runner | Purpose |
+| :--- | :--- | :--- | :--- | :--- |
+| **Pure JVM Unit Tests** | ViewModels, UseCases with orchestration/branching, Repositories, Mappers, Coordinators | JUnit 4, `kotlinx-coroutines-test`, Turbine, Manual Fakes, `MainDispatcherRule` | Pure JVM (JUnit) | Verify state transitions, error mapping, business rules, and orchestration without Android or bytecode-mocking overhead. |
+| **Design System Visual Regression** | `ui.designsystem.components` `@Preview` composables only | Roborazzi (`generateComposePreviewRobolectricTests`), Robolectric (internal renderer only) | JVM (Roborazzi) | Guard Design System tokens, themes (Light/Dark), RTL (`ar`), 200% font scaling, and Phone/Tablet adaptive layouts (`36` golden PNGs). |
+| **Black-Box E2E Flows** | Complete user journeys, real `NavHost`, Hilt graph, Room | `@android-cli` (`android run`, `android layout --diff`, `android screen capture`) | Live Emulator / Device | Validate real end-to-end Acceptance Scenarios from `docs/features/<feature-id>/spec.md` without in-repo instrumented tests. |
 
-> [!NOTE]
-> **Simplification Mandate**: To avoid redundancy and fragility, we prioritize ViewModel Unit Tests over UI Behavior tests. If the logic is verified in the ViewModel, we rely on Screenshot tests to ensure the UI correctly renders that state.
+### Explicitly Forbidden Patterns
+- **Zero `MockK` / `Mockito`**: Use hand-written, deterministic in-memory `Fake*` implementations for all domain/data interfaces (`app/src/test/java/.../testutil/fakes/` and `usecases/src/test/java/.../usecases/fakes/`).
+- **Zero Robolectric Functional / Unit Tests**: Never annotate `*ViewModelTest`, `*WorkerTest`, `*ScreenTest`, or `NavigationTest` with `@RunWith(RobolectricTestRunner::class)`. Robolectric is reserved exclusively as Roborazzi's internal renderer for Design System previews.
+- **Zero Feature Screen Screenshot Tests**: Regular feature screens verify visual layout via stateless `@Preview` functions plus clean `./gradlew assemblePreDebug lintPreDebug`, not committed screen golden PNGs.
+- **Zero In-Repo Instrumented Tests (`src/androidTest/`)**: Espresso, `createAndroidComposeRule`, UI Automator, and `androidTestImplementation` dependencies are retired in favor of `@android-cli` black-box E2E validation.
+- **Zero Trivial Tests**: Never write tests for Kotlin `data class`es, `*PreviewData`, 1:1 pass-through UseCases, 1:1 mappers without branching, or simple collection wrappers.
 
-## 2. Infrastructure & Environment
+## 2. Strict Test Budgets & Single-Layer Assertion Rule
 
-### 2.1 Critical Requirements
-- **JDK 21**: Mandatory for targeting SDK 36+ (Android 16).
-- **Render Mode**: Configured with `hardware` for high-fidelity snapshots.
-- **Private Previews**: Enabled to capture internal component variants without leaking them to the public API.
+- **Per Test Class Cap**: **1 to 3 cohesive `@Test` methods maximum** per test class. Group related branch assertions of a single behavior into 1–2 cohesive `@Test` methods.
+- **Per Feature Slice Cap**: **0 to 6 `@Test` methods total** across all modules for a standard feature slice (write `0` tests when a layer has no conditional branching, calculation, error mapping, or state transitions).
+- **Single-Layer Assertion Rule**: Test each business rule or edge case **once at the lowest layer that owns it**:
+  - `:domain` — Pure mathematical calculations, domain rules, and boundary conditions.
+  - `:data` — Serialization/deserialization, caching policies, and `Throwable`-to-`DomainError` mapping.
+  - `:usecases` — Multi-repository orchestration and fallback logic.
+  - `:app` — ViewModel passive initialization and state transitions (`Loading`, `Error`, `Success`), complex UI mappers, and pure Kotlin worker coordinators.
 
-### 2.2 Test Isolation
-To avoid production infrastructure leaks (like Firebase or production Hilt modules), all Robolectric tests **MUST** use the custom application class:
+## 3. Infrastructure & Environment
+
+### 3.1 Critical Requirements
+- **JDK 21**: Mandatory across `:domain`, `:usecases`, `:data`, and `:app` (`jvmToolchain(21)`) for Gradle 8.14.3 and Roborazzi/Robolectric on `compileSdk = 36`.
+- **`MainDispatcherRule`**: Every presentation test using `viewModelScope` or `stateIn` MUST apply `@get:Rule val mainDispatcherRule = MainDispatcherRule()` (`app/src/test/java/com/martorell/albert/meteomartocompose/testutil/MainDispatcherRule.kt`), calling `Dispatchers.setMain(UnconfinedTestDispatcher())` in `starting()` and `Dispatchers.resetMain()` in `finished()`.
+- **Roborazzi Test Isolation**: `app/src/test/resources/robolectric.properties` wires `application = com.martorell.albert.meteomartocompose.TestMeteoMartoApp` globally so Design System preview rendering never triggers Hilt or Firebase initialization.
+- **Deterministic Coil Previews**: In Design System composables using `AsyncImage` (e.g., `MmWeatherInfo.kt`), disable crossfade animation in inspection mode (`.crossfade(enable = !LocalInspectionMode.current)`) and provide `LocalAsyncImagePreviewHandler provides previewAsyncImageCoil` inside `@Preview` functions so snapshots render identically on Windows and `ubuntu-latest` CI.
+- **Pragmatic Multipreview Baseline (`MmPreview.kt`)**:
+  - `@MmPreview` covers `Light Mode`, `Dark Mode`, `RTL` (`ar`), and `Large Font` (`2.0f`).
+  - `@MmDevicePreview` covers `Phone` (`411x891dp`) and `Tablet` (`1280x800dp@240dpi`).
+
+### 3.2 Gradle Configuration (`app/build.gradle.kts`)
 ```kotlin
-@Config(application = TestMeteoMartoApp::class)
-```
-
-### 2.3 Gradle Configuration Detail (`app/build.gradle.kts`)
-The following configuration ensures that Roborazzi and Jacoco work seamlessly with the design system and flavor-based environments:
-
-```kotlin
-// Roborazzi Plugin Configuration
 roborazzi {
     outputDir.set(file("src/test/snapshots"))
     generateComposePreviewRobolectricTests {
         enable = true
-        // Scans exclusively the design system package for automated snapshots
         packages = listOf("${android.namespace}.ui.designsystem.components")
-        // Also captures private @Preview functions
         includePrivatePreviews = true
     }
 }
 
-// Android Test Options for fidelity and Jacoco integration
 android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
             all {
-                // Required for Roborazzi 4.12.2+ to avoid broken images
                 it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
             }
         }
     }
 }
 ```
+> [!IMPORTANT]
+> Never hardcode `roborazzi.test.record`, `roborazzi.test.compare`, or `roborazzi.test.verify` inside `testOptions.unitTests.all`. Always let the Roborazzi Gradle tasks (`recordRoborazziPreDebug` / `verifyRoborazziPreDebug`) control those flags.
 
-### 2.4 Core Testing Dependencies (`libs.versions.toml`)
-The project uses the following dependencies for testing (declared in the version catalog):
+### 3.3 Core Testing Dependencies (`gradle/libs.versions.toml`)
+| Library | Version Catalog Alias | Scope | Purpose |
+| :--- | :--- | :--- | :--- |
+| **JUnit 4** | `libs.junit` | `testImplementation` | Pure JVM test framework. |
+| **Coroutines Test** | `libs.kotlinx.coroutines.test` | `testImplementation` | `runTest`, `UnconfinedTestDispatcher`, `advanceUntilIdle`. |
+| **Turbine** | `libs.turbine` | `testImplementation` | Deterministic Kotlin `Flow` / `Channel` assertions. |
+| **Robolectric** | `libs.robolectric` | `testImplementation` | Internal renderer for Roborazzi Design System `@Preview` scanning only. |
+| **Roborazzi + Scanner** | `libs.roborazzi.*` | `testImplementation` | Automated Design System Compose `@Preview` visual regression. |
+| **Compose BOM + UI Test** | `platform(libs.androidx.compose.bom)`, `libs.androidx.ui.test.junit4` | `testImplementation` | Required by Roborazzi's Compose Preview test runner. |
+| **Compose Test Manifest** | `libs.androidx.ui.test.manifest` | `debugImplementation` | Required by Roborazzi to host preview compositions. |
 
-| Library | Version Catalog Alias | Description |
-| :--- | :--- | :--- |
-| **JUnit 4** | `libs.junit` | Core unit testing framework. |
-| **MockK** | `libs.mockk` | Mocking framework for Kotlin. |
-| **Turbine** | `libs.turbine` | Small testing library for Kotlin Flows. |
-| **Coroutines Test**| `libs.kotlinx.coroutines.test` | Utilities for testing asynchronous code. |
-| **Robolectric** | `libs.robolectric` | Android simulation on the JVM. |
-| **Roborazzi** | `libs.roborazzi.core` | Visual regression tool (screenshots). |
-| **Compose UI Test**| `libs.androidx.ui.test.junit4` | Compose testing integration for JUnit. |
+## 4. Verification Commands (`pre` Product Flavor)
 
-## 3. Execution & Commands
+Because `flavors.gradle` defines `pre` and `pro` product flavors, always target the `preDebug` variant:
 
-### 3.1 Unit Testing & Coverage
-To run unit tests and generate the Jacoco coverage report:
 ```bash
-# General coverage report (runs all unit tests)
-./gradlew :app:jacocoTestReport
+# Canonical CI & local quality gate (unit tests + Android Lint)
+./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache
 
-# Run unit tests only (no coverage report)
-./gradlew :app:testPreDebugUnitTest
+# Pure JVM layer module tests
+./gradlew :domain:test :usecases:test :data:test --no-daemon
+
+# Full APK & Hilt DI graph verification
+./gradlew assemblePreDebug --no-daemon
+
+# Design System visual regression verification (36 golden PNGs)
+./gradlew :app:verifyRoborazziPreDebug --no-daemon
+
+# Regenerate Design System golden PNGs after intentional Design Token or Mm* changes
+./gradlew :app:recordRoborazziPreDebug --no-daemon
+
+# Optional Jacoco coverage report (output: app/build/reports/jacoco/jacocoTestReport/html/index.html)
+./gradlew :app:jacocoTestReport --no-daemon
 ```
 
-### 3.2 Visual Regression (Roborazzi)
-We follow **ADR 09 (Pragmatic Snapshots)**: focusing on dimensions that impact UX (Theme, RTL, Font Scale).
-
-#### Manual Screenshot Tests
-To execute specific screenshot tests manually coded in `src/test`:
-```bash
-# Verify against Golden Images
-./gradlew verifyRoborazziPreDebug
-
-# Record/Update Golden Images
-./gradlew recordRoborazziPreDebug
-```
-
-#### Automated Preview Scanner
-To run the automated scanner that captures all `@Preview` functions in the configured packages:
-```bash
-# Verify all previews
-./gradlew verifyRoborazziDebug
-
-# Record all previews
-./gradlew recordRoborazziDebug
-```
-
-## 4. Visualizing & Interpreting Coverage (Jacoco)
-
-### 4.1 Report Location
-The interactive HTML report is generated at:
-`app/build/reports/jacoco/jacocoTestReport/html/index.html`
-
-### 4.2 How to Read the Report
-- **Green**: Code is fully covered.
-- **Red**: Code was never executed during tests.
-- **Yellow (Diamond)**: Partial branch coverage (e.g., only one path of an `if`/`when` was tested).
-
-**Goal**: Maintain instruction coverage >80% and branch coverage >50% for core business logic.
-
-## 5. Best Practices for Developers & Agents
-
-1. **Dual Verification**: Every new feature must include its corresponding Unit Test and Screenshot Test.
-2. **Stateless UI First**: Always target the `*Content` (stateless) composables for snapshots.
-3. **Atomic Commits**: Always include tests in the same branch as the code change.
-4. **Fakes over Mocks**: Prioritize the use of **Fakes** for complex business components to improve stability.
+### Snapshot Regeneration Triggers (`design-system-governance` §4)
+Run `./gradlew :app:recordRoborazziPreDebug --no-daemon` followed immediately by `./gradlew :app:verifyRoborazziPreDebug --no-daemon` whenever:
+1. A Design Token (Color, Spacing, Typography, Dimension) changes.
+2. A Design System component (`Mm*`) layout or preview structure changes.
+3. `.github/workflows/design-system-ci.yml` reports an intentional visual regression diff.
