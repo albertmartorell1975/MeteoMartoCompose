@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,10 +66,12 @@ fun MmWeatherInfo(
 
         Spacer(Modifier.height(MeteoMartoTheme.spacing.medium))
 
+        val isInspectionMode = LocalInspectionMode.current
+
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(city.weatherIcon)
-                .crossfade(enable = true)
+                .crossfade(enable = !isInspectionMode)
                 .build(),
             contentDescription = stringResource(R.string.weather_icon_description),
             modifier = Modifier.size(dimensionResource(R.dimen.weather_icon_size)),
