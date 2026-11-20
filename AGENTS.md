@@ -29,9 +29,10 @@ Native Android weather and climate application built with Jetpack Compose, Mater
 1. `PROGRESS.md` — Current verified state, last gate execution, and session log.
 2. `feature_list.json` — Feature backlog, `depends_on`, checkpoints (`require_review_after`), and status (`not_started`, `in_progress`, `passing`, `accepted`, `blocked`).
 3. `CONSTRAINTS.md` — Durable `MUST` / `MUST NOT` rules discovered via harness feedback loops.
-4. `.agents/skills/README.md` — On-demand (*Just-In-Time*) modular skills and technical guardrails.
+4. `CONTEXT.md`, `docs/build-brief.md` & `DESIGN.md` — Domain glossary, modernization scope, and authoritative visual contract.
+5. `.agents/skills/README.md` — On-demand (*Just-In-Time*) modular skills and technical guardrails.
 
-Read on demand: `docs/testing_strategy_guide.md`, `docs/ui_state_management_patterns.md`, `docs/features/<feature-id>/spec.md`, `docs/features/<feature-id>/validator/validation-report.md`, and `docs/features/<feature-id>/validator/pr-review.md` (`Round #1..#N`).
+Read on demand: `docs/domain-model.md`, `docs/risks-and-open-questions.md`, `docs/testing_strategy_guide.md`, `docs/ui_state_management_patterns.md`, `docs/features/<feature-id>/spec.md`, `docs/features/<feature-id>/validator/validation-report.md`, and `docs/features/<feature-id>/validator/pr-review.md` (`Round #1..#N`).
 
 ---
 

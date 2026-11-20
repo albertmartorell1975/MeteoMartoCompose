@@ -1,0 +1,231 @@
+[
+  {
+    "id": "secrets-build-hygiene",
+    "area": "infrastructure",
+    "title": "Migrate OpenWeather API credentials to secrets-gradle-plugin",
+    "user_visible_behavior": "The app builds and fetches weather data cleanly using secrets-gradle-plugin and local.defaults.properties with zero hardcoded API keys in flavors.gradle, and Design System CI watches the real ui/designsystem paths.",
+    "depends_on": [],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/secrets-build-hygiene/spec.md",
+    "validation_path": "docs/features/secrets-build-hygiene/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Verify clean assemblePreDebug succeeds using local.defaults.properties without hardcoded API_KEY_VALUE in flavors.gradle."
+    ],
+    "evidence": [],
+    "notes": "Follow dependency-manager Rule 12 (secrets-gradle-plugin + local.defaults.properties). Also fix outdated trigger paths in .github/workflows/design-system-ci.yml and align JVM module targets."
+  },
+  {
+    "id": "domain-error-contract",
+    "area": "domain",
+    "title": "Introduce pure DomainError hierarchy in domain layer",
+    "user_visible_behavior": "Authentication, network, location, permission, and persistence failures map deterministically to typed DomainError values without leaking Android or infrastructure exceptions across layers.",
+    "depends_on": [
+      "secrets-build-hygiene"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/domain-error-contract/spec.md",
+    "validation_path": "docs/features/domain-error-contract/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM unit tests verify Throwable-to-DomainError mapping across auth, network, location, and persistence cases."
+    ],
+    "evidence": [],
+    "notes": "Replaces legacy CustomError in :data per repository-pattern-governance (safeCall, typed DomainError mappers, Hilt bindings) and CONTEXT.md."
+  },
+  {
+    "id": "weather-condition-room-migration",
+    "area": "data",
+    "title": "Persist OpenWeather condition ID and nocturnal state in Room",
+    "user_visible_behavior": "Current and favorite cities retain accurate WeatherCondition (SUNNY, RAIN, BASELINE) and nocturnal state (isNight) both online and offline without wiping existing Room data.",
+    "depends_on": [
+      "domain-error-contract"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/weather-condition-room-migration/spec.md",
+    "validation_path": "docs/features/weather-condition-room-migration/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM unit tests verify OpenWeather ID mapping (800 -> SUNNY, 2xx/3xx/5xx/6xx -> RAIN, fallback -> BASELINE), isNight derivation, and Room schema migration integrity."
+    ],
+    "evidence": [],
+    "notes": "Follow room-schema-governance and repository-pattern-governance (SSOT, DTO/Entity/Domain mappers, explicit Room Migration for weatherConditionId + isNight, Hilt DI cleanup)."
+  },
+  {
+    "id": "dynamic-weather-theme-tokens",
+    "area": "design-system",
+    "title": "Implement five KISS weather palettes and Roboto Flex 12sp typography",
+    "user_visible_behavior": "The design system resolves DayBaseline, Sunny, Rain, Night, and ExtremeAlert palettes deterministically, enforces a 12sp minimum font size on Roboto Flex, and bundles WebP assets from docs/ui/resources/.",
+    "depends_on": [
+      "weather-condition-room-migration"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/dynamic-weather-theme-tokens/spec.md",
+    "validation_path": "docs/features/dynamic-weather-theme-tokens/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM unit tests verify palette precedence (ExtremeAlert > Night > Sunny > Rain > DayBaseline) and WebP drawables exist in app/src/main/res/drawable/."
+    ],
+    "evidence": [],
+    "notes": "DESIGN.md and docs/ui/meteomarto_design_contract.txt are authoritative. Raise labelSmall to 12.sp per design-system-governance and copy docs/ui/resources/*.webp drawables."
+  },
+  {
+    "id": "design-system-components-alignment",
+    "area": "design-system",
+    "title": "Align Mm components and Roborazzi golden snapshots with DESIGN.md",
+    "user_visible_behavior": "All stateless Mm* components render consistently across the five KISS palettes, RTL, 200% font scaling, and compact/expanded devices with verified Roborazzi previews.",
+    "depends_on": [
+      "dynamic-weather-theme-tokens"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/design-system-components-alignment/spec.md",
+    "validation_path": "docs/features/design-system-components-alignment/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "./gradlew :app:verifyRoborazziPreDebug --no-daemon"
+    ],
+    "evidence": [],
+    "notes": "Apply compose-modifier-and-layout-style, edge-to-edge, and design-system-governance (WCAG contrast on Night/ExtremeAlert thermal accents); regenerate Design System Roborazzi snapshots only."
+  },
+  {
+    "id": "navigation-shell-unification",
+    "area": "navigation",
+    "title": "Unify AppState navigation and adaptive shell routing",
+    "user_visible_behavior": "Navigating to the current city forecast or tapping a favorite city routes seamlessly to a single unified CityForecastScreen contract inside the adaptive bottom-bar/rail shell.",
+    "depends_on": [
+      "design-system-components-alignment"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/navigation-shell-unification/spec.md",
+    "validation_path": "docs/features/navigation-shell-unification/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Verify type-safe Navigation Compose routing compiles cleanly and adaptive shell switches between bottom bar and rail."
+    ],
+    "evidence": [],
+    "notes": "Follow compose-navigation-architecture (AppState, TopLevelRoute, type-safe Destinations, HomeNavGraph/authSubGraph/favoriteSubGraph, passive screens, edge-to-edge). No Navigation 3 migration."
+  },
+  {
+    "id": "auth-splash-login-overhaul",
+    "area": "auth",
+    "title": "Rebuild Splash and Login flow against Stitch layouts",
+    "user_visible_behavior": "Splash and Login render with the Stitch layout structure under static DayBaselinePalette, passive ViewModel initialization, and clear DomainError feedback.",
+    "depends_on": [
+      "navigation-shell-unification"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/auth-splash-login-overhaul/spec.md",
+    "validation_path": "docs/features/auth-splash-login-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM ViewModel tests using manual Fakes verify Login validation, DomainError states, and passive session routing."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_splash_welcome/ and meteomarto_login_atmospheric/. Enforce Screen/Content hoisting, safe Compose side-effects, DomainError->UiText mappers, and passive ViewModel init."
+  },
+  {
+    "id": "auth-signup-terms-overhaul",
+    "area": "auth",
+    "title": "Rebuild Register and Terms flow against Stitch layouts",
+    "user_visible_behavior": "Sign-up and Terms screens match Stitch layouts under static DayBaselinePalette with reactive field validation, DomainError feedback, and passive ViewModel state management.",
+    "depends_on": [
+      "navigation-shell-unification"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/auth-signup-terms-overhaul/spec.md",
+    "validation_path": "docs/features/auth-signup-terms-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM ViewModel tests using manual Fakes verify SignUp validation, Terms navigation, and DomainError handling."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_registre_create_user/ and meteomarto_termes_i_condicions/. Enforce Screen/Content hoisting, Compose state/side-effects, DomainError->UiText mappers, and passive ViewModel state."
+  },
+  {
+    "id": "city-forecast-dynamic-screen",
+    "area": "weather",
+    "title": "Rebuild dynamic CityForecastScreen and error state",
+    "user_visible_behavior": "CityForecastScreen displays current city or favorite detail using the Stitch layout and dynamically switches among ExtremeAlert, Night, Sunny, Rain, and DayBaseline palettes, with ErrorForecastScreen rendered neutrally on failures.",
+    "depends_on": [
+      "navigation-shell-unification"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/city-forecast-dynamic-screen/spec.md",
+    "validation_path": "docs/features/city-forecast-dynamic-screen/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM ViewModel tests using manual Fakes verify dynamic palette state resolution, Mutex idempotency, permission/GPS error handling, and favorite toggling."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/ and meteomarto_error_previsi_ciutat/. Enforce Hybrid UI State, Mutex guarding, Domain->UI mappers, edge-to-edge, and current-location-only ExtremeAlert (> Remote Config threshold)."
+  },
+  {
+    "id": "favorites-list-logout-overhaul",
+    "area": "favorites",
+    "title": "Rebuild neutral FavoritesScreen and LogoutDialog",
+    "user_visible_behavior": "FavoritesScreen renders saved cities and empty state under immutable DayBaselinePalette matching Stitch layouts, and LogoutDialog inherits the active screen palette while cleanly revoking the session.",
+    "depends_on": [
+      "city-forecast-dynamic-screen"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/favorites-list-logout-overhaul/spec.md",
+    "validation_path": "docs/features/favorites-list-logout-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM ViewModel tests using manual Fakes verify favorites list loading, empty state, item deletion, and logout flow."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_llista_de_preferits_atmospheric/ and meteomarto_di_leg_log_out/. Enforce passive ViewModel state, Compose state hoisting, and neutral DayBaselinePalette on the list."
+  },
+  {
+    "id": "high-temp-alert-screen-overhaul",
+    "area": "alerts",
+    "title": "Align HighTemperatureAlertScreen with ExtremeAlert palette",
+    "user_visible_behavior": "When the current location exceeds the Remote Config temperature threshold, HighTemperatureAlertScreen presents the Stitch alert layout with ExtremeAlertPalette and ic_warning.webp.",
+    "depends_on": [
+      "city-forecast-dynamic-screen"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/high-temp-alert-screen-overhaul/spec.md",
+    "validation_path": "docs/features/high-temp-alert-screen-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM unit tests verify threshold comparison (temperature > threshold) and alert acknowledgement lifecycle."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_alerta_meteorol_gica_atmospheric/ and docs/ui/resources/ic_warning.webp. Enforce stateless Content hoisting, edge-to-edge, and Remote Config threshold (> threshold)."
+  },
+  {
+    "id": "pragmatic-testing-cleanup",
+    "area": "testing",
+    "title": "Retire screen screenshot tests and align testing strategy docs",
+    "user_visible_behavior": "The test suite complies with testing-setup v2.4.0: pure JVM tests with manual Fakes cover ViewModels and business logic, Roborazzi covers Design System components only, and screen-level screenshot bloat is removed.",
+    "depends_on": [
+      "auth-splash-login-overhaul",
+      "auth-signup-terms-overhaul",
+      "favorites-list-logout-overhaul",
+      "high-temp-alert-screen-overhaul"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
+    "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "./gradlew :app:verifyRoborazziPreDebug --no-daemon"
+    ],
+    "evidence": [],
+    "notes": "Remove the 7 legacy screen *ScreenshotTest.kt files and screen golden PNGs; update docs/testing_strategy_guide.md to match testing-setup v2.4.0."
+  }
+]
