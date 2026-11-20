@@ -5,154 +5,101 @@ import arrow.core.left
 import arrow.core.right
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAuthRepository
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpUseCase
 import com.martorell.albert.meteomartocompose.usecases.utils.ValidateEmailUseCase
 import com.martorell.albert.meteomartocompose.usecases.utils.ValidatePasswordUseCase
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpViewModelTest {
 
-    private val testDispatcher = StandardTestDispatcher()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
-    private val validateEmailUseCase: ValidateEmailUseCase = mockk()
-    private val validatePasswordUseCase: ValidatePasswordUseCase = mockk()
-    private val signUpUseCase: SignUpUseCase = mockk()
-
-    private val interactors = SignUpInteractors(
-        validateEmailUseCase = validateEmailUseCase,
-        validatePasswordUseCase = validatePasswordUseCase,
-        signUpUseCase = signUpUseCase
+    private val authRepository = FakeAuthRepository()
+    private val viewModel = SignUpViewModel(
+        SignUpInteractors(
+            validateEmailUseCase = ValidateEmailUseCase(),
+            validatePasswordUseCase = ValidatePasswordUseCase(),
+            signUpUseCase = SignUpUseCase(authRepository),
+        )
     )
 
-    private lateinit var viewModel: SignUpViewModel
-
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        viewModel = SignUpViewModel(interactors)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun `initial state is correct`() {
-        val state = viewModel.state.value
-        assertEquals("", state.email)
-        assertEquals("", state.password)
-        assertTrue(state.isEmailValid)
-        assertTrue(state.isPasswordValid)
-        assertFalse(state.loading)
-        assertFalse(state.signUpChecked)
-    }
+    fun `initial state is passive and local validation failure skips repository call`() = runTest {
+        val initial = viewModel.state.value
+        assertEquals("", initial.email)
+        assertEquals("", initial.password)
+        assertTrue(initial.isEmailValid)
+        assertTrue(initial.isPasswordValid)
+        assertFalse(initial.loading)
+        assertFalse(initial.signUpChecked)
 
-    @Test
-    fun `setEmail updates state and clears email error`() {
-        val email = "test@example.com"
-        viewModel.setEmail(email)
-        assertEquals(email, viewModel.state.value.email)
-        assertTrue(viewModel.state.value.isEmailValid)
-    }
-
-    @Test
-    fun `validateEmail updates isEmailValid state when not empty`() {
-        val email = "invalid"
-        viewModel.setEmail(email)
-        every { validateEmailUseCase(email) } returns false
+        viewModel.setEmail("invalid")
         viewModel.validateEmail()
         assertFalse(viewModel.state.value.isEmailValid)
-    }
-
-    @Test
-    fun `clearEmailError resets isEmailValid to true`() {
-        val email = "some@email.com"
-        viewModel.setEmail(email)
-        every { validateEmailUseCase(email) } returns false
-        viewModel.validateEmail()
-        assertFalse(viewModel.state.value.isEmailValid)
-
         viewModel.clearEmailError()
         assertTrue(viewModel.state.value.isEmailValid)
+
+        viewModel.setPassword("password123")
+        viewModel.performSignUp()
+        advanceUntilIdle()
+
+        assertTrue(authRepository.signUpCalls.isEmpty())
+        assertFalse(viewModel.state.value.isEmailValid)
+        assertTrue(viewModel.state.value.showError)
+        assertFalse(viewModel.state.value.signUpChecked)
     }
 
     @Test
-    fun `performSignUp successful flow`() = runTest {
+    fun `performSignUp transitions to valid user on success`() = runTest {
         val email = "test@example.com"
         val password = "password123"
-        val user = UserDomain("1", email, "Name")
+        authRepository.signUpResult = UserDomain("1", email, "Name").right()
 
         viewModel.setEmail(email)
         viewModel.setPassword(password)
-
-        every { validateEmailUseCase(email) } returns true
-        every { validatePasswordUseCase(password) } returns true
-        coEvery { signUpUseCase(email, password) } returns user.right()
-
         viewModel.performSignUp()
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val finalState = viewModel.state.value
         assertTrue(finalState.validUser)
         assertTrue(finalState.signUpChecked)
+        assertTrue(finalState.signUpStatus)
         assertFalse(finalState.loading)
+        assertEquals(listOf(email to password), authRepository.signUpCalls)
     }
 
     @Test
-    fun `performSignUp failure flow emits event`() = runTest {
+    fun `performSignUp emits SignUpError event and updates error state on failure`() = runTest {
         val email = "test@example.com"
         val password = "password123"
         val error = CustomError.Unknown("Error")
+        authRepository.signUpResult = error.left()
 
         viewModel.setEmail(email)
         viewModel.setPassword(password)
 
-        every { validateEmailUseCase(email) } returns true
-        every { validatePasswordUseCase(password) } returns true
-        coEvery { signUpUseCase(email, password) } returns error.left()
-
         viewModel.events.test {
             viewModel.performSignUp()
-            testDispatcher.scheduler.advanceUntilIdle()
+            advanceUntilIdle()
 
             assertEquals(SignUpViewModel.SignUpEvent.SignUpError(error), awaitItem())
             val finalState = viewModel.state.value
             assertFalse(finalState.validUser)
             assertTrue(finalState.signUpChecked)
+            assertTrue(finalState.showError)
+            assertEquals(error, finalState.error)
         }
-    }
-
-    @Test
-    fun `performSignUp with local validation error does not call usecase`() = runTest {
-        val email = "invalid"
-        viewModel.setEmail(email)
-        
-        every { validateEmailUseCase(email) } returns false
-        every { validatePasswordUseCase(any()) } returns true
-
-        viewModel.performSignUp()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 0) { signUpUseCase(any(), any()) }
-        assertFalse(viewModel.state.value.isEmailValid)
-        assertTrue(viewModel.state.value.showError)
     }
 }

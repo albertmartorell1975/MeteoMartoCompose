@@ -10,53 +10,24 @@ class RemoteConfigMapperTest {
         minLimit = -100.0,
         maxLimit = 100.0,
         defaultInterval = 60L,
-        minInterval = 15L
+        minInterval = 15L,
     )
 
     @Test
-    fun `mapToThreshold should return same value when within bounds`() {
-        val input = 25.0
-        val expected = 25.0
-        val result = mapper.mapToThreshold(input)
-        assertEquals(expected, result, 0.0)
+    fun `mapToThreshold returns in-bounds value and defaults on out-of-bounds or null`() {
+        assertEquals(25.0, mapper.mapToThreshold(25.0), 0.0)
+        assertEquals(30.0, mapper.mapToThreshold(150.0), 0.0)
+        assertEquals(30.0, mapper.mapToThreshold(-150.0), 0.0)
+        assertEquals(30.0, mapper.mapToThreshold(100.0), 0.0)
+        assertEquals(30.0, mapper.mapToThreshold(-100.0), 0.0)
+        assertEquals(30.0, mapper.mapToThreshold(null), 0.0)
     }
 
     @Test
-    fun `mapToThreshold should return default when value is too high`() {
-        val input = 150.0
-        val expected = 30.0
-        val result = mapper.mapToThreshold(input)
-        assertEquals(expected, result, 0.0)
-    }
-
-    @Test
-    fun `mapToThreshold should return default when value is too low`() {
-        val input = -150.0
-        val expected = 30.0
-        val result = mapper.mapToThreshold(input)
-        assertEquals(expected, result, 0.0)
-    }
-
-    @Test
-    fun `mapToInterval should return same value when above minimum`() {
-        val input = 30L
-        val expected = 30L
-        val result = mapper.mapToInterval(input)
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `mapToInterval should return default when value is too low`() {
-        val input = 5L
-        val expected = 60L
-        val result = mapper.mapToInterval(input)
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `mapToInterval should return default when value is null`() {
-        val expected = 60L
-        val result = mapper.mapToInterval(null)
-        assertEquals(expected, result)
+    fun `mapToInterval returns value at or above minimum and defaults on too-low or null`() {
+        assertEquals(15L, mapper.mapToInterval(15L))
+        assertEquals(30L, mapper.mapToInterval(30L))
+        assertEquals(60L, mapper.mapToInterval(5L))
+        assertEquals(60L, mapper.mapToInterval(null))
     }
 }
