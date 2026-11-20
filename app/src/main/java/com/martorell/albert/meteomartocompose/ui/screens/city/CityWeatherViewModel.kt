@@ -1,6 +1,5 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -186,11 +185,6 @@ class CityWeatherViewModel @Inject constructor(
         viewModelScope.launch {
             cityWeatherInteractors.checkTemperatureThresholdUseCase()
                 .collect { result ->
-                    Log.d(
-                        "TempAlert",
-                        "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
-                    )
-
                     _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
 
                     if (result.showAlert) {
