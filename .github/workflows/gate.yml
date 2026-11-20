@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - feature/MM-02-design-system
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
