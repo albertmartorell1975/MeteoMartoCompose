@@ -22,12 +22,44 @@
     "notes": "Follow dependency-manager Rule 12 (secrets-gradle-plugin + local.defaults.properties). Also fix outdated trigger paths in .github/workflows/design-system-ci.yml and align JVM module targets."
   },
   {
+    "id": "pragmatic-testing-cleanup",
+    "area": "testing",
+    "title": "Complete pragmatic testing & Roborazzi baseline cleanup",
+    "user_visible_behavior": "The test suite and Design System CI comply fully with testing-setup v2.4.0 and design-system-governance: legacy screen screenshot tests and androidTest bloat are removed, Design System Roborazzi snapshots are pragmatic and deterministic, and unit tests follow strict 1-3 test caps with Manual Fakes and zero Robolectric in ViewModel/unit tests.",
+    "depends_on": [
+      "secrets-build-hygiene"
+    ],
+    "status": "accepted",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
+    "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "./gradlew :app:verifyRoborazziPreDebug --no-daemon",
+      "./gradlew :domain:test :usecases:test :data:test --no-daemon"
+    ],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 2m 57s (Hilt DI graph, resources, and APK verified).",
+      "PASS: ./gradlew :app:recordRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 19s (36 deterministic Design System PNGs recorded).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 48s (36/36 Design System snapshots passed, 0 diffs).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 9s (Configuration cache entry stored; :app:testPreDebugUnitTest 58/58 passed = 22 pure JVM unit tests across 8 classes <= 3/class + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 23s (:usecases:test 3/3 passed, 0 failed, 0 skipped).",
+      "PASS: Hygiene invariants -> 0 io.mockk matches across app/usecases/data/domain; 0 RobolectricTestRunner in app/src/test/; 0 androidTestImplementation lines; 0 files in app/src/androidTest/; 0 *ScreenshotTest.kt files; exactly 36 PNGs in app/src/test/snapshots/.",
+      "PASS (PR #5 Review Round #1): ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 46s (AppLogger -> AndroidAppLogger Hilt @Binds @Singleton graph and CityWeatherViewModel injection verified).",
+      "PASS (PR #5 Review Round #1): ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 10s (custom RoborazziPreviewTester with CompareOptions(changeThreshold = 0.01f) verified 36/36 Design System snapshots, 0 PNG changes).",
+      "PASS (PR #5 Review Round #1): ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 6s (Configuration cache entry stored; :app:testPreDebugUnitTest 58/58 = 22 pure JVM unit tests across 8 classes <= 3/class including FakeAppLogger TempAlert assertion + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
+      "PASS (PR #5 Review Round #1): ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 20s (:usecases:test 3/3 passed, 0 failed, 0 skipped).",
+      "PASS (PR #5 Review Round #1): Hygiene invariants -> 0 io.mockk, 0 RobolectricTestRunner in app/src/test/, 0 androidTestImplementation in Gradle scripts, 0 snapshot PNG changes (36 PNGs intact), 0 KDoc comments on AppLogger.kt and AndroidAppLogger.kt."
+    ],
+    "notes": "Promoted right after secrets-build-hygiene: (1) retire the 7 legacy screen *ScreenshotTest.kt files + 17 screen PNGs + ExampleInstrumentedTest.kt + unused androidTestImplementation deps; (2) reduce @MmDevicePreview from 6 devices to 2 (Phone + Tablet), eliminate non-deterministic crossfade in MmWeatherInfo preview, and regenerate clean Design System Roborazzi snapshots; (3) refactor existing unit tests (:app and :usecases) to 1-3 cohesive @Test per class with Manual Fakes, MainDispatcherRule, and zero Robolectric in ViewModel/unit tests; (4) align docs/testing_strategy_guide.md with testing-setup v2.4.0."
+  },
+  {
     "id": "domain-error-contract",
     "area": "domain",
     "title": "Introduce pure DomainError hierarchy in domain layer",
     "user_visible_behavior": "Authentication, network, location, permission, and persistence failures map deterministically to typed DomainError values without leaking Android or infrastructure exceptions across layers.",
     "depends_on": [
-      "secrets-build-hygiene"
+      "pragmatic-testing-cleanup"
     ],
     "status": "not_started",
     "require_review_after": "planner",
@@ -210,27 +242,5 @@
     ],
     "evidence": [],
     "notes": "Reference docs/ui/screens/meteomarto_alerta_meteorol_gica_atmospheric/ and docs/ui/resources/ic_warning.webp. Enforce stateless Content hoisting, edge-to-edge, and Remote Config threshold (> threshold)."
-  },
-  {
-    "id": "pragmatic-testing-cleanup",
-    "area": "testing",
-    "title": "Retire screen screenshot tests and align testing strategy docs",
-    "user_visible_behavior": "The test suite complies with testing-setup v2.4.0: pure JVM tests with manual Fakes cover ViewModels and business logic, Roborazzi covers Design System components only, and screen-level screenshot bloat is removed.",
-    "depends_on": [
-      "auth-splash-login-overhaul",
-      "auth-signup-terms-overhaul",
-      "favorites-list-logout-overhaul",
-      "high-temp-alert-screen-overhaul"
-    ],
-    "status": "not_started",
-    "require_review_after": "planner",
-    "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
-    "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
-    "verification": [
-      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "./gradlew :app:verifyRoborazziPreDebug --no-daemon"
-    ],
-    "evidence": [],
-    "notes": "Remove the 7 legacy screen *ScreenshotTest.kt files and screen golden PNGs; update docs/testing_strategy_guide.md to match testing-setup v2.4.0."
   }
 ]

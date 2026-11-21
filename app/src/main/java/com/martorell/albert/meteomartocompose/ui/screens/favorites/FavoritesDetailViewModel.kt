@@ -3,10 +3,8 @@ package com.martorell.albert.meteomartocompose.ui.screens.favorites
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
-import com.martorell.albert.meteomartocompose.ui.navigation.FavoritesScreens
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,8 +24,7 @@ class FavoritesDetailViewModel @Inject constructor(
      * which also defines the scope of the injected ViewModel. Therefore, the SavedStateHandle will contain
      * all arguments present in the NavBackStackEntry (refer to favoriteSubGraph for more details).
      */
-    private val cityName =
-        savedStateHandle.toRoute<FavoritesScreens.FavoritesDetail>().cityName
+    private val cityName = savedStateHandle.get<String>(CITY_NAME_ARG).orEmpty()
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
 
@@ -61,5 +58,9 @@ class FavoritesDetailViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    companion object {
+        internal const val CITY_NAME_ARG = "cityName"
     }
 }

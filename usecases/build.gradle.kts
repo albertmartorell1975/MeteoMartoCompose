@@ -23,7 +23,6 @@ dependencies {
     implementation(libs.bundles.arrow)
 
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 }

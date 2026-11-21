@@ -5,84 +5,62 @@ import arrow.core.left
 import arrow.core.right
 import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeCityWeatherRepository
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByNameUseCase
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [33])
 class FavoritesDetailViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
-    private val loadCityWeatherByNameUseCase: LoadCityWeatherByNameUseCase = mockk()
-    private val interactors = FavoriteDetailInteractors(loadCityWeatherByNameUseCase)
-    
-    private val savedStateHandle = SavedStateHandle(mapOf("cityName" to "Barcelona"))
-    private lateinit var viewModel: FavoritesDetailViewModel
+    private val cityWeatherRepository = FakeCityWeatherRepository()
+    private val viewModel = FavoritesDetailViewModel(
+        savedStateHandle = SavedStateHandle(mapOf(FavoritesDetailViewModel.CITY_NAME_ARG to "Barcelona")),
+        favoriteDetailInteractors = FavoriteDetailInteractors(
+            loadCityWeatherByNameUseCase = LoadCityWeatherByNameUseCase(cityWeatherRepository),
+        ),
+    )
 
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        viewModel = FavoritesDetailViewModel(savedStateHandle, interactors)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+    @Test
+    fun `initial state is Loading and passive before onStart`() = runTest {
+        assertTrue(viewModel.state.value.content is FavoritesDetailViewModel.DetailContent.Loading)
+        assertTrue(cityWeatherRepository.loadCityByNameCalls.isEmpty())
     }
 
     @Test
-    fun `initial state is Loading and passive`() = runTest {
-        val state = viewModel.state.value
-        assertTrue(state.content is FavoritesDetailViewModel.DetailContent.Loading)
-        coVerify(exactly = 0) { loadCityWeatherByNameUseCase(any()) }
-    }
-
-    @Test
-    fun `onStart triggers data loading and updates success state`() = runTest {
+    fun `onStart loads city weather into Success state`() = runTest {
         val dummyCity = CityWeatherDomain(
             name = "Barcelona",
             temperature = 22.5,
             temperatureMin = 18.0,
             temperatureMax = 28.0,
-            pressure = 1015
+            pressure = 1015,
         )
-        coEvery { loadCityWeatherByNameUseCase(cityName = "Barcelona") } returns dummyCity.right()
+        cityWeatherRepository.loadCityByNameResult = dummyCity.right()
 
         viewModel.onStart()
 
-        val state = viewModel.state.value
-        assertTrue(state.content is FavoritesDetailViewModel.DetailContent.Success)
-        assertEquals(dummyCity, (state.content as FavoritesDetailViewModel.DetailContent.Success).city)
+        val success = viewModel.state.value.content as FavoritesDetailViewModel.DetailContent.Success
+        assertEquals(dummyCity, success.city)
+        assertEquals(listOf("Barcelona"), cityWeatherRepository.loadCityByNameCalls)
     }
 
     @Test
-    fun `onStart updates error state when use case fails`() = runTest {
+    fun `onStart updates Error state when repository fails`() = runTest {
         val error = CustomError.Connectivity
-        coEvery { loadCityWeatherByNameUseCase(cityName = "Barcelona") } returns error.left()
+        cityWeatherRepository.loadCityByNameResult = error.left()
 
         viewModel.onStart()
 
-        val state = viewModel.state.value
-        assertTrue(state.content is FavoritesDetailViewModel.DetailContent.Error)
-        assertEquals(error, (state.content as FavoritesDetailViewModel.DetailContent.Error).error)
+        val errorContent = viewModel.state.value.content as FavoritesDetailViewModel.DetailContent.Error
+        assertEquals(error, errorContent.error)
+        assertEquals(listOf("Barcelona"), cityWeatherRepository.loadCityByNameCalls)
     }
 }
