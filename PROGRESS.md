@@ -7,7 +7,7 @@
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
 - Current next ready feature: `domain-error-contract` (blocked only until `pragmatic-testing-cleanup` PR is reviewed & merged into `feature/MM-02-design-system`)
 - Current blocker: None (`pragmatic-testing-cleanup` accepted by `workflow-validator` across all 4 levels; `secrets-build-hygiene` merged into `feature/MM-02-design-system` @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
-- Last verified at: `2026-11-20` (`pragmatic-testing-cleanup` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `58/58` = `22` pure JVM unit tests + `36` Roborazzi previews, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, `:app:verifyRoborazziPreDebug` `36/36`, and `emulator-5554` cold launch)
+- Last verified at: `2026-11-21` (`pragmatic-testing-cleanup` PR #5 Review Round #1 independent validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `58/58` = `22` pure JVM unit tests + `36` Roborazzi previews via `RoborazziPreviewTester`, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, and `:app:verifyRoborazziPreDebug` `36/36` `unchanged`)
 
 ## Session Log
 
@@ -112,3 +112,30 @@
 - Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`, `:app:verifyRoborazziPreDebug --no-daemon` (`58/58` = `22` unit + `36` Roborazzi), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`:usecases:test` `3/3`), full hygiene `git grep` sweeps, and `emulator-5554` cold launch (`TotalTime: 3387ms`, `0` crashes); ran `./gradlew prepareKotlinBuildScriptModel --build-cache --no-daemon`.
 - Files or artifacts updated: `TemperatureCheckCoordinator.kt`, `docs/features/pragmatic-testing-cleanup/spec.md`, `docs/features/pragmatic-testing-cleanup/validator/validation-report.md`, `CONSTRAINTS.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review & merge of the `pragmatic-testing-cleanup` PR into `feature/MM-02-design-system` (verify both `Quality Gate` and `Design System CI` are green), then start `domain-error-contract`.
+
+### Session 009
+
+- Date: `2026-11-21`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Apply PR #5 Review Round #1 (`review-fix`) fixes for `pragmatic-testing-cleanup` (Issue `#4`) in isolated worktree `.worktrees/impl-pragmatic-testing-cleanup`.
+- Completed:
+  - **Finding 1 (`AppLogger` abstraction & `"TempAlert"` logging)**: Created `AppLogger.kt` (`d`, `e`) and `AndroidAppLogger.kt` (`@Inject constructor()` delegating to `android.util.Log.d` / `Log.e`) under `app/src/main/java/com/martorell/albert/meteomartocompose/utils/` (zero KDoc, deferred to `workflow-documenter`); bound `AndroidAppLogger` -> `AppLogger` via `@Binds @Singleton` in `AppBindingModule.kt`; injected `AppLogger` into `CityWeatherViewModel` and restored `"TempAlert"` debug logging in `startMonitoring()`; added `FakeAppLogger` in `FakeCityWeatherDependencies.kt` and verified the `"TempAlert"` debug entry inside the existing `startMonitoring` `@Test` in `CityWeatherViewModelTest.kt` (`3` `@Test` methods preserved, `0` MockK, `0` Robolectric).
+  - **Finding 2 (Cross-OS Roborazzi Anti-Aliasing Tolerance)**: Created `RoborazziPreviewTester.kt` under `app/src/test/java/com/martorell/albert/meteomartocompose/ui/designsystem/` delegating `ComposePreviewTester<AndroidPreviewJUnit4TestParameter>` to `AndroidComposePreviewTester` (`final` in Roborazzi `1.73.0`) with a custom `Capturer` applying `RoborazziOptions.CompareOptions(changeThreshold = 0.01f)`; wired `useScanOptionParametersInTester = true` and `testerQualifiedClassName` in `app/build.gradle.kts` without mutating any of the `36` snapshot PNGs.
+- Verification run (JDK `21.0.11`):
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 46s`).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 10s`, `36/36` Design System previews verified via `RoborazziPreviewTester`, `0` snapshot PNG changes).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 6s`, configuration cache entry stored; `:app:testPreDebugUnitTest` `58/58` = `22` pure JVM unit tests across 8 classes `<= 3`/class + `36` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` passed with `0` warnings on modified/new `.kt` files).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 20s`, `:usecases:test` `3/3` passed, `0` failed, `0` skipped).
+  - Hygiene invariants: `0` `io.mockk`, `0` `RobolectricTestRunner` in `app/src/test/`, `0` `androidTestImplementation` in Gradle scripts, `0` snapshot PNG changes (`36` PNGs untouched), `0` KDoc on `AppLogger.kt` / `AndroidAppLogger.kt`.
+- Files or artifacts updated: `AppLogger.kt`, `AndroidAppLogger.kt`, `AppBindingModule.kt`, `CityWeatherViewModel.kt`, `FakeCityWeatherDependencies.kt`, `CityWeatherViewModelTest.kt`, `RoborazziPreviewTester.kt`, `app/build.gradle.kts`, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent re-validation by `workflow-validator` in an isolated git worktree, followed by KDoc documentation via `workflow-documenter` for `AppLogger.kt` and `AndroidAppLogger.kt`.
+
+### Session 010
+
+- Date: `2026-11-21`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete PR #5 Review Round #1 (`review-fix`) re-validation, KDoc documentation, incremental consolidation, and push for `pragmatic-testing-cleanup` (Issue `#4`).
+- Completed: Executed independent re-validation in `.worktrees/val-pragmatic-testing-cleanup-r1` (`workflow-validator` returned `accept`, Iteration `2 — PR Review Round #1`, `spec.md` untouched); ran `workflow-documenter` (`flash`) in `.worktrees/doc-pragmatic-testing-cleanup-r1` adding English KDoc to `AppLogger.kt` and `AndroidAppLogger.kt` (`d8118ba`); updated `validation-report.md`, `feature_list.json` (`status: "accepted"`), and `PROGRESS.md`; consolidated Round #1 delta via atomic layer commits and pushed to `origin/feature/pragmatic-testing-cleanup`.
+- Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`, `:app:verifyRoborazziPreDebug --no-daemon` (`36/36` `unchanged`, `58/58` tests in `:app`), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`:usecases:test` `3/3`); ran `./gradlew prepareKotlinBuildScriptModel --build-cache --no-daemon`.
+- Files or artifacts updated: `AppLogger.kt`, `AndroidAppLogger.kt`, `AppBindingModule.kt`, `CityWeatherViewModel.kt`, `FakeCityWeatherDependencies.kt`, `CityWeatherViewModelTest.kt`, `RoborazziPreviewTester.kt`, `app/build.gradle.kts`, `docs/features/pragmatic-testing-cleanup/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Verify both `Quality Gate` and `Design System CI` turn green on PR #5, resolve review threads, and merge PR #5 into `feature/MM-02-design-system` before starting `domain-error-contract`.
