@@ -14,6 +14,7 @@ import com.martorell.albert.meteomartocompose.data.notification.NotificationServ
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
+import com.martorell.albert.meteomartocompose.utils.AppLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -177,5 +178,25 @@ class FakeSystemService : SystemService {
 
     override fun openLocationSettings() {
         openLocationSettingsCallCount++
+    }
+}
+
+class FakeAppLogger : AppLogger {
+
+    data class LogEntry(
+        val tag: String,
+        val message: String,
+        val throwable: Throwable? = null,
+    )
+
+    val debugLogs = mutableListOf<LogEntry>()
+    val errorLogs = mutableListOf<LogEntry>()
+
+    override fun d(tag: String, message: String) {
+        debugLogs += LogEntry(tag = tag, message = message)
+    }
+
+    override fun e(tag: String, message: String, throwable: Throwable?) {
+        errorLogs += LogEntry(tag = tag, message = message, throwable = throwable)
     }
 }

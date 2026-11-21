@@ -74,6 +74,9 @@ roborazzi {
         // Enables scanning of private @Preview functions to keep the internal component 
         // API clean while still ensuring full visual regression coverage.
         includePrivatePreviews = true
+        useScanOptionParametersInTester = true
+        testerQualifiedClassName =
+            "com.martorell.albert.meteomartocompose.ui.designsystem.RoborazziPreviewTester"
     }
 }
 

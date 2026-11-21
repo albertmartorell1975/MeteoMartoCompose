@@ -5,6 +5,7 @@ import arrow.core.right
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAppLogger
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAuthRepository
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeCityWeatherRepository
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeLocationRepository
@@ -45,9 +46,10 @@ class CityWeatherViewModelTest {
     private val permissionRepository = FakePermissionRepository()
     private val remoteConfigRepository = FakeRemoteConfigRepository(initialThreshold = 30.0)
     private val systemService = FakeSystemService()
+    private val appLogger = FakeAppLogger()
 
     private fun createViewModel(): CityWeatherViewModel = CityWeatherViewModel(
-        CityWeatherInteractors(
+        cityWeatherInteractors = CityWeatherInteractors(
             checkLocationPermissionsUseCase = CheckLocationPermissionsUseCase(permissionRepository),
             checkNotificationPermissionUseCase = CheckNotificationPermissionUseCase(permissionRepository),
             currentLocationUseCase = CurrentLocationUseCase(locationRepository),
@@ -66,7 +68,8 @@ class CityWeatherViewModelTest {
             getWeatherPermissionsUseCase = GetWeatherPermissionsUseCase(permissionRepository),
             openAppSettingsUseCase = OpenAppSettingsUseCase(systemService),
             openLocationSettingsUseCase = OpenLocationSettingsUseCase(systemService),
-        )
+        ),
+        appLogger = appLogger,
     )
 
     @Test
@@ -153,6 +156,15 @@ class CityWeatherViewModelTest {
                 assertEquals("Barcelona", event.cityName)
                 assertTrue(viewModel.state.value.isHighTempAlertActive)
                 assertEquals(listOf("Barcelona" to true), cityWeatherRepository.updatedAlertStatuses)
+                assertEquals(
+                    listOf(
+                        FakeAppLogger.LogEntry(
+                            tag = "TempAlert",
+                            message = "Current Temperature: 35.0°C  High Alert Threshold: 30.0°C",
+                        )
+                    ),
+                    appLogger.debugLogs,
+                )
             }
         }
 }
