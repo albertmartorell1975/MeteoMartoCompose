@@ -29,7 +29,7 @@
     "depends_on": [
       "secrets-build-hygiene"
     ],
-    "status": "accepted",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
     "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
