@@ -17,10 +17,8 @@ kotlin {
 dependencies {
     implementation((project(":domain")))
     implementation(libs.javax.inject)
-    
-    // Arrow
-    implementation(libs.bundles.arrow)
-    
+    implementation(libs.kotlinx.coroutines.core)
+
     // Retrofit
     implementation(libs.bundles.retrofit)
 
