@@ -3,8 +3,9 @@ package com.martorell.albert.meteomartocompose.ui.screens.favorites
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.fold
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,7 @@ class FavoritesDetailViewModel @Inject constructor(
     sealed interface DetailContent {
         data object Loading : DetailContent
         data class Success(val city: CityWeatherDomain?) : DetailContent
-        data class Error(val error: CustomError) : DetailContent
+        data class Error(val error: DomainError) : DetailContent
     }
 
     fun onStart() {
@@ -53,8 +54,8 @@ class FavoritesDetailViewModel @Inject constructor(
         _state.update {
             it.copy(
                 content = result.fold(
-                    { error -> DetailContent.Error(error) },
-                    { city -> DetailContent.Success(city) }
+                    onError = { error -> DetailContent.Error(error) },
+                    onSuccess = { city -> DetailContent.Success(city) }
                 )
             )
         }

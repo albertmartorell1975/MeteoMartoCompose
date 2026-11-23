@@ -24,7 +24,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSecon
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTertiaryButton
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
-import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
+import com.martorell.albert.meteomartocompose.ui.mappers.toUiText
 
 @Composable
 fun FavoritesScreen(
@@ -73,7 +73,7 @@ fun FavoriteContent(
 
             is FavoritesViewModel.FavoritesContent.Error -> {
                 MmErrorState(
-                    message = content.error.toMessage(),
+                    message = content.error.toUiText().asString(),
                     onRetry = onRetry
                 )
             }

@@ -37,6 +37,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTerti
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmWeatherInfo
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
+import com.martorell.albert.meteomartocompose.ui.mappers.toUiText
 import com.martorell.albert.meteomartocompose.utils.AppConstants
 import com.martorell.albert.meteomartocompose.utils.previewAsyncImageCoil
 import coil3.annotation.ExperimentalCoilApi
@@ -219,7 +220,7 @@ fun CityWeatherContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     MmText.HeadlineMedium(
-                        text = stringResource(R.string.city_forecast_error),
+                        text = content.error.toUiText().asString(),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(MeteoMartoTheme.spacing.medium)
                     )

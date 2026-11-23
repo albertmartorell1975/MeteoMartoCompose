@@ -48,7 +48,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmTextField
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.showMmSnackbar
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
-import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
+import com.martorell.albert.meteomartocompose.ui.mappers.toUiText
 
 @Composable
 fun SignUpScreen(
@@ -74,7 +74,7 @@ fun SignUpScreen(
             when (event) {
                 is SignUpViewModel.SignUpEvent.SignUpError -> {
                     snackbarHostState.showMmSnackbar(
-                        message = event.error.toMessage(context),
+                        message = event.error.toUiText().asString(context),
                         actionLabel = signUpFailureAction
                     )
                 }

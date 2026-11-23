@@ -59,8 +59,21 @@
 
     <!-- Error States -->
     <string name="error_connectivity">Connectivity error</string>
-    <string name="error_firebase">Server error</string>
+    <string name="error_timeout">Connection timed out. Please try again.</string>
+    <string name="error_unauthorized">Unauthorized request. Please check your session.</string>
+    <string name="error_serialization">Unexpected response format from the server.</string>
+    <string name="error_server">Server error</string>
     <string name="error_invalid_credentials">Invalid email or password</string>
+    <string name="error_weak_password">The password is too weak.</string>
+    <string name="error_email_already_in_use">This email address is already in use.</string>
+    <string name="error_user_not_found">No account found with these credentials.</string>
+    <string name="error_session_expired">Your session has expired. Please log in again.</string>
+    <string name="error_auth_unknown">Authentication error. Please try again.</string>
+    <string name="error_location_permission_denied">Location permission is required to obtain your forecast.</string>
+    <string name="error_location_disabled">Location services are disabled.</string>
+    <string name="error_location_unavailable">Unable to determine your current location.</string>
+    <string name="error_city_not_found">City weather data was not found.</string>
+    <string name="error_database">Local storage error. Please try again.</string>
     <string name="error_unknown">Unknown error</string>
 
     <!-- High Temperature Notification -->

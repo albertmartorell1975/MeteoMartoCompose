@@ -2,7 +2,8 @@ package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.martorell.albert.meteomartocompose.data.CustomError
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.fold
 import com.martorell.albert.meteomartocompose.usecases.login.LoginInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -28,7 +29,7 @@ class LoginViewModel @Inject constructor(
     val events: Flow<LoginEvent> = _events.receiveAsFlow()
 
     sealed interface LoginEvent {
-        data class LoginError(val error: CustomError) : LoginEvent
+        data class LoginError(val error: DomainError) : LoginEvent
     }
 
     data class UiState(
@@ -42,7 +43,7 @@ class LoginViewModel @Inject constructor(
         val passwordVisible: Boolean = false,
         val showError: Boolean = false,
         val validUser: Boolean = false,
-        val error: CustomError? = null
+        val error: DomainError? = null
     )
 
     fun performLogin() {
@@ -75,28 +76,31 @@ class LoginViewModel @Inject constructor(
                 password = currentPassword
             )
 
-            result.fold({ customError ->
-                _state.update {
-                    it.copy(
-                        validUser = false,
-                        loading = false,
-                        loginChecked = true,
-                        showError = true,
-                        loginStatus = false,
-                        error = customError
-                    )
+            result.fold(
+                onError = { domainError ->
+                    _state.update {
+                        it.copy(
+                            validUser = false,
+                            loading = false,
+                            loginChecked = true,
+                            showError = true,
+                            loginStatus = false,
+                            error = domainError
+                        )
+                    }
+                    _events.send(LoginEvent.LoginError(domainError))
+                },
+                onSuccess = {
+                    _state.update {
+                        it.copy(
+                            validUser = true,
+                            loginChecked = true,
+                            loading = false,
+                            loginStatus = true
+                        )
+                    }
                 }
-                viewModelScope.launch { _events.send(LoginEvent.LoginError(customError)) }
-            }) {
-                _state.update {
-                    it.copy(
-                        validUser = true,
-                        loginChecked = true,
-                        loading = false,
-                        loginStatus = true
-                    )
-                }
-            }
+            )
         }
     }
 
