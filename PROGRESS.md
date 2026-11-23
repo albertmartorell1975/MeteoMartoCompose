@@ -5,8 +5,8 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `domain-error-contract` (blocked only until `pragmatic-testing-cleanup` PR is reviewed & merged into `feature/MM-02-design-system`)
-- Current blocker: None (`pragmatic-testing-cleanup` accepted by `workflow-validator` across all 4 levels; `secrets-build-hygiene` merged into `feature/MM-02-design-system` @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
+- Current next ready feature: `domain-error-contract` (Issue `#6`; `spec.md` generated — awaiting human checkpoint review per `require_review_after: "planner"`)
+- Current blocker: None (`pragmatic-testing-cleanup` PR #5 merged into `feature/MM-02-design-system` @ `1eea1a7`; `secrets-build-hygiene` merged @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
 - Last verified at: `2026-11-23` (`pragmatic-testing-cleanup` PR #5 Review Round #2 independent validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `58/58` = `22` pure JVM unit tests + `36` Roborazzi previews via `RoborazziPreviewTester`, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, and `:app:verifyRoborazziPreDebug` `36/36` `unchanged` with zero HTTP fetch in `MmWeatherInfoPreview`)
 
 ## Session Log
@@ -167,3 +167,13 @@
 - Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`, `:app:verifyRoborazziPreDebug --no-daemon` (`36/36` `unchanged`, `58/58` tests in `:app`), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`:usecases:test` `3/3`), and visually verified updated `MmWeatherInfoPreview` PNGs render the deterministic green Coil placeholder.
 - Files or artifacts updated: `AppLogger.kt`, `AndroidAppLogger.kt`, `CityWeatherViewModel.kt`, `FakeCityWeatherDependencies.kt`, `MmWeatherInfo.kt`, `app/src/test/snapshots/*MmWeatherInfo*` (`6` PNGs), `docs/features/pragmatic-testing-cleanup/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Verify both `Quality Gate` and `Design System CI` turn green on PR #5, resolve review threads, and merge PR #5 into `feature/MM-02-design-system` before starting `domain-error-contract`.
+
+### Session 013
+
+- Date: `2026-11-23`
+- Agent: 🔵 `[PLANNER · workflow-planner]`
+- Goal: Produce the unified implementation specification for `domain-error-contract` (Issue `#6`).
+- Completed: Audited `:domain`, `:data`, `:usecases`, and `:app` Gradle build configs, `gradle/libs.versions.toml`, `CustomError.kt`, `CustomErrorFlow.kt`, all 7 `:data` repository/data-source interfaces, all 5 affected `:usecases`, `AccountServiceImpl`, `AuthErrorMapper`, `AuthRepositoryImpl`, `CityWeatherRepositoryImpl`, `CityRoomDataSource`, `LocationServerDataSourceImpl`, `FirebaseRemoteConfigDataSourceImpl`, `AppBindingModule`, `ErrorUiMappers.kt`, `strings.xml`, all 5 ViewModels/Screens, and all existing unit tests/fakes. Authored `docs/features/domain-error-contract/spec.md` specifying pure `:domain` `DomainError` + `Result<out T, out E : DomainError>` (eliminating `CustomError`, `CustomErrorFlow`, and unused Arrow `Either` while adding explicit `kotlinx-coroutines-core = "1.11.0"` to `:data` and `:usecases`), `CancellationException`-safe `safeCall`/`safeSyncCall`, injectable `ErrorMapper`/`AndroidErrorMapper`/`AuthErrorMapper`, UI-layer `UiText` + `DomainError.toUiText()`, and a Closed Test Plan of `6` new pure-JVM `@Test` methods across `3` classes (`<= 3`/class, `0` MockK, `0` Robolectric). Updated `feature_list.json` (`domain-error-contract.status` -> `"in_progress"`).
+- Verification run: Read-only repository inspection, `git grep` audits (`CustomError`, `Either`, `arrow.`, `ResultResponse`), and JSON/spec structure verification (zero executable, build, or resource files modified).
+- Files or artifacts updated: `docs/features/domain-error-contract/spec.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review of `docs/features/domain-error-contract/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.

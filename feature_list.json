@@ -67,7 +67,7 @@
     "depends_on": [
       "pragmatic-testing-cleanup"
     ],
-    "status": "not_started",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/domain-error-contract/spec.md",
     "validation_path": "docs/features/domain-error-contract/validator/validation-report.md",
