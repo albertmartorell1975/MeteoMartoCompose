@@ -29,7 +29,7 @@
     "depends_on": [
       "secrets-build-hygiene"
     ],
-    "status": "in_progress",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/pragmatic-testing-cleanup/spec.md",
     "validation_path": "docs/features/pragmatic-testing-cleanup/validator/validation-report.md",
@@ -49,7 +49,13 @@
       "PASS (PR #5 Review Round #1): ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 10s (custom RoborazziPreviewTester with CompareOptions(changeThreshold = 0.01f) verified 36/36 Design System snapshots, 0 PNG changes).",
       "PASS (PR #5 Review Round #1): ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 6s (Configuration cache entry stored; :app:testPreDebugUnitTest 58/58 = 22 pure JVM unit tests across 8 classes <= 3/class including FakeAppLogger TempAlert assertion + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
       "PASS (PR #5 Review Round #1): ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 20s (:usecases:test 3/3 passed, 0 failed, 0 skipped).",
-      "PASS (PR #5 Review Round #1): Hygiene invariants -> 0 io.mockk, 0 RobolectricTestRunner in app/src/test/, 0 androidTestImplementation in Gradle scripts, 0 snapshot PNG changes (36 PNGs intact), 0 KDoc comments on AppLogger.kt and AndroidAppLogger.kt."
+      "PASS (PR #5 Review Round #1): Hygiene invariants -> 0 io.mockk, 0 RobolectricTestRunner in app/src/test/, 0 androidTestImplementation in Gradle scripts, 0 snapshot PNG changes (36 PNGs intact), 0 KDoc comments on AppLogger.kt and AndroidAppLogger.kt.",
+      "PASS (PR #5 Review Round #2): ./gradlew :app:recordRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 48s (only the 6 MmWeatherInfoPreview PNGs changed with deterministic green previewAsyncImageCoil placeholder via LocalInspectionMode provides true; 30 non-MmWeatherInfo PNGs untouched).",
+      "PASS (PR #5 Review Round #2): ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 45s (results-summary.json: 36/36 unchanged, 0 diffs).",
+      "PASS (PR #5 Review Round #2): ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 29s (AppLogger.debug/error rename and Hilt DI graph verified).",
+      "PASS (PR #5 Review Round #2): ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 8s (Configuration cache entry stored; :app:testPreDebugUnitTest 58/58 = 22 pure JVM unit tests across 8 classes <= 3/class including CityWeatherViewModelTest TempAlert debugLogs assertion + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified .kt files).",
+      "PASS (PR #5 Review Round #2): ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 19s (:usecases:test 3/3 passed, 0 failed, 0 skipped).",
+      "PASS (PR #5 Review Round #2): Hygiene invariants -> 0 io.mockk across app/usecases/data/domain, 0 RobolectricTestRunner in app/src/test/, exact 36 PNGs in app/src/test/snapshots/ (only 6 MmWeatherInfoPreview PNGs updated), 0 KDoc modifications in AppLogger.kt / AndroidAppLogger.kt."
     ],
     "notes": "Promoted right after secrets-build-hygiene: (1) retire the 7 legacy screen *ScreenshotTest.kt files + 17 screen PNGs + ExampleInstrumentedTest.kt + unused androidTestImplementation deps; (2) reduce @MmDevicePreview from 6 devices to 2 (Phone + Tablet), eliminate non-deterministic crossfade in MmWeatherInfo preview, and regenerate clean Design System Roborazzi snapshots; (3) refactor existing unit tests (:app and :usecases) to 1-3 cohesive @Test per class with Manual Fakes, MainDispatcherRule, and zero Robolectric in ViewModel/unit tests; (4) align docs/testing_strategy_guide.md with testing-setup v2.4.0."
   },
