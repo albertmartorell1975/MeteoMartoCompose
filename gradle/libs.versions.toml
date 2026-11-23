@@ -18,7 +18,6 @@ ksp = "2.2.20-2.0.3"
 firebase-bom = "34.2.0"
 firebase-auth = "23.2.1"
 firebase-config = "22.1.2"
-arrow = "2.1.2"
 retrofit = "3.0.0"
 okhttp = "5.1.0"
 androidx-room = "2.7.2"
@@ -30,7 +29,7 @@ coil = "3.3.0"
 androidx-constraintlayout = "1.1.1"
 google-services = "4.4.3"
 secrets-gradle-plugin = "2.0.1"
-kotlinx-coroutines-test = "1.11.0"
+kotlinx-coroutines = "1.11.0"
 turbine = "1.2.1"
 # Robolectric is used solely as the internal engine for Roborazzi Design System preview snapshots
 robolectric = "4.14.1"
@@ -72,8 +71,6 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebase-config" }
-arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
-arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
@@ -85,7 +82,8 @@ google-play-services-location = { group = "com.google.android.gms", name = "play
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidx-constraintlayout" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 # Design System Infrastructure
@@ -117,10 +115,6 @@ retrofit = [
 room = [
     "androidx-room-runtime",
     "androidx-room-ktx"
-]
-arrow = [
-    "arrow-core",
-    "arrow-fx-coroutines"
 ]
 
 [plugins]

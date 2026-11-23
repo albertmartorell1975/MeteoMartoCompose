@@ -32,6 +32,7 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            isReturnDefaultValues = true
             all {
                 it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware"
             }
@@ -157,7 +158,6 @@ dependencies {
 
     // Data Handling & Networking
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.bundles.arrow)
     implementation(libs.bundles.retrofit)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
