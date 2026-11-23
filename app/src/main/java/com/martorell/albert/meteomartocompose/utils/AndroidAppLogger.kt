@@ -11,14 +11,14 @@ class AndroidAppLogger @Inject constructor() : AppLogger {
     /**
      * Logs a debug message to [Log.d].
      */
-    override fun d(tag: String, message: String) {
+    override fun debug(tag: String, message: String) {
         Log.d(tag, message)
     }
 
     /**
      * Logs an error message to [Log.e], forwarding [throwable] only when non-null.
      */
-    override fun e(tag: String, message: String, throwable: Throwable?) {
+    override fun error(tag: String, message: String, throwable: Throwable?) {
         if (throwable != null) {
             Log.e(tag, message, throwable)
         } else {

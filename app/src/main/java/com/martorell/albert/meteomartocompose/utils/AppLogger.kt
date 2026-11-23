@@ -9,10 +9,10 @@ interface AppLogger {
     /**
      * Emits a debug-level diagnostic message under [tag].
      */
-    fun d(tag: String, message: String)
+    fun debug(tag: String, message: String)
 
     /**
      * Emits an error-level message under [tag], optionally attaching an associated [throwable].
      */
-    fun e(tag: String, message: String, throwable: Throwable? = null)
+    fun error(tag: String, message: String, throwable: Throwable? = null)
 }

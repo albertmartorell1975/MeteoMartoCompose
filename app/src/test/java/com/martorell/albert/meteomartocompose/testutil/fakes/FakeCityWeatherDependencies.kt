@@ -192,11 +192,11 @@ class FakeAppLogger : AppLogger {
     val debugLogs = mutableListOf<LogEntry>()
     val errorLogs = mutableListOf<LogEntry>()
 
-    override fun d(tag: String, message: String) {
+    override fun debug(tag: String, message: String) {
         debugLogs += LogEntry(tag = tag, message = message)
     }
 
-    override fun e(tag: String, message: String, throwable: Throwable?) {
+    override fun error(tag: String, message: String, throwable: Throwable?) {
         errorLogs += LogEntry(tag = tag, message = message, throwable = throwable)
     }
 }

@@ -189,7 +189,7 @@ class CityWeatherViewModel @Inject constructor(
                 .collect { result ->
                     _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
 
-                    appLogger.d(
+                    appLogger.debug(
                         "TempAlert",
                         "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
                     )
