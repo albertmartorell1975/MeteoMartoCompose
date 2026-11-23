@@ -1,211 +1,170 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
-import android.util.Log
+import app.cash.turbine.test
 import arrow.core.right
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
-import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
-import com.martorell.albert.meteomartocompose.usecases.cityweather.*
-import io.mockk.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Assert.*
-import org.junit.Before
+import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAppLogger
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAuthRepository
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeCityWeatherRepository
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeLocationRepository
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakePermissionRepository
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeRemoteConfigRepository
+import com.martorell.albert.meteomartocompose.testutil.fakes.FakeSystemService
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckLocationPermissionsUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckNotificationPermissionUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CheckTemperatureThresholdUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
+import com.martorell.albert.meteomartocompose.usecases.cityweather.CurrentLocationUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.GetAllCitiesUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.GetWeatherPermissionsUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.IsCurrentCityFavoriteUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.IsGPSEnableUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByCoordinatesUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.LogOutUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.MarkCityAlertNotifiedUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.OpenAppSettingsUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.OpenLocationSettingsUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.SaveLocationUseCase
+import com.martorell.albert.meteomartocompose.usecases.cityweather.SwitchFavoriteUseCase
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CityWeatherViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
-    private val checkLocationPermissionsUseCase: CheckLocationPermissionsUseCase = mockk()
-    private val checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase = mockk()
-    private val currentLocationUseCase: CurrentLocationUseCase = mockk()
-    private val isGPSEnableUseCase: IsGPSEnableUseCase = mockk()
-    private val loadCityWeatherByCoordinatesUseCase: LoadCityWeatherByCoordinatesUseCase = mockk()
-    private val switchFavoriteUseCase: SwitchFavoriteUseCase = mockk()
-    private val getAllCitiesUseCase: GetAllCitiesUseCase = mockk()
-    private val isCurrentCityFavoriteUseCase: IsCurrentCityFavoriteUseCase = mockk()
-    private val logOutUseCase: LogOutUseCase = mockk()
-    private val saveLocationUseCase: SaveLocationUseCase = mockk()
-    private val checkTemperatureThresholdUseCase: CheckTemperatureThresholdUseCase = mockk()
-    private val markCityAlertNotifiedUseCase: MarkCityAlertNotifiedUseCase = mockk()
-    private val getWeatherPermissionsUseCase: GetWeatherPermissionsUseCase = mockk()
-    private val openAppSettingsUseCase: OpenAppSettingsUseCase = mockk()
-    private val openLocationSettingsUseCase: OpenLocationSettingsUseCase = mockk()
+    private val authRepository = FakeAuthRepository()
+    private val cityWeatherRepository = FakeCityWeatherRepository()
+    private val locationRepository = FakeLocationRepository()
+    private val permissionRepository = FakePermissionRepository()
+    private val remoteConfigRepository = FakeRemoteConfigRepository(initialThreshold = 30.0)
+    private val systemService = FakeSystemService()
+    private val appLogger = FakeAppLogger()
 
-    private val interactors = CityWeatherInteractors(
-        checkLocationPermissionsUseCase,
-        checkNotificationPermissionUseCase,
-        currentLocationUseCase,
-        isGPSEnableUseCase,
-        loadCityWeatherByCoordinatesUseCase,
-        switchFavoriteUseCase,
-        getAllCitiesUseCase,
-        isCurrentCityFavoriteUseCase,
-        logOutUseCase,
-        saveLocationUseCase,
-        checkTemperatureThresholdUseCase,
-        markCityAlertNotifiedUseCase,
-        getWeatherPermissionsUseCase,
-        openAppSettingsUseCase,
-        openLocationSettingsUseCase
+    private fun createViewModel(): CityWeatherViewModel = CityWeatherViewModel(
+        cityWeatherInteractors = CityWeatherInteractors(
+            checkLocationPermissionsUseCase = CheckLocationPermissionsUseCase(permissionRepository),
+            checkNotificationPermissionUseCase = CheckNotificationPermissionUseCase(permissionRepository),
+            currentLocationUseCase = CurrentLocationUseCase(locationRepository),
+            isGPSEnableUseCase = IsGPSEnableUseCase(permissionRepository),
+            loadCityWeatherByCoordinatesUseCase = LoadCityWeatherByCoordinatesUseCase(cityWeatherRepository),
+            switchFavoriteUseCase = SwitchFavoriteUseCase(cityWeatherRepository),
+            getAllCitiesUseCase = GetAllCitiesUseCase(cityWeatherRepository),
+            isCurrentCityFavoriteUseCase = IsCurrentCityFavoriteUseCase(cityWeatherRepository),
+            logOutUseCase = LogOutUseCase(authRepository),
+            saveLocationUseCase = SaveLocationUseCase(locationRepository),
+            checkTemperatureThresholdUseCase = CheckTemperatureThresholdUseCase(
+                cityWeatherRepository,
+                remoteConfigRepository,
+            ),
+            markCityAlertNotifiedUseCase = MarkCityAlertNotifiedUseCase(cityWeatherRepository),
+            getWeatherPermissionsUseCase = GetWeatherPermissionsUseCase(permissionRepository),
+            openAppSettingsUseCase = OpenAppSettingsUseCase(systemService),
+            openLocationSettingsUseCase = OpenLocationSettingsUseCase(systemService),
+        ),
+        appLogger = appLogger,
     )
 
-    private lateinit var viewModel: CityWeatherViewModel
-
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
-        // Default answer for monitoring to avoid crashes in setup/initialization
-        every { checkTemperatureThresholdUseCase() } returns flowOf()
-        viewModel = CityWeatherViewModel(interactors)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-        unmockkAll()
-    }
-
     @Test
-    fun `initial state is correct and passive`() {
-        val state = viewModel.state.value
-        assertEquals(CityWeatherViewModel.CityContent.Initial, state.content)
-        assertFalse(state.isLoading)
-        verify { checkTemperatureThresholdUseCase wasNot Called }
-    }
-
-    @Test
-    fun `onStart only triggers load if initial state`() = runTest {
-        val city = CityWeatherDomain(name = "Barcelona", justAdded = true, temperature = 25.0, temperatureMin = 20.0, temperatureMax = 30.0, pressure = 1013)
-        coEvery { checkLocationPermissionsUseCase() } returns true
-        coEvery { checkNotificationPermissionUseCase() } returns true
-        coEvery { isGPSEnableUseCase() } returns true
-        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(41.38, 2.17).right()
-        coEvery { saveLocationUseCase(any(), any()) } just Runs
-        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
-        coEvery { getAllCitiesUseCase() } returns flowOf(listOf(city)) // Return a city to move out of Initial state
-
-        // 1. Initial call triggers load
-        viewModel.onStart()
-        testScheduler.advanceUntilIdle()
-        
-        coVerify(exactly = 1) { currentLocationUseCase() }
-
-        // 2. Second call (e.g. rotation) does NOT trigger load again
-        // because state is now Success, not Initial.
-        viewModel.onStart()
-        testScheduler.advanceUntilIdle()
-        
-        coVerify(exactly = 1) { currentLocationUseCase() }
-    }
-
-    @Test
-    fun `onRefresh always triggers load`() = runTest {
-        coEvery { checkLocationPermissionsUseCase() } returns true
-        coEvery { checkNotificationPermissionUseCase() } returns true
-        coEvery { isGPSEnableUseCase() } returns true
-        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(41.38, 2.17).right()
-        coEvery { saveLocationUseCase(any(), any()) } just Runs
-        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
-        coEvery { getAllCitiesUseCase() } returns flowOf(emptyList())
-
-        viewModel.onRefresh()
-        viewModel.onRefresh()
-
-        coVerify(exactly = 2) { currentLocationUseCase() }
-    }
-
-    @Test
-    fun `getCurrentLocationStarted success flow`() = runTest {
-        val mockCity = CityWeatherDomain(
+    fun `initial state is passive onStart loads once idempotently and onRefresh reloads`() = runTest {
+        val city = CityWeatherDomain(
             name = "Barcelona",
             justAdded = true,
             temperature = 25.0,
             temperatureMin = 20.0,
             temperatureMax = 30.0,
-            pressure = 1013
+            pressure = 1013,
         )
-        
-        coEvery { checkLocationPermissionsUseCase() } returns true
-        coEvery { checkNotificationPermissionUseCase() } returns true
-        coEvery { isGPSEnableUseCase() } returns true
-        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(41.38, 2.17).right()
-        coEvery { saveLocationUseCase(any(), any()) } just Runs
-        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
-        coEvery { getAllCitiesUseCase() } returns flowOf(listOf(mockCity))
+        locationRepository.currentLocationResult = CurrentLocationDomain(41.38, 2.17).right()
+        cityWeatherRepository.setCities(listOf(city))
+
+        val viewModel = createViewModel()
+        assertEquals(CityWeatherViewModel.CityContent.Initial, viewModel.state.value.content)
+        assertFalse(viewModel.state.value.isLoading)
+        assertEquals(0, locationRepository.loadCurrentLocationCallCount)
+        assertEquals(0, cityWeatherRepository.listOfCitiesAccessCount)
 
         viewModel.onStart()
-        
-        val finalState = viewModel.state.value
-        assertTrue(finalState.content is CityWeatherViewModel.CityContent.Success)
-        assertEquals("Barcelona", (finalState.content as CityWeatherViewModel.CityContent.Success).city.name)
-        
-        coVerify { currentLocationUseCase() }
-        coVerify { loadCityWeatherByCoordinatesUseCase("41.38", "2.17") }
-    }
-
-    @Test
-    fun `getCurrentLocationStarted shows GPS dialog when GPS disabled`() = runTest {
-        coEvery { checkLocationPermissionsUseCase() } returns true
-        coEvery { checkNotificationPermissionUseCase() } returns true
-        coEvery { isGPSEnableUseCase() } returns false
+        val loadedContent = viewModel.state.value.content as CityWeatherViewModel.CityContent.Success
+        assertEquals("Barcelona", loadedContent.city.name)
+        assertEquals(1, locationRepository.loadCurrentLocationCallCount)
+        assertEquals(listOf("41.38" to "2.17"), cityWeatherRepository.loadCurrentWeatherCalls)
 
         viewModel.onStart()
+        assertEquals(1, locationRepository.loadCurrentLocationCallCount)
 
-        val state = viewModel.state.value
-        assertTrue(state.showGPSDialog)
-        assertTrue(state.locationChecked)
+        viewModel.onRefresh()
+        assertEquals(2, locationRepository.loadCurrentLocationCallCount)
     }
 
     @Test
-    fun `startMonitoring updates high temperature alert state`() = runTest {
-        val alertResult = TemperatureAlertResult(
-            cityName = "Barcelona",
-            showAlert = false,
-            isPersistentAlertActive = true,
-            currentTemperature = 35.0,
-            threshold = 30.0
-        )
-        every { checkTemperatureThresholdUseCase() } returns flowOf(alertResult)
-        coEvery { markCityAlertNotifiedUseCase(any(), any()) } just Runs
+    fun `onStart shows GPS dialog when disabled and onFavoriteClicked toggles loaded city`() = runTest {
+        permissionRepository.gpsEnabled = false
+        val viewModel = createViewModel()
 
-        viewModel.startMonitoring()
+        viewModel.onStart()
+        assertTrue(viewModel.state.value.showGPSDialog)
+        assertTrue(viewModel.state.value.locationChecked)
+        assertEquals(CityWeatherViewModel.CityContent.NeedsLocation, viewModel.state.value.content)
 
-        assertTrue(viewModel.state.value.isHighTempAlertActive)
-    }
-
-    @Test
-    fun `onFavoriteClicked calls switchFavoriteUseCase`() = runTest {
         val city = CityWeatherDomain(
             name = "Sabadell",
             justAdded = true,
             temperature = 25.0,
             temperatureMin = 20.0,
             temperatureMax = 30.0,
-            pressure = 1013
+            pressure = 1013,
         )
-        
-        coEvery { checkLocationPermissionsUseCase() } returns true
-        coEvery { checkNotificationPermissionUseCase() } returns true
-        coEvery { isGPSEnableUseCase() } returns true
-        coEvery { currentLocationUseCase() } returns CurrentLocationDomain(0.0, 0.0).right()
-        coEvery { saveLocationUseCase(any(), any()) } just Runs
-        coEvery { loadCityWeatherByCoordinatesUseCase(any(), any()) } returns null
-        coEvery { getAllCitiesUseCase() } returns flowOf(listOf(city))
-
-        viewModel.onStart()
-        
-        coEvery { switchFavoriteUseCase(any()) } just Runs
-
+        permissionRepository.gpsEnabled = true
+        cityWeatherRepository.setCities(listOf(city))
+        viewModel.onRefresh()
         viewModel.onFavoriteClicked()
 
-        coVerify { switchFavoriteUseCase(match { it.name == "Sabadell" }) }
+        assertEquals(listOf("Sabadell"), cityWeatherRepository.switchedFavoriteCities.map { it.name })
     }
+
+    @Test
+    fun `startMonitoring updates persistent high temperature alert state and marks city notified`() =
+        runTest {
+            cityWeatherRepository.setCities(
+                listOf(
+                    CityWeatherDomain(
+                        name = "Barcelona",
+                        justAdded = true,
+                        temperature = 35.0,
+                        temperatureMin = 28.0,
+                        temperatureMax = 37.0,
+                        pressure = 1012,
+                        isAlertNotified = false,
+                    )
+                )
+            )
+            val viewModel = createViewModel()
+
+            viewModel.events.test {
+                viewModel.startMonitoring()
+
+                val event = awaitItem()
+                assertTrue(event.showAlert)
+                assertEquals("Barcelona", event.cityName)
+                assertTrue(viewModel.state.value.isHighTempAlertActive)
+                assertEquals(listOf("Barcelona" to true), cityWeatherRepository.updatedAlertStatuses)
+                assertEquals(
+                    listOf(
+                        FakeAppLogger.LogEntry(
+                            tag = "TempAlert",
+                            message = "Current Temperature: 35.0°C  High Alert Threshold: 30.0°C",
+                        )
+                    ),
+                    appLogger.debugLogs,
+                )
+            }
+        }
 }

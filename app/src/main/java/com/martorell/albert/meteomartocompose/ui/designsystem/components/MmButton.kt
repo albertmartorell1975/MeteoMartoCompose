@@ -136,36 +136,6 @@ fun MmTertiaryButton(
 
 @MmPreview
 @Composable
-private fun MmPrimaryButtonPreview() {
-    MeteoMartoTheme {
-        MmPrimaryButton(onClick = {}) {
-            Text("Primary Action")
-        }
-    }
-}
-
-@MmPreview
-@Composable
-private fun MmSecondaryButtonPreview() {
-    MeteoMartoTheme {
-        MmSecondaryButton(onClick = {}) {
-            Text("Secondary Action")
-        }
-    }
-}
-
-@MmPreview
-@Composable
-private fun MmTertiaryButtonPreview() {
-    MeteoMartoTheme {
-        MmTertiaryButton(onClick = {}) {
-            Text("Tertiary Action")
-        }
-    }
-}
-
-@MmPreview
-@Composable
 private fun MmButtonStatesPreview() {
     MeteoMartoTheme {
         Column(
@@ -176,6 +146,8 @@ private fun MmButtonStatesPreview() {
             MmPrimaryButton(onClick = {}, enabled = false) { Text("Primary Disabled") }
             MmSecondaryButton(onClick = {}, enabled = true) { Text("Secondary Enabled") }
             MmSecondaryButton(onClick = {}, enabled = false) { Text("Secondary Disabled") }
+            MmTertiaryButton(onClick = {}, enabled = true) { Text("Tertiary Enabled") }
+            MmTertiaryButton(onClick = {}, enabled = false) { Text("Tertiary Disabled") }
         }
     }
 }

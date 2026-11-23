@@ -7,9 +7,11 @@ import com.martorell.albert.meteomartocompose.data.cityweather.PermissionReposit
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
 import com.martorell.albert.meteomartocompose.framework.preferences.UserPreferencesImpl
 import com.martorell.albert.meteomartocompose.framework.system.AndroidSystemService
+import com.martorell.albert.meteomartocompose.utils.AndroidAppLogger
 import com.martorell.albert.meteomartocompose.utils.AndroidPermissionChecker
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserver
 import com.martorell.albert.meteomartocompose.utils.AppLifecycleObserverImpl
+import com.martorell.albert.meteomartocompose.utils.AppLogger
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -49,4 +51,10 @@ abstract class AppBindingModule {
     abstract fun bindSystemService(
         impl: AndroidSystemService,
     ): SystemService
+
+    @Binds
+    @Singleton
+    abstract fun bindAppLogger(
+        impl: AndroidAppLogger,
+    ): AppLogger
 }

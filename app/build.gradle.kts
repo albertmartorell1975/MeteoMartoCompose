@@ -74,6 +74,9 @@ roborazzi {
         // Enables scanning of private @Preview functions to keep the internal component 
         // API clean while still ensuring full visual regression coverage.
         includePrivatePreviews = true
+        useScanOptionParametersInTester = true
+        testerQualifiedClassName =
+            "com.martorell.albert.meteomartocompose.ui.designsystem.RoborazziPreviewTester"
     }
 }
 
@@ -173,24 +176,16 @@ dependencies {
 
     // Local Unit Tests
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.androidx.work.testing)
-    testImplementation(libs.androidx.test.core)
-    testImplementation(libs.robolectric)
 
-    // Screenshot Testing (Roborazzi)
+    // Screenshot Testing (Roborazzi — Design System @Preview scanning only)
+    testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi.core)
     testImplementation(libs.roborazzi.compose)
     testImplementation(libs.roborazzi.rule)
     testImplementation(libs.roborazzi.scanner)
     testImplementation(libs.roborazzi.composable.scanner)
-
-    // Instrumented Tests
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
 
     // Roborazzi also needs these in unit tests for Preview scanning
     testImplementation(platform(libs.androidx.compose.bom))

@@ -1,6 +1,5 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -12,6 +11,7 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDoma
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
+import com.martorell.albert.meteomartocompose.utils.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CityWeatherViewModel @Inject constructor(
     private val cityWeatherInteractors: CityWeatherInteractors,
+    private val appLogger: AppLogger,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -186,12 +187,12 @@ class CityWeatherViewModel @Inject constructor(
         viewModelScope.launch {
             cityWeatherInteractors.checkTemperatureThresholdUseCase()
                 .collect { result ->
-                    Log.d(
+                    _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
+
+                    appLogger.debug(
                         "TempAlert",
                         "Current Temperature: ${result.currentTemperature}°C  High Alert Threshold: ${result.threshold}°C",
                     )
-
-                    _state.update { it.copy(isHighTempAlertActive = result.isPersistentAlertActive) }
 
                     if (result.showAlert) {
                         // Mark as notified immediately to avoid double triggers from rapid emissions
