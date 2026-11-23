@@ -1,24 +1,29 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
-import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocalDataSource
-import com.martorell.albert.meteomartocompose.data.customTryCatch
-import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
-import com.martorell.albert.meteomartocompose.domain.cityweather.response.CityWeatherResponse
-import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
-import com.martorell.albert.meteomartocompose.utils.listToDomain
-import com.martorell.albert.meteomartocompose.utils.toDomain
-import com.martorell.albert.meteomartocompose.utils.toRoom
-import com.martorell.albert.meteomartocompose.utils.openWeatherConverter
 import androidx.room.withTransaction
 import com.martorell.albert.meteomartocompose.BuildConfig
+import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocalDataSource
+import com.martorell.albert.meteomartocompose.data.util.ErrorMapper
+import com.martorell.albert.meteomartocompose.data.util.safeCall
+import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.domain.cityweather.response.CityWeatherResponse
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
+import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
+import com.martorell.albert.meteomartocompose.utils.listToDomain
+import com.martorell.albert.meteomartocompose.utils.openWeatherConverter
+import com.martorell.albert.meteomartocompose.utils.toDomain
+import com.martorell.albert.meteomartocompose.utils.toRoom
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class CityRoomDataSource @Inject constructor(private val db: MeteoMartoDatabase) : CityWeatherLocalDataSource {
+class CityRoomDataSource @Inject constructor(
+    private val db: MeteoMartoDatabase,
+    private val errorMapper: ErrorMapper,
+) : CityWeatherLocalDataSource {
 
     private val cityDao = db.cityDao()
 
@@ -92,10 +97,22 @@ class CityRoomDataSource @Inject constructor(private val db: MeteoMartoDatabase)
 
     }
 
-    override suspend fun loadCity(name: String): ResultResponse<CityWeatherDomain> =
-        customTryCatch {
-            withContext(Dispatchers.IO) { cityDao.getCityByName(name).toDomain() }
+    override suspend fun loadCity(name: String): Result<CityWeatherDomain, DomainError> {
+        val queryResult = safeCall(mapper = errorMapper::map) {
+            withContext(Dispatchers.IO) { cityDao.getCityByName(name) }
         }
+        return when (queryResult) {
+            is Result.Error -> queryResult
+            is Result.Success -> {
+                val city = queryResult.data
+                if (city == null) {
+                    Result.Error(DomainError.Local.NotFound)
+                } else {
+                    Result.Success(city.toDomain())
+                }
+            }
+        }
+    }
     
     override suspend fun updateFavorite(cityWeatherDomain: CityWeatherDomain) {
 
