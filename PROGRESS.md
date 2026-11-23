@@ -5,9 +5,9 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `domain-error-contract` (Issue `#6`; `spec.md` generated — awaiting human checkpoint review per `require_review_after: "planner"`)
-- Current blocker: None (`pragmatic-testing-cleanup` PR #5 merged into `feature/MM-02-design-system` @ `1eea1a7`; `secrets-build-hygiene` merged @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` enabled for PRs targeting `feature/MM-02-design-system`).
-- Last verified at: `2026-11-23` (`pragmatic-testing-cleanup` PR #5 Review Round #2 independent validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `58/58` = `22` pure JVM unit tests + `36` Roborazzi previews via `RoborazziPreviewTester`, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, and `:app:verifyRoborazziPreDebug` `36/36` `unchanged` with zero HTTP fetch in `MmWeatherInfoPreview`)
+- Current next ready feature: `weather-condition-room-migration` (blocked only until `domain-error-contract` PR is reviewed & merged into `feature/MM-02-design-system`)
+- Current blocker: None (`domain-error-contract` accepted by `workflow-validator` across all 4 levels; `pragmatic-testing-cleanup` PR #5 merged into `feature/MM-02-design-system` @ `1eea1a7`; `secrets-build-hygiene` merged @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` & `design-system-ci.yml` enabled for PRs targeting `feature/MM-02-design-system`).
+- Last verified at: `2026-11-23` (`domain-error-contract` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:data:test` `3/3`, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, and `emulator-5554` online -> offline `"Connectivity error"` -> retry `"Mountain View"` runtime flow)
 
 ## Session Log
 
@@ -177,3 +177,34 @@
 - Verification run: Read-only repository inspection, `git grep` audits (`CustomError`, `Either`, `arrow.`, `ResultResponse`), and JSON/spec structure verification (zero executable, build, or resource files modified).
 - Files or artifacts updated: `docs/features/domain-error-contract/spec.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review of `docs/features/domain-error-contract/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
+
+### Session 014
+
+- Date: `2026-11-23`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Implement `domain-error-contract` (Issue `#6`) in isolated worktree `.worktrees/impl-domain-error-contract` (`wt/impl-domain-error-contract`).
+- Completed:
+  - **Dependencies**: Unified `kotlinx-coroutines = "1.11.0"` and added `kotlinx-coroutines-core` in `gradle/libs.versions.toml`, `data/build.gradle.kts`, and `usecases/build.gradle.kts`; removed unused `arrow` (`arrow-core`, `arrow-fx-coroutines`, `bundles.arrow`) from `gradle/libs.versions.toml`, `data/build.gradle.kts`, `usecases/build.gradle.kts`, and `app/build.gradle.kts`; enabled `isReturnDefaultValues = true` in `app/build.gradle.kts` `testOptions.unitTests` so pure JVM unit tests can construct Firebase/Android exceptions without Robolectric or MockK.
+  - **`:domain`**: Created pure Kotlin `DomainError.kt` (`Network`, `Auth`, `Location`, `Local`, `Unknown`) and `Result.kt` (`Success`, `Error`, `map`, `onSuccess`, `onError`, `getOrNull`, `fold`) with zero external/Android imports.
+  - **`:data`**: Deleted legacy `CustomError.kt` and `CustomErrorFlow.kt`; created `ErrorMapper.kt` and `ExceptionMapper.kt` (`toDomainError`, `safeCall`, `safeSyncCall` strictly rethrowing `CancellationException` and guarding against cause-chain cycles); migrated all 7 `:data` repository and data-source interfaces to `Result<..., DomainError>`.
+  - **`:usecases`**: Migrated `LoadCityWeatherByCoordinatesUseCase`, `LoadCityWeatherByNameUseCase`, `CurrentLocationUseCase`, `LogInUseCase`, and `SignUpUseCase` to `Result<..., DomainError>`.
+  - **`:app` Data, Framework, DI & Presentation**: Created `AndroidErrorMapper.kt` and registered `@Binds @Singleton` in `AppBindingModule.kt`; refactored `AuthErrorMapper.kt` (`@Inject constructor(private val errorMapper: ErrorMapper)` matching `FirebaseAuthWeakPasswordException` before `FirebaseAuthInvalidCredentialsException`); migrated `AccountServiceImpl`, `AuthRepositoryImpl`, `CityWeatherRepositoryImpl`, `CityRoomDataSource` (`Local.NotFound` on `null`), `LocationRepositoryImpl`, `LocationServerDataSourceImpl`, `FirebaseRemoteConfigDataSourceImpl`, and `RemoteConfigRepositoryImpl`; created `UiText.kt`, replaced `ErrorUiMappers.kt` with exhaustive `DomainError.toUiText()`, added localized error strings in `strings.xml` (removing `error_firebase`), and updated all 5 ViewModels (`Login`, `SignUp`, `CityWeather`, `Favorites`, `FavoritesDetail`) and 5 Screens.
+  - **Pure JVM Tests (`6` new `@Test` total, `<= 3`/class, `0` MockK, `0` Robolectric)**: Created `ExceptionMapperTest.kt` (`3 @Test`), `AndroidAndAuthErrorMapperTest.kt` (`2 @Test`), and `ErrorUiMappersTest.kt` (`1 @Test`); mechanically migrated existing fakes and 5 unit test classes preserving exact `@Test` counts (`22` existing + `3` new `:app` + `3` new `:data` + `3` existing `:usecases`).
+- Verification run (JDK `21.0.11`):
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 16s`; full Hilt DI graph, resources, and APK verified; `0` compiler warnings on modified/new files).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 10s`, configuration cache entry stored; `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` passed with `0` warnings on modified/new `.kt` files).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 43s`; `:data:test` `3/3`, `:usecases:test` `3/3`, `:domain:test` `NO-SOURCE`, `0` failed, `0` skipped).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 48s`; `results-summary.json`: `total: 36, recorded: 0, added: 0, changed: 0, unchanged: 36`; `0` PNG diffs).
+  - Hygiene invariants: `0` `CustomError`, `0` `CustomErrorFlow`, `0` `ResultResponse`, `0` `customTryCatch`, `0` `customFlowTryCatch`, `0` `arrow.`, `0` `io.mockk` across `app/data/domain/usecases`; `0` `android.*` in `:domain`; `0` `RobolectricTestRunner` in `app/src/test/`; `0` KDoc comments on all 8 KDoc-deferred production files.
+- Files or artifacts updated: `gradle/libs.versions.toml`, `data/build.gradle.kts`, `usecases/build.gradle.kts`, `app/build.gradle.kts`, `DomainError.kt`, `Result.kt`, `ErrorMapper.kt`, `ExceptionMapper.kt`, 7 `:data` interfaces, 5 `:usecases` classes, `AndroidErrorMapper.kt`, `AppBindingModule.kt`, `AuthErrorMapper.kt`, 8 `:app` data/framework implementations, `UiText.kt`, `ErrorUiMappers.kt`, `strings.xml`, 5 ViewModels, 5 Screens, 3 new test files, 3 updated fake files, 5 updated test files, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent 4-level validation by `workflow-validator` in an isolated git worktree, followed by KDoc authoring via `workflow-documenter`.
+
+### Session 015
+
+- Date: `2026-11-23`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete independent validation, KDoc documentation, consolidation, and PR publication for `domain-error-contract` (Issue `#6`).
+- Completed: Executed independent 4-level validation in `.worktrees/val-domain-error-contract` (`workflow-validator` returned `accept`, all `6` new tests audited as `KEEP`, `emulator-5554` verified online -> offline `"Connectivity error"` -> retry recovery with `0` crashes); ran `workflow-documenter` (`flash`) in `.worktrees/doc-domain-error-contract` adding English KDoc to all 8 new/refactored public files (`68f7a34`); persisted `validation-report.md`, updated `spec.md` (`[x]`, `accepted`), `CONSTRAINTS.md`, `docs/ui_state_management_patterns.md`, `feature_list.json` (`accepted`), and `PROGRESS.md`; consolidated with atomic layer commits and published PR targeting `feature/MM-02-design-system`.
+- Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`61/61` `:app` = `25` pure JVM unit + `36` Roborazzi `unchanged`), `:domain:test :usecases:test :data:test --rerun-tasks` (`:data:test` `3/3`, `:usecases:test` `3/3`), `:app:verifyRoborazziPreDebug`, hygiene greps (`0` `CustomError`/`CustomErrorFlow`/`arrow.`/`io.mockk`), and `emulator-5554` runtime flow; ran `./gradlew prepareKotlinBuildScriptModel --build-cache --no-daemon`.
+- Files or artifacts updated: 8 KDoc-enriched `.kt` files, `docs/features/domain-error-contract/spec.md`, `docs/features/domain-error-contract/validator/validation-report.md`, `CONSTRAINTS.md`, `docs/ui_state_management_patterns.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review & merge of the `domain-error-contract` PR into `feature/MM-02-design-system`, then start `weather-condition-room-migration`.

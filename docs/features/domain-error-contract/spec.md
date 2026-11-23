@@ -6,7 +6,7 @@
 * **`id`:** `domain-error-contract`
 * **`area`:** `domain`
 * **`depends_on`:** `["pragmatic-testing-cleanup"]` (`accepted` and merged into `feature/MM-02-design-system`)
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`module_topology`:** `Layer-Based (:domain, :usecases, :data, :app)`
 * **Objective:** Replace `:data`'s legacy `CustomError` (`Either<CustomError, T>` / `ResultResponse<T>`) and `CustomErrorFlow` (`CustomErrorFlow?`) with a pure Kotlin `DomainError` sealed hierarchy and idiomatic `Result<out T, out E : DomainError>` contract owned by `:domain`, backed by structured-concurrency-safe `safeCall` / `safeSyncCall` helpers, typed `ErrorMapper` / `AuthErrorMapper` / `AndroidErrorMapper` exception mappers, and UI-layer `UiText` + `DomainError.toUiText()` localization.
 * **Identified Ambiguities / Assumptions:**
@@ -132,29 +132,29 @@ No Room database schema, entity, DAO, or migration changes required. `CityRoomDa
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `repository-pattern-governance`, `viewmodel-architecture-governance`, `kotlin-coroutines-structured-concurrency`, `hilt`, `dependency-manager`, and `testing-setup`. Ensure JDK 21 is active (`java -version`).
-- [ ] **Dependencies (Atomic Update + Gradle Sync):**
+- [x] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `repository-pattern-governance`, `viewmodel-architecture-governance`, `kotlin-coroutines-structured-concurrency`, `hilt`, `dependency-manager`, and `testing-setup`. Ensure JDK 21 is active (`java -version`).
+- [x] **Dependencies (Atomic Update + Gradle Sync):**
   - Update `gradle/libs.versions.toml` to unify `kotlinx-coroutines = "1.11.0"`, declare `kotlinx-coroutines-core`, and remove unused `arrow` entries (`arrow`, `arrow-core`, `arrow-fx-coroutines`, `bundles.arrow`).
   - Update `data/build.gradle.kts` and `usecases/build.gradle.kts` to use `implementation(libs.kotlinx.coroutines.core)` instead of `libs.bundles.arrow`; remove `implementation(libs.bundles.arrow)` from `app/build.gradle.kts`.
-- [ ] **Domain (`:domain` — Pure Kotlin, ZERO imports):**
+- [x] **Domain (`:domain` — Pure Kotlin, ZERO imports):**
   - Create `DomainError.kt` (`Network`: `NoInternet`, `Timeout`, `Unauthorized`, `Serialization`, `ServerError(val code: Int)`, `Unknown`; `Auth`: `InvalidCredentials`, `WeakPassword`, `EmailAlreadyInUse`, `UserNotFound`, `SessionExpired`, `Unknown`; `Location`: `PermissionDenied`, `Disabled`, `Unavailable`; `Local`: `NotFound`, `DatabaseError`; top-level `Unknown`).
   - Create `Result.kt` (`Result<out T, out E : DomainError>` with `Success`, `Error`, and `map`, `onSuccess`, `onError`, `getOrNull`, `fold`).
-- [ ] **Data (`:data` — Pure JVM):**
+- [x] **Data (`:data` — Pure JVM):**
   - Delete `CustomError.kt` and `CustomErrorFlow.kt`.
   - Create `data/util/ErrorMapper.kt` and `data/util/ExceptionMapper.kt` (`Throwable.toDomainError()`, `safeCall`, `safeSyncCall`), strictly rethrowing `CancellationException` before catching `Exception` and traversing wrapped `cause` chains safely (guarding against self-referential cause loops).
   - Update all 7 `:data` repository and data-source interfaces to return `Result<T, DomainError>` (and `Result<Unit, DomainError>` for `CityWeatherRepository.loadCityCurrentWeather`).
-- [ ] **UseCases (`:usecases` — Pure JVM):**
+- [x] **UseCases (`:usecases` — Pure JVM):**
   - Update `LoadCityWeatherByCoordinatesUseCase`, `LoadCityWeatherByNameUseCase`, `CurrentLocationUseCase`, `LogInUseCase`, and `SignUpUseCase` to return `Result<..., DomainError>`.
-- [ ] **App Data, Framework & DI (`:app`):**
+- [x] **App Data, Framework & DI (`:app`):**
   - Create `AndroidErrorMapper` (`@Inject constructor() : ErrorMapper`) handling `CancellationException` rethrow, cause-chain timeout/connectivity (`SocketTimeoutException`, `InterruptedIOException`, `IOException`, `FirebaseNetworkException`), `android.database.SQLException`, `kotlinx.serialization.SerializationException`, `FirebaseRemoteConfigServerException` / `FirebaseRemoteConfigException`, `ResolvableApiException` / `ApiException`, and delegating fallback to `Throwable.toDomainError()`.
   - Register `@Binds @Singleton abstract fun bindErrorMapper(impl: AndroidErrorMapper): ErrorMapper` in `AppBindingModule.kt`.
   - Refactor `AuthErrorMapper` to `@Inject constructor(private val errorMapper: ErrorMapper)` matching `FirebaseAuthWeakPasswordException` before `FirebaseAuthInvalidCredentialsException`, plus `FirebaseAuthUserCollisionException`, `FirebaseAuthInvalidUserException`, `FirebaseAuthException` error codes, network causes, and `CancellationException` rethrow.
   - Update `AccountServiceImpl` (replace `runCatching` with `safeCall(mapper = authErrorMapper::map)`), `AuthRepositoryImpl` (`result.onSuccess { ... }`), `CityWeatherRepositoryImpl` (`safeCall(mapper = errorMapper::map)`), `CityRoomDataSource` (`loadCity` returning `Local.NotFound` on `null` and `safeCall`), `LocationRepositoryImpl`, `LocationServerDataSourceImpl` (fix null `result`, map `SecurityException` -> `PermissionDenied`, `ResolvableApiException` -> `Disabled`, null/`ApiException` -> `Unavailable`, preserve cancellation), `FirebaseRemoteConfigDataSourceImpl` (`safeSyncCall` + `errorMapper`), and `RemoteConfigRepositoryImpl` (`result.getOrNull()`).
-- [ ] **UI / Presentation (`:app`):**
+- [x] **UI / Presentation (`:app`):**
   - Create `ui/util/UiText.kt` (`DynamicString`, `StringResource`, `@Composable fun asString()`, `fun asString(context: Context)`).
   - Replace `ui/mappers/ErrorUiMappers.kt` with exhaustive `fun DomainError.toUiText(): UiText` and add all corresponding localized strings in `app/src/main/res/values/strings.xml` (removing unused `error_firebase`).
   - Update `LoginViewModel`, `SignUpViewModel`, `CityWeatherViewModel` (`CityContent.Error(val error: DomainError)`, `coordinates: CurrentLocationDomain`, `DomainError.Local.DatabaseError` in local Flow `.catch`, handle `Location.PermissionDenied` cleanly), `FavoritesViewModel` (`FavoritesContent.Error(val error: DomainError)`), `FavoritesDetailViewModel` (`DetailContent.Error(val error: DomainError)`), and their 5 screens (`LoginScreen`, `SignUpScreen`, `CityWeatherScreen`, `FavoritesScreen`, `FavoritesDetailScreen`) to display `.toUiText().asString(...)`.
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+- [x] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: **6 new `@Test` methods total** across 3 new test classes (`<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` cross-layer duplication). Existing tests updated mechanically with exact `@Test` counts preserved (`22` `:app` + `3` `:usecases`).
   - *Planned new `*Test.kt` files*:
     1. `data/src/test/java/com/martorell/albert/meteomartocompose/data/util/ExceptionMapperTest.kt` (`3 @Test`):
@@ -168,7 +168,7 @@ No Room database schema, entity, DAO, or migration changes required. `CityRoomDa
        - `toUiText maps every DomainError subtype to its localized string resource`
   - *Zero-test layers*: `:domain` (`0` tests — pure sealed/data types and trivial wrappers); `:usecases` (`0` new tests — 1:1 pass-throughs).
   - *Existing test/fake updates*: Update `FakeUseCaseRepositories.kt`, `FakeAuthSources.kt`, `FakeCityWeatherDependencies.kt`, `AuthRepositoryImplTest.kt`, `LoginViewModelTest.kt`, `SignUpViewModelTest.kt`, `CityWeatherViewModelTest.kt`, `FavoritesDetailViewModelTest.kt` to use `Result.Success`/`Result.Error` and `DomainError`.
-- [ ] **Compiler Self-Verification (MANDATORY):**
+- [x] **Compiler Self-Verification (MANDATORY):**
   - Execute `./gradlew assemblePreDebug --no-daemon`
   - Execute `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`
   - Execute `./gradlew :domain:test :usecases:test :data:test --no-daemon`
@@ -177,8 +177,8 @@ No Room database schema, entity, DAO, or migration changes required. `CityRoomDa
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `domain-error-contract` scope (`WIP=1`) and `CONSTRAINTS.md` (zero screen layout redesigns, zero Room schema changes, zero Roborazzi PNG diffs).
-- [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (exhaustive `DomainError`, `Result`, `safeCall`/`safeSyncCall` rethrowing `CancellationException`, Hilt `@Binds` wiring, `UiText` localization, zero `CustomError`/`CustomErrorFlow`/`arrow.` remaining).
-- [ ] Clean Architecture & SOLID invariants (`:domain` has zero external/Android deps; ViewModels have zero `:data` error imports or `R.string`; Hilt strict `@Binds` isolation) and security rules (no raw exception/stacktrace leakage) are respected across all layers.
-- [ ] `@compiler` verification evidence is present and valid; pure JVM unit tests verify real behavior within the strict Test Budget (`6` new `@Test` total, `<= 3`/class, `0` MockK, `0` Robolectric, `0` cross-layer duplication).
-- [ ] Structured validation report written to `docs/features/domain-error-contract/validator/validation-report.md`.
+- [x] Implementation stays strictly within `domain-error-contract` scope (`WIP=1`) and `CONSTRAINTS.md` (zero screen layout redesigns, zero Room schema changes, zero Roborazzi PNG diffs).
+- [x] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (exhaustive `DomainError`, `Result`, `safeCall`/`safeSyncCall` rethrowing `CancellationException`, Hilt `@Binds` wiring, `UiText` localization, zero `CustomError`/`CustomErrorFlow`/`arrow.` remaining).
+- [x] Clean Architecture & SOLID invariants (`:domain` has zero external/Android deps; ViewModels have zero `:data` error imports or `R.string`; Hilt strict `@Binds` isolation) and security rules (no raw exception/stacktrace leakage) are respected across all layers.
+- [x] `@compiler` verification evidence is present and valid; pure JVM unit tests verify real behavior within the strict Test Budget (`6` new `@Test` total, `<= 3`/class, `0` MockK, `0` Robolectric, `0` cross-layer duplication).
+- [x] Structured validation report written to `docs/features/domain-error-contract/validator/validation-report.md`.

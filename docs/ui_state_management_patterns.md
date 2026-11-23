@@ -48,7 +48,7 @@ sealed interface CityContent {
     data object Initial : CityContent
     data object NeedsLocation : CityContent
     data class Success(val city: CityWeatherDomain) : CityContent
-    data class Error(val error: CustomError) : CityContent
+    data class Error(val error: DomainError) : CityContent
 }
 ```
 
