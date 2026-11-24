@@ -1,31 +1,29 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
+import androidx.room.withTransaction
 import com.martorell.albert.meteomartocompose.data.city.sources.LocationLocalDataSource
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.framework.db.model.LocationLocal
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LocationRoomDataImpl @Inject constructor(db: MeteoMartoDatabase) : LocationLocalDataSource {
+class LocationRoomDataImpl @Inject constructor(
+    private val db: MeteoMartoDatabase,
+) : LocationLocalDataSource {
 
     private val locationDao = db.locationDao()
 
     override suspend fun saveLocation(
         latitude: Double?,
-        longitude: Double?
+        longitude: Double?,
     ) {
-
-        withContext(Dispatchers.IO) {
+        db.withTransaction {
             locationDao.cleanTable()
             locationDao.insertLocation(
                 LocationLocal(
                     latitude = latitude,
-                    longitude = longitude
-                )
+                    longitude = longitude,
+                ),
             )
         }
-
     }
-
 }

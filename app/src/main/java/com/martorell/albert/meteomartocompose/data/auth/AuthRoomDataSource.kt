@@ -4,9 +4,6 @@ import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSou
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.utils.toRoom
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
 import javax.inject.Inject
 
 class AuthRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : AuthLocalDataSource {
@@ -14,11 +11,6 @@ class AuthRoomDataSource @Inject constructor(db: MeteoMartoDatabase) : AuthLocal
     private val userDao = db.userDao()
 
     override suspend fun newUser(user: UserDomain) {
-
-        withContext(Dispatchers.IO) {
-            userDao.insertUser(user.toRoom())
-        }
-
+        userDao.insertUser(user.toRoom())
     }
-
 }

@@ -59,15 +59,3 @@ fun <T, E : DomainError> Result<T, E>.getOrNull(): T? =
         is Result.Success -> data
         is Result.Error -> null
     }
-
-/**
- * Exhaustively reduces this [Result] to a single value by applying [onError] for [Result.Error]
- * or [onSuccess] for [Result.Success].
- */
-inline fun <T, E : DomainError, R> Result<T, E>.fold(
-    onError: (E) -> R,
-    onSuccess: (T) -> R,
-): R = when (this) {
-    is Result.Success -> onSuccess(data)
-    is Result.Error -> onError(error)
-}

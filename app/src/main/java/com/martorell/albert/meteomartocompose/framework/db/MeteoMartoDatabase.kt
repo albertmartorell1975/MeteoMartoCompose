@@ -15,8 +15,8 @@ import com.martorell.albert.meteomartocompose.framework.db.model.User
         CityWeather::class,
         LocationLocal::class,
     ],
-    version = 2,
-    exportSchema = false
+    version = 3,
+    exportSchema = true,
 )
 abstract class MeteoMartoDatabase : RoomDatabase() {
 

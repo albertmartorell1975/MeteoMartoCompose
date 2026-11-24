@@ -1,7 +1,6 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
 import androidx.room.withTransaction
-import com.martorell.albert.meteomartocompose.BuildConfig
 import com.martorell.albert.meteomartocompose.data.city.sources.CityWeatherLocalDataSource
 import com.martorell.albert.meteomartocompose.data.util.ErrorMapper
 import com.martorell.albert.meteomartocompose.data.util.safeCall
@@ -11,7 +10,6 @@ import com.martorell.albert.meteomartocompose.domain.model.DomainError
 import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import com.martorell.albert.meteomartocompose.utils.listToDomain
-import com.martorell.albert.meteomartocompose.utils.openWeatherConverter
 import com.martorell.albert.meteomartocompose.utils.toDomain
 import com.martorell.albert.meteomartocompose.utils.toRoom
 import kotlinx.coroutines.flow.Flow
@@ -32,23 +30,27 @@ class CityRoomDataSource @Inject constructor(
     }
 
     override suspend fun refreshCity(cityServer: CityWeatherResponse) {
+        val mappedCity = cityServer.toRoom()
         db.withTransaction {
             if (isEmpty()) {
-                cityDao.insert(cityServer.toRoom())
+                cityDao.insert(mappedCity)
             } else {
                 cityDao.allCitiesAsNotJustAdded()
-                val cityInfo = cityDao.getCityByName(cityServer.name)
+                val cityInfo = cityDao.getCityByName(mappedCity.name)
                 if (cityInfo == null) {
-                    cityDao.insert(cityServer.toRoom())
+                    cityDao.insert(mappedCity)
                 } else {
                     cityDao.update(
-                        name = cityServer.name,
-                        weatherDescription = if (cityServer.weather.isNotEmpty()) cityServer.weather[0].description else "",
-                        weatherIcon = if (cityServer.weather.isNotEmpty()) "${BuildConfig.OPEN_WEATHER_ICON_URL}${cityServer.weather[0].icon}@2x.png" else "",
-                        pressure = cityServer.main.pressure,
-                        temperatureMax = cityServer.main.temp_max.openWeatherConverter(),
-                        temperatureMin = cityServer.main.temp_min.openWeatherConverter(),
-                        temperature = cityServer.main.temp.openWeatherConverter(),
+                        name = mappedCity.name,
+                        weatherDescription = mappedCity.weatherDescription,
+                        weatherIcon = mappedCity.weatherIcon,
+                        weatherConditionId = mappedCity.weatherConditionId,
+                        isNight = mappedCity.isNight,
+                        rain = mappedCity.rain,
+                        pressure = mappedCity.pressure,
+                        temperatureMax = mappedCity.temperatureMax,
+                        temperatureMin = mappedCity.temperatureMin,
+                        temperature = mappedCity.temperature,
                     )
                 }
             }
@@ -59,6 +61,9 @@ class CityRoomDataSource @Inject constructor(
         cityName: String,
         weatherDescription: String?,
         weatherIcon: String?,
+        weatherConditionId: Int,
+        isNight: Boolean,
+        rain: Double?,
         pressure: Int,
         temperatureMax: Double,
         temperatureMin: Double,
@@ -68,6 +73,9 @@ class CityRoomDataSource @Inject constructor(
             name = cityName,
             weatherDescription = weatherDescription,
             weatherIcon = weatherIcon,
+            weatherConditionId = weatherConditionId,
+            isNight = isNight,
+            rain = rain,
             pressure = pressure,
             temperatureMax = temperatureMax,
             temperatureMin = temperatureMin,

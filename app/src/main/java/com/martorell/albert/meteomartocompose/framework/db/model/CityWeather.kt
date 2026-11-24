@@ -1,5 +1,6 @@
 package com.martorell.albert.meteomartocompose.framework.db.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,6 +12,10 @@ data class CityWeather(
     val justAdded: Boolean = false,
     val weatherDescription: String? = "",
     val weatherIcon: String? = "",
+    @ColumnInfo(defaultValue = "0")
+    val weatherConditionId: Int,
+    @ColumnInfo(defaultValue = "0")
+    val isNight: Boolean,
     val temperature: Double,
     val temperatureMin: Double,
     val temperatureMax: Double,

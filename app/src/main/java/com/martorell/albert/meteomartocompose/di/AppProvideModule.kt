@@ -7,10 +7,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.martorell.albert.meteomartocompose.BuildConfig
 import com.martorell.albert.meteomartocompose.data.city.CityWeatherServerDataSource
-import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
-import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
-import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
 import com.martorell.albert.meteomartocompose.data.server.APIKeyInterceptor
+import com.martorell.albert.meteomartocompose.framework.db.MIGRATION_2_3
 import com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase
 import dagger.Module
 import dagger.Provides
@@ -42,8 +40,8 @@ object AppProvideModule {
     fun providesDatabase(app: Application): MeteoMartoDatabase = Room.databaseBuilder(
         app,
         MeteoMartoDatabase::class.java,
-        ROOM_DATABASE
-    ).fallbackToDestructiveMigration(true)
+        ROOM_DATABASE,
+    ).addMigrations(MIGRATION_2_3)
         .build()
 
     @Provides
