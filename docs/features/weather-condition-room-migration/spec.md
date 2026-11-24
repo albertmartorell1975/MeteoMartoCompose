@@ -6,7 +6,7 @@
 * **`id`:** `weather-condition-room-migration`
 * **`area`:** `data`
 * **`depends_on`:** `["domain-error-contract"]` (`accepted` and merged into `feature/MM-02-design-system` @ `9c49a3c`)
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`github_issue`:** `#8`
 * **`module_topology`:** `Layer-Based (:domain -> :usecases <- :data -> :app)`
 * **Objective:** Introduce a pure `:domain` `WeatherCondition` model mapped deterministically from OpenWeather condition IDs (`weather[0].id`), derive nocturnal state (`isNight`) deterministically from OpenWeather payloads, persist both `weatherConditionId` and `isNight` in Room via an explicit non-destructive `Migration(2, 3)` with exported Room schema verification (`exportSchema = true`), keep Room refresh/favorite SSOT mappers consistent, remove `.fallbackToDestructiveMigration(true)` + unused imports in `AppProvideModule`, and complete the queued PR #7 follow-up cleanups (`AuthRoomDataSource.kt`, `LocationLocalServerDataImpl.kt`, and unused `Result.fold` in `domain/.../Result.kt`).
@@ -138,29 +138,29 @@ No API endpoint or Retrofit DTO changes required. `CityWeatherServerDataSource.g
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `room-schema-governance`, `repository-pattern-governance`, `hilt`, `kotlin-coroutines-structured-concurrency`, and `testing-setup`. Confirm JDK 21 is active (`java -version`). Write zero KDoc on new/modified public symbols (deferred to `workflow-documenter`).
-- [ ] **Gradle Configuration:**
+- [x] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `room-schema-governance`, `repository-pattern-governance`, `hilt`, `kotlin-coroutines-structured-concurrency`, and `testing-setup`. Confirm JDK 21 is active (`java -version`). Write zero KDoc on new/modified public symbols (deferred to `workflow-documenter`).
+- [x] **Gradle Configuration:**
   - Add `dependencies { testImplementation(libs.junit) }` to `domain/build.gradle.kts` (zero `implementation` dependencies).
   - Add `arg("room.schemaLocation", "$projectDir/schemas")` inside `ksp { ... }` in `app/build.gradle.kts`.
-- [ ] **Domain (`:domain` — Pure Kotlin, ZERO runtime imports):**
+- [x] **Domain (`:domain` — Pure Kotlin, ZERO runtime imports):**
   - Create `domain/src/main/java/com/martorell/albert/meteomartocompose/domain/cityweather/WeatherCondition.kt` (`BASELINE`, `SUNNY`, `RAIN` + `fromOpenWeatherId(conditionId: Int)` using named constants `CLEAR_SKY_ID = 800`, `THUNDERSTORM_RANGE = 200..232`, `DRIZZLE_RANGE = 300..321`, `RAIN_RANGE = 500..531`, `SNOW_RANGE = 600..622`).
   - Update `CityWeatherDomain.kt` to add `val weatherConditionId: Int = 0`, `val isNight: Boolean = false`, and computed `val weatherCondition: WeatherCondition get() = WeatherCondition.fromOpenWeatherId(weatherConditionId)`.
   - Remove unused `Result.fold` extension (and its KDoc) from `domain/src/main/java/com/martorell/albert/meteomartocompose/domain/model/Result.kt`.
-- [ ] **Data Contract (`:data` — Pure JVM):**
+- [x] **Data Contract (`:data` — Pure JVM):**
   - Update `CityWeatherLocalDataSource.updateCity(...)` to accept `weatherConditionId: Int`, `isNight: Boolean`, and `rain: Double?`.
-- [ ] **Room Persistence, Migration & DI (`:app`):**
+- [x] **Room Persistence, Migration & DI (`:app`):**
   - Add `@ColumnInfo(defaultValue = "0") val weatherConditionId: Int` and `@ColumnInfo(defaultValue = "0") val isNight: Boolean` (no Kotlin defaults) to `CityWeather.kt`.
   - Create `framework/db/MeteoMartoDatabaseMigrations.kt` defining `MIGRATION_2_3: Migration = object : Migration(2, 3)` with the two non-destructive `ALTER TABLE CityWeather ADD COLUMN ... INTEGER NOT NULL DEFAULT 0` statements.
   - Update `MeteoMartoDatabase.kt` to `version = 3` and `exportSchema = true` (preserving trailing commas in `entities`).
   - Update `CityDao.update(...)` SQL and parameters to include `weatherConditionId`, `isNight`, and `rain`.
   - Update `AppProvideModule.kt` to replace `.fallbackToDestructiveMigration(true)` with `.addMigrations(MIGRATION_2_3)` and remove unused imports (`PermissionChecker`, `PermissionRepository`, `PermissionRepositoryImpl`).
-- [ ] **Mappers & Room Data Sources (`:app`):**
+- [x] **Mappers & Room Data Sources (`:app`):**
   - Update `CityMapper.kt`: add `resolveIsNight(iconCode: String?, dt: Int, sunrise: Int, sunset: Int): Boolean` (icon suffix `"n"`/`"d"` primary, valid `dt < sunrise || dt > sunset` fallback, else `false`), map `weatherConditionId` and `isNight` in `CityWeatherResponse.toRoom()`, `CityWeather?.toDomain()`, and `CityWeatherDomain.toRoom()`, and simplify `List<CityWeather>.listToDomain()` to `map { it.toDomain() }`.
   - Update `CityRoomDataSource.kt`: map once via `val mappedCity = cityServer.toRoom()` in `refreshCity(...)` and pass `weatherConditionId`, `isNight`, and `rain` to `cityDao.update(...)` (and in `updateCity(...)`); remove unused `BuildConfig`/`openWeatherConverter` imports.
   - Update `AuthRoomDataSource.kt`: remove redundant `withContext(Dispatchers.IO)` and unused `Dispatchers`/`withContext` imports.
   - Update `LocationLocalServerDataImpl.kt`: retain `private val db: MeteoMartoDatabase`, replace redundant `withContext(Dispatchers.IO)` with `db.withTransaction { ... }` around `locationDao.cleanTable()` and `locationDao.insertLocation(...)`, and remove unused `Dispatchers`/`withContext` imports.
   - Run `./gradlew assemblePreDebug --no-daemon` to generate `app/schemas/com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase/3.json` and confirm it is tracked in git.
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+- [x] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: **5 new `@Test` methods total** across 3 new test classes (`<= 3`/class, `<= 6`/feature, pure JVM only, Manual Fakes only, `0` MockK, `0` Robolectric, `0` `androidTest`, `0` cross-layer duplication). Existing `31` pure JVM unit tests + `36` Roborazzi previews must stay green with zero regressions.
   - *Planned new `*Test.kt` files*:
     1. `domain/src/test/java/com/martorell/albert/meteomartocompose/domain/cityweather/WeatherConditionTest.kt` (`1 @Test`):
@@ -172,7 +172,7 @@ No API endpoint or Retrofit DTO changes required. `CityWeatherServerDataSource.g
        - `migration 2 to 3 executes non-destructive alter statements for weatherConditionId and isNight` (pure JVM `SupportSQLiteDatabase` SQL recorder verifying versions `2 -> 3`, exact 2 `ALTER TABLE` statements, and zero destructive DDL/DML)
        - `exported Room v3 schema matches CityWeather migration columns and non-null defaults` (reads KSP-generated `app/schemas/.../3.json` and asserts `version == 3`, `CityWeather` table presence, and exact `weatherConditionId` / `isNight` `INTEGER` / `notNull: true` / `defaultValue: "0"` alignment).
   - *Zero-test layers*: `:data` (`0` new tests — interface signature update only); `:usecases` (`0` new tests — untouched).
-- [ ] **Compiler Self-Verification (MANDATORY):**
+- [x] **Compiler Self-Verification (MANDATORY):**
   - Execute `./gradlew assemblePreDebug --no-daemon`
   - Execute `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`
   - Execute `./gradlew :domain:test :usecases:test :data:test --no-daemon`
@@ -182,8 +182,8 @@ No API endpoint or Retrofit DTO changes required. `CityWeatherServerDataSource.g
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `weather-condition-room-migration` scope (`WIP=1`) and `CONSTRAINTS.md` (zero UI/palette redesigns, zero Roborazzi PNG diffs).
-- [ ] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (`WeatherCondition` OpenWeather mapping, `resolveIsNight` priority/fallback, Room `v2 -> v3` non-destructive migration with exported `3.json`, SSOT refresh/favorite persistence of `weatherConditionId` + `isNight`, and PR #7 follow-up cleanups).
-- [ ] Clean Architecture & SOLID invariants (`:domain` has zero external runtime imports; `AppProvideModule` pure `@Provides` with zero unused imports; zero redundant `withContext(Dispatchers.IO)` in Room data sources; zero `Result.fold`) and `room-schema-governance` rules (`version = 3`, `exportSchema = true`, trailing commas, non-destructive `MIGRATION_2_3`) are respected.
-- [ ] `@compiler` verification evidence is present and valid; pure JVM unit tests verify real behavior within the strict Test Budget (`5` new `@Test` total across `3` classes, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` `androidTest`, `0` cross-layer duplication).
-- [ ] Structured validation report written to `docs/features/weather-condition-room-migration/validator/validation-report.md`.
+- [x] Implementation stays strictly within `weather-condition-room-migration` scope (`WIP=1`) and `CONSTRAINTS.md` (zero UI/palette redesigns, zero Roborazzi PNG diffs).
+- [x] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (`WeatherCondition` OpenWeather mapping, `resolveIsNight` priority/fallback, Room `v2 -> v3` non-destructive migration with exported `3.json`, SSOT refresh/favorite persistence of `weatherConditionId` + `isNight`, and PR #7 follow-up cleanups).
+- [x] Clean Architecture & SOLID invariants (`:domain` has zero external runtime imports; `AppProvideModule` pure `@Provides` with zero unused imports; zero redundant `withContext(Dispatchers.IO)` in Room data sources; zero `Result.fold`) and `room-schema-governance` rules (`version = 3`, `exportSchema = true`, trailing commas, non-destructive `MIGRATION_2_3`) are respected.
+- [x] `@compiler` verification evidence is present and valid; pure JVM unit tests verify real behavior within the strict Test Budget (`5` new `@Test` total across `3` classes, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` `androidTest`, `0` cross-layer duplication).
+- [x] Structured validation report written to `docs/features/weather-condition-room-migration/validator/validation-report.md`.

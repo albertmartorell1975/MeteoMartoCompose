@@ -5,9 +5,9 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `weather-condition-room-migration` (spec ready for planner review checkpoint)
-- Current blocker: None (`domain-error-contract` PR #7 merged into `feature/MM-02-design-system` @ `9c49a3c`; `weather-condition-room-migration` active on branch `feature/weather-condition-room-migration`).
-- Last verified at: `2026-11-24` (`domain-error-contract` PR #7 Review Round #1 independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:data:test` `3/3`, `:usecases:test` `3/3`, `lintPreDebug` `0` `MissingPermission` warnings, `assemblePreDebug`, and `emulator-5554` online + Favorites + revoked-permission runtime flow)
+- Current next ready feature: `dynamic-weather-theme-tokens` (waiting for `weather-condition-room-migration` PR review & merge into `feature/MM-02-design-system`)
+- Current blocker: None (`weather-condition-room-migration` accepted and published for PR review targeting `feature/MM-02-design-system`).
+- Last verified at: `2026-11-24` (`weather-condition-room-migration` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `65/65` = `29` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on modified/new `.kt` files, `assemblePreDebug`, and live `emulator-5554` in-place Room `v2 -> v3` migration verified with `PRAGMA user_version = 3` and `0` errors)
 
 ## Session Log
 
@@ -248,3 +248,33 @@
 - Verification run: Read-only repository inspection and spec/budget/schema-governance consistency audit (zero executable, build, or resource files modified).
 - Files or artifacts updated: `docs/features/weather-condition-room-migration/spec.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review of `docs/features/weather-condition-room-migration/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
+
+### Session 019
+
+- Date: `2026-11-24`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Implement `weather-condition-room-migration` (Issue `#8`) in isolated worktree `.worktrees/impl-weather-condition-room-migration` (`wt/impl-weather-condition-room-migration`).
+- Completed:
+  - **Gradle Config**: Added `dependencies { testImplementation(libs.junit) }` to `domain/build.gradle.kts` (zero runtime/implementation deps) and `arg("room.schemaLocation", "$projectDir/schemas")` to `ksp { ... }` in `app/build.gradle.kts`.
+  - **`:domain`**: Created pure Kotlin `WeatherCondition.kt` (`BASELINE`, `SUNNY`, `RAIN` + `fromOpenWeatherId` with named constants), added `weatherConditionId: Int = 0`, `isNight: Boolean = false`, and computed `weatherCondition` on `CityWeatherDomain.kt`, and removed unused `Result.fold` + its KDoc from `Result.kt`.
+  - **`:data`**: Extended `CityWeatherLocalDataSource.updateCity(...)` with `weatherConditionId: Int`, `isNight: Boolean`, and `rain: Double?`.
+  - **`:app` Persistence, Migration, DI, Mappers & Data Sources**: Added `@ColumnInfo(defaultValue = "0")` `weatherConditionId` and `isNight` (without Kotlin defaults) to `CityWeather.kt`; created `MeteoMartoDatabaseMigrations.kt` (`MIGRATION_2_3` executing non-destructive `ALTER TABLE CityWeather ADD COLUMN ... INTEGER NOT NULL DEFAULT 0`); bumped `MeteoMartoDatabase.kt` to `version = 3` and `exportSchema = true` (preserving trailing commas) and tracked KSP-generated `app/schemas/.../MeteoMartoDatabase/3.json`; updated `CityDao.update(...)`; replaced `.fallbackToDestructiveMigration(true)` with `.addMigrations(MIGRATION_2_3)` and removed 3 unused imports in `AppProvideModule.kt`; added `resolveIsNight(...)`, updated `toRoom()`/`toDomain()`/`listToDomain()` in `CityMapper.kt`; updated `CityRoomDataSource.kt` to reuse `val mappedCity = cityServer.toRoom()` and drop unused imports; removed redundant `withContext(Dispatchers.IO)` in `AuthRoomDataSource.kt` and replaced it with `db.withTransaction` in `LocationLocalServerDataImpl.kt`. Zero KDoc written on KDoc-deferred files.
+  - **Pure JVM Closed Test Plan (`5` new `@Test` across `3` classes, `<= 3`/class, `0` MockK, `0` Robolectric, `0` `androidTest`)**: Created `WeatherConditionTest.kt` (`1 @Test`), `CityMapperTest.kt` (`2 @Test`), and `MeteoMartoDatabaseMigrationTest.kt` (`2 @Test`).
+- Verification run (JDK `21.0.11`):
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 51s`; tracked `3.json` schema generated, full Hilt DI graph verified, `0` compiler warnings on modified/new files).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 16s`, configuration cache stored; `:app:testPreDebugUnitTest` `65/65` = `29` pure JVM unit tests across 12 classes `<= 3`/class + `36` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` `0` warnings on modified/new `.kt` files).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 23s`; `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`; total `36` pure JVM unit tests, `0` failed, `0` skipped).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 49s`; `results-summary.json`: `total=36, recorded=0, added=0, changed=0, unchanged=36`, `0` PNG diffs).
+  - Hygiene invariants: `0` `fallbackToDestructiveMigration` in `app/src/main/`; `0` `withContext` in `AuthRoomDataSource.kt`, `LocationLocalServerDataImpl.kt`, `CityRoomDataSource.kt`; `0` `Result.fold` in `domain/`; `0` `io.mockk` across `app/data/domain/usecases`; `0` `RobolectricTestRunner` in `app/src/test/`; `0` `android.*` in `domain/src/main/`; `app/schemas/.../3.json` tracked; `0` KDoc on deferred files.
+- Files or artifacts updated: `domain/build.gradle.kts`, `app/build.gradle.kts`, `WeatherCondition.kt`, `CityWeatherDomain.kt`, `Result.kt`, `CityWeatherLocalDataSource.kt`, `CityWeather.kt`, `MeteoMartoDatabaseMigrations.kt`, `MeteoMartoDatabase.kt`, `app/schemas/.../3.json`, `CityDao.kt`, `AppProvideModule.kt`, `CityMapper.kt`, `CityRoomDataSource.kt`, `AuthRoomDataSource.kt`, `LocationLocalServerDataImpl.kt`, `WeatherConditionTest.kt`, `CityMapperTest.kt`, `MeteoMartoDatabaseMigrationTest.kt`, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent 4-level validation by `workflow-validator` in an isolated git worktree, followed by KDoc documentation via `workflow-documenter`.
+
+### Session 020
+
+- Date: `2026-11-24`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete strict independent validation, KDoc documentation, atomic consolidation, and PR publication for `weather-condition-room-migration` (Issue `#8`).
+- Completed: Executed strict adversarial 4-level validation in `.worktrees/val-weather-condition-room-migration` (`workflow-validator` returned `accept`, all `5/5` new tests audited as `KEEP`, real SQLite `v2 -> v3` parity verified against `3.json`, and live `emulator-5554` in-place upgrade verified `PRAGMA user_version = 3` preserving `User`/`LocationLocal`/`CityWeather` favorites with `0` errors); ran `workflow-documenter` (`flash`) in `.worktrees/doc-weather-condition-room-migration` adding English KDoc to `WeatherCondition.kt`, `CityWeatherDomain.kt`, `MeteoMartoDatabaseMigrations.kt`, and `CityMapper.kt` (`1bea611`); persisted `validation-report.md`, updated `spec.md` (`[x]`, `accepted`), `CONSTRAINTS.md`, `feature_list.json` (`accepted`), and `PROGRESS.md`; consolidated with atomic layer commits and published PR targeting `feature/MM-02-design-system`.
+- Verification run: Independent validator re-ran `assemblePreDebug`, `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`0` warnings in `lint-results-preDebug.xml` on modified/new `.kt` files), `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`65/65` `:app` = `29` pure JVM unit tests + `36/36` Roborazzi `unchanged`), full hygiene greps, and live `emulator-5554` SQLite + cold-launch verification; orchestrator ran `./gradlew prepareKotlinBuildScriptModel :domain:test compilePreDebugKotlin --build-cache --no-daemon` post-KDoc.
+- Files or artifacts updated: `WeatherCondition.kt`, `CityWeatherDomain.kt`, `MeteoMartoDatabaseMigrations.kt`, `CityMapper.kt`, `docs/features/weather-condition-room-migration/spec.md`, `docs/features/weather-condition-room-migration/validator/validation-report.md`, `CONSTRAINTS.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review & merge of the `weather-condition-room-migration` PR into `feature/MM-02-design-system`, then start `dynamic-weather-theme-tokens`.

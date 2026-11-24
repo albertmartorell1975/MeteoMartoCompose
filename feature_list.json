@@ -97,7 +97,7 @@
     "depends_on": [
       "domain-error-contract"
     ],
-    "status": "in_progress",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/weather-condition-room-migration/spec.md",
     "validation_path": "docs/features/weather-condition-room-migration/validator/validation-report.md",
@@ -105,7 +105,13 @@
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
       "Pure JVM unit tests verify OpenWeather ID mapping (800 -> SUNNY, 2xx/3xx/5xx/6xx -> RAIN, fallback -> BASELINE), isNight derivation, and Room schema migration integrity."
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 51s (Room KSP generated tracked app/schemas/com.martorell.albert.meteomartocompose.framework.db.MeteoMartoDatabase/3.json, full Hilt DI graph with MIGRATION_2_3 verified, 0 compiler warnings on modified/new files).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 16s (Configuration cache entry stored; :app:testPreDebugUnitTest 65/65 passed = 29 pure JVM unit tests across 12 classes <= 3/class including CityMapperTest 2/2 & MeteoMartoDatabaseMigrationTest 2/2 + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 23s (:domain:test 1/1 WeatherConditionTest, :usecases:test 3/3 CheckTemperatureThresholdUseCaseTest, :data:test 3/3 ExceptionMapperTest; total 36 pure JVM unit tests across all modules, 0 failed, 0 skipped).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 49s (results-summary.json: total=36, recorded=0, added=0, changed=0, unchanged=36; 0 PNG diffs).",
+      "PASS: Hygiene invariants -> 0 fallbackToDestructiveMigration in app/src/main/; 0 withContext in AuthRoomDataSource.kt, LocationLocalServerDataImpl.kt, and CityRoomDataSource.kt; 0 Result.fold in domain/; 0 io.mockk across app/data/domain/usecases; 0 RobolectricTestRunner in app/src/test/; 0 android.* in domain/src/main/; tracked app/schemas/.../3.json verified; 0 KDoc comments on KDoc-deferred files (WeatherCondition.kt, CityWeatherDomain.kt, MeteoMartoDatabaseMigrations.kt, CityMapper.kt)."
+    ],
     "notes": "Follow room-schema-governance and repository-pattern-governance (SSOT, DTO/Entity/Domain mappers, explicit Room Migration for weatherConditionId + isNight, Hilt DI cleanup). Also include data/domain follow-up cleanup from PR #7: remove redundant withContext(Dispatchers.IO) in AuthRoomDataSource.kt and LocationLocalServerDataImpl.kt, and remove unused Result.fold extension from domain/.../Result.kt."
   },
   {
