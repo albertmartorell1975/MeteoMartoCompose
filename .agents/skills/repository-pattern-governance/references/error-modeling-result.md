@@ -70,13 +70,13 @@ Always consume `Result` with an exhaustive `when` expression rather than introdu
 
 ```kotlin
 // ✅ GOOD — idiomatic, readable, and consistent across repositories and ViewModels
-when (val result = loadCityWeather()) {
+when (val result = repository.getCharacterDetail(id)) {
     is Result.Success -> handleSuccess(result.data)
     is Result.Error -> handleError(result.error)
 }
 
 // ❌ AVOID — mixes FP style with Kotlin exhaustive `when`
-loadCityWeather().fold(
+repository.getCharacterDetail(id).fold(
     onError = { handleError(it) },
     onSuccess = { handleSuccess(it) },
 )
