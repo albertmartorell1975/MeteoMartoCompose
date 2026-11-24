@@ -5,8 +5,8 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `weather-condition-room-migration` (blocked only until `domain-error-contract` PR is reviewed & merged into `feature/MM-02-design-system`)
-- Current blocker: None (`domain-error-contract` accepted by `workflow-validator` across all 4 levels; `pragmatic-testing-cleanup` PR #5 merged into `feature/MM-02-design-system` @ `1eea1a7`; `secrets-build-hygiene` merged @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` & `design-system-ci.yml` enabled for PRs targeting `feature/MM-02-design-system`).
+- Current next ready feature: `weather-condition-room-migration` (spec ready for planner review checkpoint)
+- Current blocker: None (`domain-error-contract` PR #7 merged into `feature/MM-02-design-system` @ `9c49a3c`; `weather-condition-room-migration` active on branch `feature/weather-condition-room-migration`).
 - Last verified at: `2026-11-24` (`domain-error-contract` PR #7 Review Round #1 independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:data:test` `3/3`, `:usecases:test` `3/3`, `lintPreDebug` `0` `MissingPermission` warnings, `assemblePreDebug`, and `emulator-5554` online + Favorites + revoked-permission runtime flow)
 
 ## Session Log
@@ -237,3 +237,14 @@
 - Verification run: Independent validator re-ran `assemblePreDebug :domain:test :usecases:test :data:test --no-daemon` (`:data:test` `3/3`, `:usecases:test` `3/3`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`0` `MissingPermission` or other warnings on modified files), `:app:verifyRoborazziPreDebug --no-daemon` (`61/61` `:app` = `25` pure JVM unit tests + `36` Roborazzi `unchanged`), hygiene greps (`0` magic `401`/`403`, `0` `withContext` in `CityRoomDataSource.kt`, `0` `@SuppressLint` in `LocationServerDataSourceImpl.kt`, `0` `.fold(` in ViewModels, `0` `city_forecast_error`), and `emulator-5554` live runtime verification.
 - Files or artifacts updated: `ExceptionMapper.kt`, `AndroidErrorMapper.kt`, `CityRoomDataSource.kt`, `LocationServerDataSourceImpl.kt`, `LoginViewModel.kt`, `SignUpViewModel.kt`, `CityWeatherViewModel.kt`, `FavoritesDetailViewModel.kt`, `strings.xml`, `docs/features/domain-error-contract/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Verify CI checks stay green on PR #7, resolve review threads, and merge PR #7 into `feature/MM-02-design-system` before starting `weather-condition-room-migration`.
+
+
+### Session 018
+
+- Date: `2026-11-24`
+- Agent: 🔵 `[PLANNER · workflow-planner]`
+- Goal: Produce the unified implementation specification for `weather-condition-room-migration` (Issue `#8`).
+- Completed: Audited `:domain`, `:data`, `:usecases`, and `:app` Gradle configs, `CityWeatherDomain.kt`, OpenWeather response DTOs (`CityWeatherResponse`, `Weather`, `Sys`, `Main`, `Rain`, `Coord`), `Result.kt`, `CityWeatherLocalDataSource.kt`, `CityWeatherRepositoryImpl.kt`, `MeteoMartoDatabase.kt`, `CityWeather.kt`, `CityDao.kt`, `UserDao.kt`, `LocationDao.kt`, `AppProvideModule.kt`, `CityRoomDataSource.kt`, `AuthRoomDataSource.kt`, `LocationLocalServerDataImpl.kt`, `CityMapper.kt`, `MmWeatherInfo.kt`, legacy screens, and existing unit tests/fakes. Authored `docs/features/weather-condition-room-migration/spec.md` covering pure `:domain` `WeatherCondition` (`800` -> `SUNNY`, `200..232`/`300..321`/`500..531`/`600..622` -> `RAIN`, fallback -> `BASELINE`), computed `CityWeatherDomain.weatherCondition`, deterministic `resolveIsNight` (`"n"`/`"d"` icon suffix primary, `dt < sunrise || dt > sunset` fallback), non-destructive Room `v2 -> v3` `MIGRATION_2_3` with `exportSchema = true` + tracked `app/schemas/.../3.json` + `.addMigrations(MIGRATION_2_3)` replacing `.fallbackToDestructiveMigration(true)`, SSOT refresh/favorite persistence of `weatherConditionId` + `isNight` + `rain`, PR #7 follow-up cleanups (`AuthRoomDataSource.kt`, `LocationLocalServerDataImpl.kt`, unused `Result.fold`), and a pure JVM Closed Test Plan of `5` new `@Test` methods across `3` classes (`<= 3`/class, `0` MockK, `0` Robolectric, `0` `androidTest`). Updated `feature_list.json` (`weather-condition-room-migration.status` -> `"in_progress"`).
+- Verification run: Read-only repository inspection and spec/budget/schema-governance consistency audit (zero executable, build, or resource files modified).
+- Files or artifacts updated: `docs/features/weather-condition-room-migration/spec.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review of `docs/features/weather-condition-room-migration/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.

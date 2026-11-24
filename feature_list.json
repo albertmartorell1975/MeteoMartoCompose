@@ -97,7 +97,7 @@
     "depends_on": [
       "domain-error-contract"
     ],
-    "status": "not_started",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/weather-condition-room-migration/spec.md",
     "validation_path": "docs/features/weather-condition-room-migration/validator/validation-report.md",
