@@ -199,10 +199,10 @@
     },
     "room-schema-governance": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "92d19dfda543b5cc2ab12390f4446645d1a3308f",
+      "commit": "d91497f7e6692ed36783c496c2acfaa702cc43c4",
       "sourceType": "github",
       "skillPath": ".agents/skills/room-schema-governance/SKILL.md",
-      "computedHash": "9946ebd570cc635bceeb238793e36d365b3a0ab4eb899609ba6a74153ac4b833"
+      "computedHash": "75af1a885ca6161dd10924ac119717b4127cef4029faee9331efc4e71c8d8234"
     },
     "testing-setup": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -227,17 +227,17 @@
     },
     "workflow-implementer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c6c3b113a182b1130887adb8eb33d3d461c1c922",
+      "commit": "d91497f7e6692ed36783c496c2acfaa702cc43c4",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-implementer/SKILL.md",
-      "computedHash": "a16c4c7bdb0e0ccb257a2b0c090745f97342c4cf06c11ea34c1eb54034b104fb"
+      "computedHash": "9eb6e12d262b85d871dd699fc24d5f7e53832d7c7a4b5010018f77beb7f49f52"
     },
     "workflow-initializer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c6c3b113a182b1130887adb8eb33d3d461c1c922",
+      "commit": "d91497f7e6692ed36783c496c2acfaa702cc43c4",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-initializer/SKILL.md",
-      "computedHash": "5ed497da8e80b6d47a5d850a41dcde30e61609be857d357fd0a8aecf312bd910"
+      "computedHash": "9079379050b5bb9ce4c639dddfa0c2b65b07152f67220222f75ba935ea15e027"
     },
     "workflow-orchestrator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -255,10 +255,10 @@
     },
     "workflow-validator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c6c3b113a182b1130887adb8eb33d3d461c1c922",
+      "commit": "d91497f7e6692ed36783c496c2acfaa702cc43c4",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-validator/SKILL.md",
-      "computedHash": "1b293e5ed5c05cf7e1bc58804f667879dc2568b8eaeaebbf6243ea1a60ba9029"
+      "computedHash": "a4cafdd3e4eec224f4602fcf8999abc68ea323c2eb4f39c33539b4dca6aee0eb"
     }
   }
 }
