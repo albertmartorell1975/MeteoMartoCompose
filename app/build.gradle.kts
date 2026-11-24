@@ -116,6 +116,7 @@ tasks.withType<org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask>().configureEa
  */
 ksp {
     arg("dagger.formatGeneratedSource", "disabled")
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 // Add or modify this block

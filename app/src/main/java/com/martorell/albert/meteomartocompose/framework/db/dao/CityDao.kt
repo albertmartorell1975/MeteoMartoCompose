@@ -32,14 +32,19 @@ interface CityDao {
     suspend fun loadCurrentCity(): CityWeather?
 
     @Query(
-        "UPDATE CityWeather SET weatherDescription = :weatherDescription," +
-                "weatherIcon = :weatherIcon, pressure = :pressure, temperatureMax = :temperatureMax, " +
-                "temperatureMin = :temperatureMin, temperature = :temperature,justAdded = 1  WHERE name =:name "
+        "UPDATE CityWeather SET weatherDescription = :weatherDescription, " +
+            "weatherIcon = :weatherIcon, weatherConditionId = :weatherConditionId, " +
+            "isNight = :isNight, rain = :rain, pressure = :pressure, " +
+            "temperatureMax = :temperatureMax, temperatureMin = :temperatureMin, " +
+            "temperature = :temperature, justAdded = 1 WHERE name = :name",
     )
     suspend fun update(
         name: String,
         weatherDescription: String?,
         weatherIcon: String?,
+        weatherConditionId: Int,
+        isNight: Boolean,
+        rain: Double?,
         pressure: Int,
         temperatureMax: Double,
         temperatureMin: Double,
