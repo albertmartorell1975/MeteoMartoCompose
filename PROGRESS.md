@@ -5,8 +5,8 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `dynamic-weather-theme-tokens` (waiting for `weather-condition-room-migration` PR review & merge into `feature/MM-02-design-system`)
-- Current blocker: None (`weather-condition-room-migration` accepted and published for PR review targeting `feature/MM-02-design-system`).
+- Current next ready feature: `dynamic-weather-theme-tokens` (`in_progress` — specification authored, awaiting human planner checkpoint `require_review_after: "planner"`).
+- Current blocker: None (`weather-condition-room-migration` merged via PR #9 into `feature/MM-02-design-system` @ `70f1d88`).
 - Last verified at: `2026-11-24` (`weather-condition-room-migration` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `65/65` = `29` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on modified/new `.kt` files, `assemblePreDebug`, and live `emulator-5554` in-place Room `v2 -> v3` migration verified with `PRAGMA user_version = 3` and `0` errors)
 
 ## Session Log
@@ -278,3 +278,13 @@
 - Verification run: Independent validator re-ran `assemblePreDebug`, `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`0` warnings in `lint-results-preDebug.xml` on modified/new `.kt` files), `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`65/65` `:app` = `29` pure JVM unit tests + `36/36` Roborazzi `unchanged`), full hygiene greps, and live `emulator-5554` SQLite + cold-launch verification; orchestrator ran `./gradlew prepareKotlinBuildScriptModel :domain:test compilePreDebugKotlin --build-cache --no-daemon` post-KDoc.
 - Files or artifacts updated: `WeatherCondition.kt`, `CityWeatherDomain.kt`, `MeteoMartoDatabaseMigrations.kt`, `CityMapper.kt`, `docs/features/weather-condition-room-migration/spec.md`, `docs/features/weather-condition-room-migration/validator/validation-report.md`, `CONSTRAINTS.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review & merge of the `weather-condition-room-migration` PR into `feature/MM-02-design-system`, then start `dynamic-weather-theme-tokens`.
+
+### Session 021
+
+- Date: `2026-11-24`
+- Agent: 🔵 `[PLANNER · workflow-planner]`
+- Goal: Produce the unified implementation specification for `dynamic-weather-theme-tokens` (Issue `#10`).
+- Completed: Audited `DESIGN.md`, `docs/ui/meteomarto_design_contract.txt`, `docs/ui/resources/{ic_logo,ic_warning,ic_error_forecast}.webp`, `app/src/main/res/font/roboto_flex.ttf`, `WeatherCondition.kt`, `CityWeatherDomain.kt`, all `ui/designsystem/foundation/*.kt` and `ui/designsystem/components/*.kt` files, `MeteoMartoComposeLayout.kt`, all screen call sites, `app/build.gradle.kts`, `.github/workflows/design-system-ci.yml`, `RoborazziPreviewTester.kt`, and `MeteoMartoDatabaseMigrationTest.kt`. Authored `docs/features/dynamic-weather-theme-tokens/spec.md` covering the 5 KISS `SimpleWeatherPalette` constants & deterministic `resolveWeatherPalette` (`ExtremeAlert > Night > Sunny > Rain > DayBaseline`), WCAG-AA-verified `FndColors` (adding `background` and tightening `Rain` `cold` to `#1565C0` for strict `>= 4.5:1` on `#F4F8FB`), variable-weight `RobotoFlex` & `>= 12.sp` `FndTypography` (`labelSmall: 11.sp -> 12.sp`) + `toMaterialTypography()`, `FndShapes` (`8/20/28dp`/pill) + `toMaterialShapes()`, deterministic `MeteoMartoTheme` (removing Android 12+ wallpaper `dynamicColor` override) + `DayBaselinePalette` root `MeteoMartoComposeLayout`, verbatim `.webp` asset bundling into `app/src/main/res/drawable/`, clean refresh of the existing `36` Design System Roborazzi PNGs (zero `Mm*` component code changes), and a pure JVM Closed Test Plan of `3` new `@Test` methods across `2` classes (`<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` `androidTest`). Updated `feature_list.json` (`dynamic-weather-theme-tokens.status` -> `"in_progress"`).
+- Verification run: Read-only repository inspection, WCAG AA contrast ratio calculation across all 5 palettes, and spec/budget/governance consistency audit (zero executable, build, or resource files modified).
+- Files or artifacts updated: `docs/features/dynamic-weather-theme-tokens/spec.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review of `docs/features/dynamic-weather-theme-tokens/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.

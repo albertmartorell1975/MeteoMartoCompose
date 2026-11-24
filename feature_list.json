@@ -122,7 +122,7 @@
     "depends_on": [
       "weather-condition-room-migration"
     ],
-    "status": "not_started",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/dynamic-weather-theme-tokens/spec.md",
     "validation_path": "docs/features/dynamic-weather-theme-tokens/validator/validation-report.md",
