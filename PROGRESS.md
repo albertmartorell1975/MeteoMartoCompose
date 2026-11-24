@@ -7,7 +7,7 @@
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
 - Current next ready feature: `weather-condition-room-migration` (blocked only until `domain-error-contract` PR is reviewed & merged into `feature/MM-02-design-system`)
 - Current blocker: None (`domain-error-contract` accepted by `workflow-validator` across all 4 levels; `pragmatic-testing-cleanup` PR #5 merged into `feature/MM-02-design-system` @ `1eea1a7`; `secrets-build-hygiene` merged @ `0e08818`; `gh` CLI authenticated as `albertmartorell1975`; `gate.yml` & `design-system-ci.yml` enabled for PRs targeting `feature/MM-02-design-system`).
-- Last verified at: `2026-11-23` (`domain-error-contract` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:data:test` `3/3`, `:usecases:test` `3/3`, `lintPreDebug`, `assemblePreDebug`, and `emulator-5554` online -> offline `"Connectivity error"` -> retry `"Mountain View"` runtime flow)
+- Last verified at: `2026-11-24` (`domain-error-contract` PR #7 Review Round #1 independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:data:test` `3/3`, `:usecases:test` `3/3`, `lintPreDebug` `0` `MissingPermission` warnings, `assemblePreDebug`, and `emulator-5554` online + Favorites + revoked-permission runtime flow)
 
 ## Session Log
 
@@ -208,3 +208,32 @@
 - Verification run: Independent validator re-ran `assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`61/61` `:app` = `25` pure JVM unit + `36` Roborazzi `unchanged`), `:domain:test :usecases:test :data:test --rerun-tasks` (`:data:test` `3/3`, `:usecases:test` `3/3`), `:app:verifyRoborazziPreDebug`, hygiene greps (`0` `CustomError`/`CustomErrorFlow`/`arrow.`/`io.mockk`), and `emulator-5554` runtime flow; ran `./gradlew prepareKotlinBuildScriptModel --build-cache --no-daemon`.
 - Files or artifacts updated: 8 KDoc-enriched `.kt` files, `docs/features/domain-error-contract/spec.md`, `docs/features/domain-error-contract/validator/validation-report.md`, `CONSTRAINTS.md`, `docs/ui_state_management_patterns.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review & merge of the `domain-error-contract` PR into `feature/MM-02-design-system`, then start `weather-condition-room-migration`.
+
+### Session 016
+
+- Date: `2026-11-23`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Apply PR #7 Review Round #1 (`review-fix`) refinements for `domain-error-contract` (Issue `#6`) in isolated worktree `.worktrees/impl-domain-error-contract` (`wt/impl-domain-error-contract`).
+- Completed:
+  - **Finding 1 (Named HTTP status constants)**: Defined `HTTP_UNAUTHORIZED = 401` and `HTTP_FORBIDDEN = 403` in `data/.../util/ExceptionMapper.kt` (no KDoc added; deferred to `workflow-documenter`) and referenced them in both `ExceptionMapper.kt` and `app/.../data/error/AndroidErrorMapper.kt`.
+  - **Finding 2 (Remove redundant `withContext(Dispatchers.IO)`)**: Removed redundant `withContext(Dispatchers.IO)` wrappers and unused `Dispatchers`/`withContext` imports across `CityRoomDataSource.kt` (`CityDao` methods are already `suspend`/`Flow` and `db.withTransaction` is main-safe).
+  - **Finding 3 (Eliminate `@SuppressLint("MissingPermission")`)**: Removed `@SuppressLint("MissingPermission")` from `LocationServerDataSourceImpl.kt`, injected `@param:ApplicationContext private val context: Context`, and added an explicit Lint-recognized `ContextCompat.checkSelfPermission` guard for `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` returning `Result.Error(DomainError.Location.PermissionDenied)` before accessing `fusedLocationProviderManager.lastLocation`.
+  - **Finding 4 (Unify `Result.fold` -> `when (result)`)**: Replaced all 4 `Result.fold(...)` call sites in `LoginViewModel.kt`, `SignUpViewModel.kt`, `CityWeatherViewModel.kt`, and `FavoritesDetailViewModel.kt` with exhaustive `when (result)` and removed unused `fold` imports while keeping `Result.fold` intact in `:domain/Result.kt`.
+  - **Finding 5 (Remove unused string resource)**: Removed unused `<string name="city_forecast_error">` from `app/src/main/res/values/strings.xml` after confirming `0` remaining references.
+- Verification run (JDK `21.0.11`):
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 32s`, `0` compiler warnings on modified files).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 25s`, configuration cache entry stored; `:app:testPreDebugUnitTest` `61/61` = `25` pure JVM unit tests + `36` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` `0` `MissingPermission` or other warnings on `LocationServerDataSourceImpl.kt` or any modified file).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 23s`; `:data:test` `3/3`, `:usecases:test` `3/3`, `:domain:test` `NO-SOURCE`; `31` total pure JVM unit tests).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 49s`; `results-summary.json`: `total: 36, recorded: 0, added: 0, changed: 0, unchanged: 36`; `0` PNG diffs).
+- Files or artifacts updated: `ExceptionMapper.kt`, `AndroidErrorMapper.kt`, `CityRoomDataSource.kt`, `LocationServerDataSourceImpl.kt`, `LoginViewModel.kt`, `SignUpViewModel.kt`, `CityWeatherViewModel.kt`, `FavoritesDetailViewModel.kt`, `strings.xml`, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent re-validation by `workflow-validator` in an isolated git worktree, followed by KDoc documentation via `workflow-documenter` for `HTTP_UNAUTHORIZED` / `HTTP_FORBIDDEN`.
+
+### Session 017
+
+- Date: `2026-11-24`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete PR #7 Review Round #1 (`review-fix`) re-validation, KDoc update, incremental atomic consolidation, and push for `domain-error-contract` (Issue `#6`).
+- Completed: Executed independent 4-level validation in `.worktrees/val-domain-error-contract-r1` (`workflow-validator` returned `accept`, Iteration `2 — PR #7 Review Round #1`, `spec.md` untouched, live `emulator-5554` verified online `"Mountain View"`, Favorites Room query, and revoked location permission flow with `0` errors); ran `workflow-documenter` (`flash`) in `.worktrees/doc-domain-error-contract` adding English KDoc to `HTTP_UNAUTHORIZED` and `HTTP_FORBIDDEN` in `ExceptionMapper.kt` (`e95c61f`); persisted `validation-report.md`, updated `feature_list.json` (`status: "accepted"`), and `PROGRESS.md`; consolidated Round #1 delta via atomic layer commits and pushed to `origin/feature/domain-error-contract`.
+- Verification run: Independent validator re-ran `assemblePreDebug :domain:test :usecases:test :data:test --no-daemon` (`:data:test` `3/3`, `:usecases:test` `3/3`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`0` `MissingPermission` or other warnings on modified files), `:app:verifyRoborazziPreDebug --no-daemon` (`61/61` `:app` = `25` pure JVM unit tests + `36` Roborazzi `unchanged`), hygiene greps (`0` magic `401`/`403`, `0` `withContext` in `CityRoomDataSource.kt`, `0` `@SuppressLint` in `LocationServerDataSourceImpl.kt`, `0` `.fold(` in ViewModels, `0` `city_forecast_error`), and `emulator-5554` live runtime verification.
+- Files or artifacts updated: `ExceptionMapper.kt`, `AndroidErrorMapper.kt`, `CityRoomDataSource.kt`, `LocationServerDataSourceImpl.kt`, `LoginViewModel.kt`, `SignUpViewModel.kt`, `CityWeatherViewModel.kt`, `FavoritesDetailViewModel.kt`, `strings.xml`, `docs/features/domain-error-contract/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Verify CI checks stay green on PR #7, resolve review threads, and merge PR #7 into `feature/MM-02-design-system` before starting `weather-condition-room-migration`.
