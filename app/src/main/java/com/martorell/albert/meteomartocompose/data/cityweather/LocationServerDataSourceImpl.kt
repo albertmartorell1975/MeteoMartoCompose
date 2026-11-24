@@ -1,6 +1,9 @@
 package com.martorell.albert.meteomartocompose.data.cityweather
 
-import android.annotation.SuppressLint
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.martorell.albert.meteomartocompose.data.city.sources.LocationServerDataSource
 import com.martorell.albert.meteomartocompose.data.util.ErrorMapper
@@ -8,21 +11,34 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocation
 import com.martorell.albert.meteomartocompose.domain.model.DomainError
 import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.utils.toDomain
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-@SuppressLint("MissingPermission")
 class LocationServerDataSourceImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val fusedLocationProviderManager: FusedLocationProviderClient,
     private val errorMapper: ErrorMapper,
 ) : LocationServerDataSource {
 
-    override suspend fun loadCurrentLocation(): Result<CurrentLocationDomain, DomainError> =
-        try {
+    override suspend fun loadCurrentLocation(): Result<CurrentLocationDomain, DomainError> {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return Result.Error(DomainError.Location.PermissionDenied)
+        }
+
+        return try {
+            val task = fusedLocationProviderManager.lastLocation
             suspendCancellableCoroutine { continuation ->
-                val task = fusedLocationProviderManager.lastLocation
                 if (task.isComplete) {
                     when {
                         task.isSuccessful -> {
@@ -71,4 +87,5 @@ class LocationServerDataSourceImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(errorMapper.map(e))
         }
+    }
 }

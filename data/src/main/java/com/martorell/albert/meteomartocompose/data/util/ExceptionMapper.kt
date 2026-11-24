@@ -12,6 +12,12 @@ import java.sql.SQLException
 import java.util.Collections
 import java.util.IdentityHashMap
 
+/** HTTP status code indicating missing or invalid authentication credentials, mapped to [DomainError.Network.Unauthorized]. */
+const val HTTP_UNAUTHORIZED = 401
+
+/** HTTP status code indicating an authenticated request lacks permission, mapped to [DomainError.Network.Unauthorized]. */
+const val HTTP_FORBIDDEN = 403
+
 /**
  * Maps pure JVM, Retrofit, serialization, permission, and SQL [Throwable] chains to a typed
  * [DomainError], guarding against cyclic `cause` references.
@@ -31,7 +37,7 @@ fun Throwable.toDomainError(): DomainError {
 
             is IOException -> return DomainError.Network.NoInternet
             is HttpException -> return when (current.code()) {
-                401, 403 -> DomainError.Network.Unauthorized
+                HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> DomainError.Network.Unauthorized
                 else -> DomainError.Network.ServerError(current.code())
             }
 

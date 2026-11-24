@@ -7,6 +7,8 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigServerException
 import com.martorell.albert.meteomartocompose.data.util.ErrorMapper
+import com.martorell.albert.meteomartocompose.data.util.HTTP_FORBIDDEN
+import com.martorell.albert.meteomartocompose.data.util.HTTP_UNAUTHORIZED
 import com.martorell.albert.meteomartocompose.data.util.toDomainError
 import com.martorell.albert.meteomartocompose.domain.model.DomainError
 import kotlinx.coroutines.CancellationException
@@ -56,7 +58,7 @@ class AndroidErrorMapper @Inject constructor() : ErrorMapper {
                 is SQLException -> return DomainError.Local.DatabaseError
                 is SerializationException -> return DomainError.Network.Serialization
                 is FirebaseRemoteConfigServerException -> return when (current.httpStatusCode) {
-                    401, 403 -> DomainError.Network.Unauthorized
+                    HTTP_UNAUTHORIZED, HTTP_FORBIDDEN -> DomainError.Network.Unauthorized
                     else -> DomainError.Network.ServerError(current.httpStatusCode)
                 }
 
