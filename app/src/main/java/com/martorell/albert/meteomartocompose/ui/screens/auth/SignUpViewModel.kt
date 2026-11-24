@@ -3,7 +3,7 @@ package com.martorell.albert.meteomartocompose.ui.screens.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.martorell.albert.meteomartocompose.domain.model.DomainError
-import com.martorell.albert.meteomartocompose.domain.model.fold
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -76,8 +76,8 @@ class SignUpViewModel @Inject constructor(
                 password = currentPassword
             )
 
-            result.fold(
-                onError = { domainError ->
+            when (result) {
+                is Result.Error -> {
                     _state.update {
                         it.copy(
                             validUser = false,
@@ -85,12 +85,13 @@ class SignUpViewModel @Inject constructor(
                             signUpChecked = true,
                             showError = true,
                             signUpStatus = false,
-                            error = domainError
+                            error = result.error
                         )
                     }
-                    _events.send(SignUpEvent.SignUpError(domainError))
-                },
-                onSuccess = {
+                    _events.send(SignUpEvent.SignUpError(result.error))
+                }
+
+                is Result.Success -> {
                     _state.update {
                         it.copy(
                             validUser = true,
@@ -100,7 +101,7 @@ class SignUpViewModel @Inject constructor(
                         )
                     }
                 }
-            )
+            }
         }
     }
 

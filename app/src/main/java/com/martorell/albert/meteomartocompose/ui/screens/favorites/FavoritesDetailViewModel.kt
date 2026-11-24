@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.model.DomainError
-import com.martorell.albert.meteomartocompose.domain.model.fold
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.usecases.favoritedetail.FavoriteDetailInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,10 +53,10 @@ class FavoritesDetailViewModel @Inject constructor(
 
         _state.update {
             it.copy(
-                content = result.fold(
-                    onError = { error -> DetailContent.Error(error) },
-                    onSuccess = { city -> DetailContent.Success(city) }
-                )
+                content = when (result) {
+                    is Result.Error -> DetailContent.Error(result.error)
+                    is Result.Success -> DetailContent.Success(result.data)
+                }
             )
         }
     }

@@ -7,7 +7,6 @@ import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocation
 import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
 import com.martorell.albert.meteomartocompose.domain.model.DomainError
 import com.martorell.albert.meteomartocompose.domain.model.Result
-import com.martorell.albert.meteomartocompose.domain.model.fold
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import com.martorell.albert.meteomartocompose.utils.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -234,9 +233,10 @@ class CityWeatherViewModel @Inject constructor(
 
                 val currentLocation = cityWeatherInteractors.currentLocationUseCase.invoke()
 
-                currentLocation.fold(
-                    onError = { locationError ->
-                        val permissionsGranted = locationError !is DomainError.Location.PermissionDenied
+                when (currentLocation) {
+                    is Result.Error -> {
+                        val permissionsGranted =
+                            currentLocation.error !is DomainError.Location.PermissionDenied
                         _state.update { updatedState ->
                             updatedState.copy(
                                 content = CityContent.NeedsLocation,
@@ -246,8 +246,10 @@ class CityWeatherViewModel @Inject constructor(
                                 permissionsGranted = permissionsGranted,
                             )
                         }
-                    },
-                    onSuccess = { location ->
+                    }
+
+                    is Result.Success -> {
+                        val location = currentLocation.data
                         cityWeatherInteractors.saveLocationUseCase.invoke(
                             latitude = location.latitude,
                             longitude = location.longitude,
@@ -263,8 +265,8 @@ class CityWeatherViewModel @Inject constructor(
                         }
 
                         loadCityWeather()
-                    },
-                )
+                    }
+                }
 
             } else {
 
