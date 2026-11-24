@@ -106,7 +106,7 @@
       "Pure JVM unit tests verify OpenWeather ID mapping (800 -> SUNNY, 2xx/3xx/5xx/6xx -> RAIN, fallback -> BASELINE), isNight derivation, and Room schema migration integrity."
     ],
     "evidence": [],
-    "notes": "Follow room-schema-governance and repository-pattern-governance (SSOT, DTO/Entity/Domain mappers, explicit Room Migration for weatherConditionId + isNight, Hilt DI cleanup)."
+    "notes": "Follow room-schema-governance and repository-pattern-governance (SSOT, DTO/Entity/Domain mappers, explicit Room Migration for weatherConditionId + isNight, Hilt DI cleanup). Also include data/domain follow-up cleanup from PR #7: remove redundant withContext(Dispatchers.IO) in AuthRoomDataSource.kt and LocationLocalServerDataImpl.kt, and remove unused Result.fold extension from domain/.../Result.kt."
   },
   {
     "id": "dynamic-weather-theme-tokens",
