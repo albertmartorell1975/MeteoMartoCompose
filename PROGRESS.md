@@ -5,9 +5,9 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `dynamic-weather-theme-tokens` (`in_progress` — specification authored, awaiting human planner checkpoint `require_review_after: "planner"`).
-- Current blocker: None (`weather-condition-room-migration` merged via PR #9 into `feature/MM-02-design-system` @ `70f1d88`).
-- Last verified at: `2026-11-24` (`weather-condition-room-migration` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `65/65` = `29` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on modified/new `.kt` files, `assemblePreDebug`, and live `emulator-5554` in-place Room `v2 -> v3` migration verified with `PRAGMA user_version = 3` and `0` errors)
+- Current next ready feature: `design-system-components-alignment` (waiting for `dynamic-weather-theme-tokens` PR review & merge into `feature/MM-02-design-system`)
+- Current blocker: None (`dynamic-weather-theme-tokens` accepted and published for PR review targeting `feature/MM-02-design-system`).
+- Last verified at: `2026-11-24` (`dynamic-weather-theme-tokens` independent 4-level validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `68/68` = `32` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on modified/new `.kt` files, `assemblePreDebug`, `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs`, and live `emulator-5554` Light & OS Dark Mode verification with `0` crashes)
 
 ## Session Log
 
@@ -288,3 +288,40 @@
 - Verification run: Read-only repository inspection, WCAG AA contrast ratio calculation across all 5 palettes, and spec/budget/governance consistency audit (zero executable, build, or resource files modified).
 - Files or artifacts updated: `docs/features/dynamic-weather-theme-tokens/spec.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review of `docs/features/dynamic-weather-theme-tokens/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
+
+
+### Session 022
+
+- Date: `2026-11-24`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Implement `dynamic-weather-theme-tokens` (Issue `#10`) in isolated worktree `.worktrees/impl-dynamic-weather-theme-tokens` (`wt/impl-dynamic-weather-theme-tokens`).
+- Completed:
+  - **Foundation Tokens & Theme (`:app` — `ui/designsystem/foundation/`):**
+    - Created `WeatherPalette.kt` with `@Immutable SimpleWeatherPalette`, the 5 authoritative KISS palettes (`DayBaselinePalette`, `SunnyPalette`, `RainPalette`, `NightPalette`, `ExtremeAlertPalette`) matching `DESIGN.md` hex values verbatim, `LocalWeatherPalette`, and deterministic `resolveWeatherPalette(...)` (`ExtremeAlert > Night > Sunny > Rain > DayBaseline` via exhaustive `when (condition)`).
+    - Updated `FndColors.kt` adding `background: Color`, replacing legacy purple `FndColorsLight`/`FndColorsDark` with WCAG-AA-verified (`>= 4.5:1`) presets for all 5 palettes (including `Rain` `cold = #1565C0` on `#F4F8FB` and accessible dark `onPrimary` on `Sunny`, `Night`, `ExtremeAlert`), adding `FndColors.Companion.fromPalette(palette)` with luminance fallback for custom palettes, defaulting `LocalFndColors` to `DayBaselineFndColors`, and removing stale KDoc (deferred to `workflow-documenter`).
+    - Updated `FndTypography.kt` registering variable `RobotoFlex` weights (`Normal 400`, `Medium 500`, `SemiBold 600`, `Bold 700`) backed by `R.font.roboto_flex`, raising `labelSmall` from `11.sp` to `12.sp`, and adding `FndTypography.toMaterialTypography()` mapping all 15 Material 3 text styles.
+    - Created `FndShapes.kt` (`input = 8.dp`, `card = 20.dp`, `dialog = 28.dp`, `pill = CircleShape` using named constants), `LocalFndShapes`, and `FndShapes.toMaterialShapes()`.
+    - Updated `DesignSystem.kt` adding `MeteoMartoTheme.palette` and `MeteoMartoTheme.shapes` getters, removing Android 12+ wallpaper `dynamicColor` overrides, providing cached immutable default tokens, and wiring `colorScheme`, `typography`, and `shapes` into `MaterialTheme`.
+    - Updated `MeteoMartoComposeLayout.kt` to pass `palette = DayBaselinePalette` and paint the root `Box` with `MeteoMartoTheme.colors.background`. Zero KDoc written on the 5 KDoc-deferred foundation files; zero edits to `ui/designsystem/components/*.kt`, legacy `ui/theme/*.kt`, `ic_splash.xml`, or `:domain`/`:data`/`:usecases`.
+  - **WebP Assets & Roborazzi Baseline:** Copied `ic_logo.webp`, `ic_warning.webp`, and `ic_error_forecast.webp` verbatim from `docs/ui/resources/` into `app/src/main/res/drawable/` (zero mockups from `docs/ui/screens/`); refreshed and verified the exact `36` existing Design System Roborazzi PNGs (`30` modified, `0` added/deleted, `36/36 unchanged` on verification).
+  - **Pure JVM Closed Test Plan (`3` new `@Test` across `2` classes, `<= 3`/class, `0` MockK, `0` Robolectric, `0` `androidTest`):** Created `WeatherThemePaletteTest.kt` (`2 @Test`) and `DesignSystemResourcesTest.kt` (`1 @Test`).
+- Verification run (JDK `21.0.11`):
+  - `./gradlew :app:recordRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 54s`).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 47s`; `results-summary.json`: `total=36, recorded=0, added=0, changed=0, unchanged=36`).
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 30s`; `0` compiler warnings on modified/new files).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 9s`, configuration cache stored; `:app:testPreDebugUnitTest` `68/68` = `32` pure JVM unit tests across 14 classes `<= 3`/class + `36` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` `0` warnings on modified/new `.kt` files).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 22s`; `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`; total `39` pure JVM unit tests across all modules).
+  - `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 42s`).
+  - Hygiene invariants: `0` `dynamicLightColorScheme`/`dynamicDarkColorScheme` in `ui/designsystem/`; `0` `11.sp` in `ui/designsystem/`; `0` changes in `ui/designsystem/components/`; exact `36` PNGs in `app/src/test/snapshots/`; `0` `io.mockk`; `0` `RobolectricTestRunner` in `app/src/test/`; `0` KDoc on the 5 KDoc-deferred files.
+- Files or artifacts updated: `WeatherPalette.kt`, `FndColors.kt`, `FndTypography.kt`, `FndShapes.kt`, `DesignSystem.kt`, `MeteoMartoComposeLayout.kt`, `app/src/main/res/drawable/{ic_logo,ic_warning,ic_error_forecast}.webp`, `app/src/test/snapshots/*.png` (`30` refreshed / `36` total), `WeatherThemePaletteTest.kt`, `DesignSystemResourcesTest.kt`, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent 4-level validation by `workflow-validator` in an isolated git worktree, followed by English KDoc authoring via `workflow-documenter` for the 5 foundation files.
+
+### Session 023
+
+- Date: `2026-11-24`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete independent 4-level validation, English KDoc documentation, atomic consolidation, and PR publication for `dynamic-weather-theme-tokens` (Issue `#10`).
+- Completed: Executed independent 4-level validation in `.worktrees/val-dynamic-weather-theme-tokens` (`workflow-validator` returned `accept`, all `3/3` new tests audited as `KEEP`, SHA-256 WebP parity verified, exhaustive WCAG AA contrast check passed, and live `emulator-5554` Light & OS Dark Mode verified deterministic `DayBaselinePalette` pinning with `0` crashes); ran `workflow-documenter` (`flash`) in `.worktrees/doc-dynamic-weather-theme-tokens` adding English KDoc (`+187/-0`) to `WeatherPalette.kt`, `FndColors.kt`, `FndShapes.kt`, `FndTypography.kt`, and `DesignSystem.kt` (`0f6ef30`); persisted `docs/features/dynamic-weather-theme-tokens/validator/validation-report.md`; updated `spec.md` (`[x]`, `accepted`), `CONSTRAINTS.md` (#13 enriched), `feature_list.json` (`accepted`), and `PROGRESS.md`; consolidated with atomic layer commits and published PR targeting `feature/MM-02-design-system`.
+- Verification run: Independent validator re-ran `assemblePreDebug --no-daemon`, `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`0` warnings on all 8 touched `.kt` files), uncached `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`68/68` `:app` = `32` pure JVM unit tests + `36/36` Roborazzi `unchanged`), `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` (pre- and post-KDoc with `0` warnings), full hygiene greps, and live `emulator-5554` Light/Dark launch verification.
+- Files or artifacts updated: `WeatherPalette.kt`, `FndColors.kt`, `FndShapes.kt`, `FndTypography.kt`, `DesignSystem.kt`, `MeteoMartoComposeLayout.kt`, `app/src/main/res/drawable/{ic_logo,ic_warning,ic_error_forecast}.webp`, `WeatherThemePaletteTest.kt`, `DesignSystemResourcesTest.kt`, `app/src/test/snapshots/*.png`, `docs/features/dynamic-weather-theme-tokens/spec.md`, `docs/features/dynamic-weather-theme-tokens/validator/validation-report.md`, `CONSTRAINTS.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review & merge of the `dynamic-weather-theme-tokens` PR into `feature/MM-02-design-system` (verify `Quality Gate` and `Design System CI` are green), then start `design-system-components-alignment`.

@@ -6,7 +6,7 @@
 * **`id`:** `dynamic-weather-theme-tokens`
 * **`area`:** `design-system`
 * **`depends_on`:** `["weather-condition-room-migration"]` (`accepted` and merged into `feature/MM-02-design-system` via PR #9 @ `70f1d88`)
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`github_issue`:** `#10` (`[dynamic-weather-theme-tokens] Implement five KISS weather palettes and Roboto Flex 12sp typography`)
 * **`module_topology`:** `Layer-Based (:domain -> :usecases <- :data -> :app)`
 * **Objective:** Implement the authoritative 5-palette KISS dynamic theming foundation (`SimpleWeatherPalette`: `DayBaselinePalette`, `SunnyPalette`, `RainPalette`, `NightPalette`, `ExtremeAlertPalette`) and deterministic palette resolver (`ExtremeAlert > Night > Sunny > Rain > DayBaseline`), map each palette to WCAG-compliant `FndColors` (adding `background`) and Material 3 `ColorScheme` with zero wallpaper `dynamicColor` override, enforce `Roboto Flex` variable weights and a strict `>= 12.sp` minimum font scale across `FndTypography` and `MaterialTheme.typography` (raising `labelSmall` from `11.sp` to `12.sp`), add `FndShapes` (`8.dp` / `20.dp` / `28.dp` / pill), bundle the 3 authoritative WebP graphic assets from `docs/ui/resources/` into `app/src/main/res/drawable/`, and cleanly refresh the existing `36` Design System Roborazzi snapshots so `verifyRoborazziPreDebug` and `Design System CI` remain 100% deterministic and green.
@@ -138,10 +138,10 @@ No persistence changes required.
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `DESIGN.md`, `docs/ui/meteomarto_design_contract.txt`, `design-system-governance`, `kotlin-style`, and `testing-setup`. Confirm JDK 21 is active (`java -version`). Write **zero** KDoc comments (`/** ... */`) on new or modified public symbols (deferred strictly to `workflow-documenter`). Do **NOT** modify any `ui/designsystem/components/*.kt` files.
-- [ ] **Domain / Data / UseCase (`:domain`, `:data`, `:usecases`):**
+- [x] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, `DESIGN.md`, `docs/ui/meteomarto_design_contract.txt`, `design-system-governance`, `kotlin-style`, and `testing-setup`. Confirm JDK 21 is active (`java -version`). Write **zero** KDoc comments (`/** ... */`) on new or modified public symbols (deferred strictly to `workflow-documenter`). Do **NOT** modify any `ui/designsystem/components/*.kt` files.
+- [x] **Domain / Data / UseCase (`:domain`, `:data`, `:usecases`):**
   - No changes required (`WeatherCondition` and `CityWeatherDomain.isNight` are already implemented).
-- [ ] **UI Foundation Tokens & Theme (`:app` — `ui/designsystem/foundation/`):**
+- [x] **UI Foundation Tokens & Theme (`:app` — `ui/designsystem/foundation/`):**
   - **Create `WeatherPalette.kt`**:
     - Define `@Immutable data class SimpleWeatherPalette(val background: Color, val surface: Color, val onSurface: Color, val primary: Color)`.
     - Define the 5 canonical constants matching `DESIGN.md` hex values verbatim:
@@ -171,15 +171,15 @@ No persistence changes required.
     - Build `lightColorScheme` / `darkColorScheme` from `colors = FndColors.fromPalette(palette)` (including `background = colors.background` and `onBackground = colors.onSurface`), provide cached immutable defaults (`DefaultFndSpacing`, `DefaultFndDimensions`, `DefaultFndTypography`, `DefaultFndShapes`) in `CompositionLocalProvider`, and pass `colorScheme`, `typography = DefaultMaterialTypography`, and `shapes = DefaultMaterialShapes` to `MaterialTheme(...)`.
   - **Update `MeteoMartoComposeLayout.kt`**:
     - Pass `palette = DayBaselinePalette` into `MeteoMartoTheme(palette = DayBaselinePalette, fontScale = fontScale)` and apply `.background(MeteoMartoTheme.colors.background)` on the root `Box` (removing unused `MaterialTheme` import).
-- [ ] **UI Design Assets (`:app` — `res/drawable/`):**
+- [x] **UI Design Assets (`:app` — `res/drawable/`):**
   - Copy `docs/ui/resources/ic_logo.webp` -> `app/src/main/res/drawable/ic_logo.webp`.
   - Copy `docs/ui/resources/ic_warning.webp` -> `app/src/main/res/drawable/ic_warning.webp`.
   - Copy `docs/ui/resources/ic_error_forecast.webp` -> `app/src/main/res/drawable/ic_error_forecast.webp`.
   - Confirm `app/src/main/res/drawable/ic_splash.xml` remains untouched and zero files from `docs/ui/screens/` are copied.
-- [ ] **Refresh Existing Design System Roborazzi Baseline (36 PNGs — `design-system-governance` §4):**
+- [x] **Refresh Existing Design System Roborazzi Baseline (36 PNGs — `design-system-governance` §4):**
   - Run `./gradlew :app:recordRoborazziPreDebug --no-daemon` so the `36` existing Design System golden PNGs reflect the new `DayBaseline`/`Night` palette tokens, `12.sp` `labelSmall`, and `MaterialTheme` typography/shapes.
   - Run `./gradlew :app:verifyRoborazziPreDebug --no-daemon` immediately afterward and verify `results-summary.json` reports `total: 36, added: 0, changed: 0, unchanged: 36`.
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+- [x] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: **3 new `@Test` methods total** across **2 new test classes** (`<= 3`/class, `<= 6`/feature, pure JVM only, `0` MockK, `0` Robolectric, `0` `androidTest`, `0` cross-layer duplication). Existing `36` pure JVM unit tests + `36` Roborazzi previews must stay green with zero regressions.
   - *Planned new `*Test.kt` files*:
     1. `app/src/test/java/com/martorell/albert/meteomartocompose/ui/designsystem/foundation/WeatherThemePaletteTest.kt` (`2 @Test`):
@@ -188,7 +188,7 @@ No persistence changes required.
     2. `app/src/test/java/com/martorell/albert/meteomartocompose/ui/designsystem/foundation/DesignSystemResourcesTest.kt` (`1 @Test`):
        - `bundled webp drawables and roboto flex font exist with valid binary headers and zero screen mockups` (resolves `src/main/res` cleanly on both module-relative and root-relative CWDs, asserts `ic_logo.webp`, `ic_warning.webp`, `ic_error_forecast.webp` exist with valid `RIFF` + `WEBP` magic bytes, `font/roboto_flex.ttf` exists and is non-empty, and zero `screen.png` / `meteomarto_*.png` mockup files exist in `res/drawable/`).
   - *Zero-test layers*: `:domain`, `:data`, `:usecases` (`0` new tests — untouched).
-- [ ] **Compiler Self-Verification (MANDATORY):**
+- [x] **Compiler Self-Verification (MANDATORY):**
   - Execute `./gradlew assemblePreDebug --no-daemon`
   - Execute `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`
   - Execute `./gradlew :domain:test :usecases:test :data:test --no-daemon`
@@ -199,8 +199,8 @@ No persistence changes required.
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `dynamic-weather-theme-tokens` scope (`WIP=1`) and `CONSTRAINTS.md` (zero edits to `ui/designsystem/components/*.kt`, zero screen overhauls, zero mockups in `res/drawable/`).
-- [ ] All 5 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (exact 5 KISS palette hex values & precedence, WCAG AA `>= 4.5:1` contrast, Roboto Flex variable weights & `>= 12.sp` across all 15 styles, `FndShapes`, deterministic `MeteoMartoTheme` with zero wallpaper `dynamicColor`, 3 valid `.webp` drawables, and `36/36` verified Roborazzi PNGs).
-- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`, `design-system-governance`, `kotlin-style`) are respected (`:domain` untouched, exhaustive `when (condition)`, zero magic literals, zero wildcard/unused imports).
-- [ ] `@compiler` verification evidence, `:app:verifyRoborazziPreDebug`, and `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` pass cleanly on JDK 21; pure JVM unit tests verify real behavior within the strict Test Budget (`3` new `@Test` total across `2` classes, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` `androidTest`).
-- [ ] Structured validation report written to `docs/features/dynamic-weather-theme-tokens/validator/validation-report.md`.
+- [x] Implementation stays strictly within `dynamic-weather-theme-tokens` scope (`WIP=1`) and `CONSTRAINTS.md` (zero edits to `ui/designsystem/components/*.kt`, zero screen overhauls, zero mockups in `res/drawable/`).
+- [x] All 5 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (exact 5 KISS palette hex values & precedence, WCAG AA `>= 4.5:1` contrast, Roboto Flex variable weights & `>= 12.sp` across all 15 styles, `FndShapes`, deterministic `MeteoMartoTheme` with zero wallpaper `dynamicColor`, 3 valid `.webp` drawables, and `36/36` verified Roborazzi PNGs).
+- [x] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`, `design-system-governance`, `kotlin-style`) are respected (`:domain` untouched, exhaustive `when (condition)`, zero magic literals, zero wildcard/unused imports).
+- [x] `@compiler` verification evidence, `:app:verifyRoborazziPreDebug`, and `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` pass cleanly on JDK 21; pure JVM unit tests verify real behavior within the strict Test Budget (`3` new `@Test` total across `2` classes, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric, `0` `androidTest`).
+- [x] Structured validation report written to `docs/features/dynamic-weather-theme-tokens/validator/validation-report.md`.
