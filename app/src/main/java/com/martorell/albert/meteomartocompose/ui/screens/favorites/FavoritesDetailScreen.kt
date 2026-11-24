@@ -28,7 +28,7 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPrevi
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmScaffold
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmWeatherInfo
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
-import com.martorell.albert.meteomartocompose.ui.mappers.toMessage
+import com.martorell.albert.meteomartocompose.ui.mappers.toUiText
 import com.martorell.albert.meteomartocompose.utils.previewAsyncImageCoil
 
 @Composable
@@ -71,7 +71,7 @@ fun FavoritesDetailContent(
 
             is FavoritesDetailViewModel.DetailContent.Error -> {
                 MmErrorState(
-                    message = content.error.toMessage(),
+                    message = content.error.toUiText().asString(),
                     onRetry = onRetry
                 )
             }

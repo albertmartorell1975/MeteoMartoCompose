@@ -67,7 +67,7 @@
     "depends_on": [
       "pragmatic-testing-cleanup"
     ],
-    "status": "not_started",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/domain-error-contract/spec.md",
     "validation_path": "docs/features/domain-error-contract/validator/validation-report.md",
@@ -75,7 +75,18 @@
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
       "Pure JVM unit tests verify Throwable-to-DomainError mapping across auth, network, location, and persistence cases."
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 16s (full Hilt DI graph with AndroidErrorMapper -> ErrorMapper @Binds @Singleton, resources, and APK verified; 0 compiler warnings on modified/new files).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 10s (Configuration cache entry stored; :app:testPreDebugUnitTest 61/61 passed = 25 pure JVM unit tests across 10 classes <= 3/class + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 warnings on modified/new .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 43s (:data:test 3/3 passed, :usecases:test 3/3 passed, :domain:test NO-SOURCE, 0 failed, 0 skipped).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 48s (results-summary.json: total=36, recorded=0, added=0, changed=0, unchanged=36; 0 PNG diffs).",
+      "PASS: Hygiene invariants -> 0 CustomError, 0 CustomErrorFlow, 0 ResultResponse, 0 customTryCatch, 0 customFlowTryCatch, 0 arrow., 0 io.mockk across app/data/domain/usecases; 0 android.* in :domain; 0 RobolectricTestRunner in app/src/test/; 0 KDoc comments on the 8 KDoc-deferred production files.",
+      "PASS (PR #7 Review Round #1): ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 32s (Hilt DI graph with @param:ApplicationContext in LocationServerDataSourceImpl verified; 0 compiler warnings on modified files).",
+      "PASS (PR #7 Review Round #1): ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 25s (Configuration cache entry stored; :app:testPreDebugUnitTest 61/61 = 25 pure JVM unit tests across 10 classes <= 3/class + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug passed with 0 MissingPermission or other warnings on LocationServerDataSourceImpl.kt, strings.xml, or any modified file).",
+      "PASS (PR #7 Review Round #1): ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 23s (:data:test 3/3, :usecases:test 3/3, :domain:test NO-SOURCE; total 31 pure JVM unit tests, 0 failed, 0 skipped).",
+      "PASS (PR #7 Review Round #1): ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 49s (results-summary.json: total=36, recorded=0, added=0, changed=0, unchanged=36; 0 PNG diffs).",
+      "PASS (PR #7 Review Round #1): Hygiene invariants -> HTTP_UNAUTHORIZED (401) & HTTP_FORBIDDEN (403) shared without KDoc (deferred to workflow-documenter); 0 withContext in CityRoomDataSource.kt; 0 @SuppressLint in LocationServerDataSourceImpl.kt; 0 .fold( in app/src/main/ ViewModels while Result.fold preserved in :domain/Result.kt; 0 city_forecast_error references; 0 new @Test methods; spec.md & snapshots untouched."
+    ],
     "notes": "Replaces legacy CustomError in :data per repository-pattern-governance (safeCall, typed DomainError mappers, Hilt bindings) and CONTEXT.md."
   },
   {

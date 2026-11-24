@@ -4,7 +4,9 @@ import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionC
 import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionRepository
 import com.martorell.albert.meteomartocompose.data.city.sources.SystemService
 import com.martorell.albert.meteomartocompose.data.cityweather.PermissionRepositoryImpl
+import com.martorell.albert.meteomartocompose.data.error.AndroidErrorMapper
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
+import com.martorell.albert.meteomartocompose.data.util.ErrorMapper
 import com.martorell.albert.meteomartocompose.framework.preferences.UserPreferencesImpl
 import com.martorell.albert.meteomartocompose.framework.system.AndroidSystemService
 import com.martorell.albert.meteomartocompose.utils.AndroidAppLogger
@@ -57,4 +59,10 @@ abstract class AppBindingModule {
     abstract fun bindAppLogger(
         impl: AndroidAppLogger,
     ): AppLogger
+
+    @Binds
+    @Singleton
+    abstract fun bindErrorMapper(
+        impl: AndroidErrorMapper,
+    ): ErrorMapper
 }

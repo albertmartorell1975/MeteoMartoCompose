@@ -1,10 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui.screens.favorites
 
 import androidx.lifecycle.SavedStateHandle
-import arrow.core.left
-import arrow.core.right
-import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeCityWeatherRepository
 import com.martorell.albert.meteomartocompose.usecases.cityweather.LoadCityWeatherByNameUseCase
@@ -43,7 +42,7 @@ class FavoritesDetailViewModelTest {
             temperatureMax = 28.0,
             pressure = 1015,
         )
-        cityWeatherRepository.loadCityByNameResult = dummyCity.right()
+        cityWeatherRepository.loadCityByNameResult = Result.Success(dummyCity)
 
         viewModel.onStart()
 
@@ -54,8 +53,8 @@ class FavoritesDetailViewModelTest {
 
     @Test
     fun `onStart updates Error state when repository fails`() = runTest {
-        val error = CustomError.Connectivity
-        cityWeatherRepository.loadCityByNameResult = error.left()
+        val error = DomainError.Network.NoInternet
+        cityWeatherRepository.loadCityByNameResult = Result.Error(error)
 
         viewModel.onStart()
 

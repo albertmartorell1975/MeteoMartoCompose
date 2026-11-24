@@ -2,7 +2,8 @@ package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.martorell.albert.meteomartocompose.data.CustomError
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.usecases.signup.SignUpInteractors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -28,7 +29,7 @@ class SignUpViewModel @Inject constructor(
     val events: Flow<SignUpEvent> = _events.receiveAsFlow()
 
     sealed interface SignUpEvent {
-        data class SignUpError(val error: CustomError) : SignUpEvent
+        data class SignUpError(val error: DomainError) : SignUpEvent
     }
 
     data class UiState(
@@ -42,7 +43,7 @@ class SignUpViewModel @Inject constructor(
         val passwordVisible: Boolean = false,
         val showError: Boolean = false,
         val validUser: Boolean = false,
-        val error: CustomError? = null,
+        val error: DomainError? = null,
     )
 
     fun performSignUp() {
@@ -75,26 +76,30 @@ class SignUpViewModel @Inject constructor(
                 password = currentPassword
             )
 
-            result.fold({ customError ->
-                _state.update {
-                    it.copy(
-                        validUser = false,
-                        loading = false,
-                        signUpChecked = true,
-                        showError = true,
-                        signUpStatus = false,
-                        error = customError
-                    )
+            when (result) {
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            validUser = false,
+                            loading = false,
+                            signUpChecked = true,
+                            showError = true,
+                            signUpStatus = false,
+                            error = result.error
+                        )
+                    }
+                    _events.send(SignUpEvent.SignUpError(result.error))
                 }
-                viewModelScope.launch { _events.send(SignUpEvent.SignUpError(customError)) }
-            }) {
-                _state.update {
-                    it.copy(
-                        validUser = true,
-                        signUpChecked = true,
-                        loading = false,
-                        signUpStatus = true
-                    )
+
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            validUser = true,
+                            signUpChecked = true,
+                            loading = false,
+                            signUpStatus = true
+                        )
+                    }
                 }
             }
         }

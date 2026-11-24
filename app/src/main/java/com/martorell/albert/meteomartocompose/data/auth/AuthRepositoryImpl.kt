@@ -1,18 +1,19 @@
 package com.martorell.albert.meteomartocompose.data.auth
 
-import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.auth.repositories.AuthRepository
 import com.martorell.albert.meteomartocompose.data.auth.sources.AccountService
 import com.martorell.albert.meteomartocompose.data.auth.sources.AuthLocalDataSource
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
+import com.martorell.albert.meteomartocompose.domain.model.onSuccess
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
     private val authLocalDataSource: AuthLocalDataSource,
-) :
-    AuthRepository {
+) : AuthRepository {
 
     override val isUserLoggedIn: Flow<Boolean>
         get() = accountService.authState
@@ -27,43 +28,32 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logIn(
         email: String,
         password: String
-    ): ResultResponse<UserDomain?> {
-
+    ): Result<UserDomain?, DomainError> {
         val result = accountService.logIn(
             email = email,
             password = password
         )
 
-        // Only if the result is correct, will be saved on the local database
-        result.fold(
-            { },
-        ) { user ->
+        result.onSuccess { user ->
             user?.let { authLocalDataSource.newUser(it) }
         }
 
         return result
-
     }
 
     override suspend fun singUp(
         email: String,
         password: String
-    ): ResultResponse<UserDomain?> {
-
+    ): Result<UserDomain?, DomainError> {
         val result = accountService.singUp(
             email = email,
             password = password
         )
 
-        // Only if the result is correct, will be saved on the local database
-        result.fold(
-            {},
-        ) { user ->
+        result.onSuccess { user ->
             user?.let { authLocalDataSource.newUser(it) }
         }
 
         return result
-
     }
-
 }

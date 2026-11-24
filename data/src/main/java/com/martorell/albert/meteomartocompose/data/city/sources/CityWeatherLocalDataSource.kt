@@ -1,8 +1,9 @@
 package com.martorell.albert.meteomartocompose.data.city.sources
 
-import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.response.CityWeatherResponse
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 
 interface CityWeatherLocalDataSource {
@@ -20,7 +21,7 @@ interface CityWeatherLocalDataSource {
         temperature: Double,
     )
 
-    suspend fun loadCity(name: String): ResultResponse<CityWeatherDomain>
+    suspend fun loadCity(name: String): Result<CityWeatherDomain, DomainError>
     suspend fun updateFavorite(cityWeatherDomain: CityWeatherDomain)
     suspend fun makeAllCitiesAsNotJustAdded()
     fun getAll(): Flow<List<CityWeatherDomain>>

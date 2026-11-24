@@ -1,10 +1,5 @@
 package com.martorell.albert.meteomartocompose.testutil.fakes
 
-import arrow.core.left
-import arrow.core.right
-import com.martorell.albert.meteomartocompose.data.CustomError
-import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
-import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.city.repositories.LocationRepository
 import com.martorell.albert.meteomartocompose.data.city.repositories.PermissionChecker
@@ -14,6 +9,8 @@ import com.martorell.albert.meteomartocompose.data.notification.NotificationServ
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.utils.AppLogger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,11 +22,11 @@ class FakeCityWeatherRepository(
 
     private val citiesFlow = MutableStateFlow<List<CityWeatherDomain>>(emptyList())
 
-    var loadCurrentWeatherError: CustomErrorFlow? = null
+    var loadCurrentWeatherResult: Result<Unit, DomainError> = Result.Success(Unit)
     var loadCurrentWeatherException: Throwable? = null
     var onLoadCurrentWeather: ((String, String) -> Unit)? = null
-    var loadCityByNameResult: ResultResponse<CityWeatherDomain> =
-        CustomError.Unknown("Not configured").left()
+    var loadCityByNameResult: Result<CityWeatherDomain, DomainError> =
+        Result.Error(DomainError.Local.NotFound)
     var currentCityFavorite: Boolean = false
 
     var listOfCitiesAccessCount: Int = 0
@@ -57,11 +54,11 @@ class FakeCityWeatherRepository(
     override suspend fun loadCityCurrentWeather(
         latitude: String,
         longitude: String,
-    ): CustomErrorFlow? {
+    ): Result<Unit, DomainError> {
         loadCurrentWeatherCalls += latitude to longitude
         loadCurrentWeatherException?.let { throw it }
         onLoadCurrentWeather?.invoke(latitude, longitude)
-        return loadCurrentWeatherError
+        return loadCurrentWeatherResult
     }
 
     override suspend fun switchFavorite(city: CityWeatherDomain) {
@@ -80,7 +77,7 @@ class FakeCityWeatherRepository(
         }
     }
 
-    override suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain> {
+    override suspend fun loadCityByName(cityName: String): Result<CityWeatherDomain, DomainError> {
         loadCityByNameCalls += cityName
         return loadCityByNameResult
     }
@@ -108,13 +105,13 @@ class FakeRemoteConfigRepository(
 
 class FakeLocationRepository : LocationRepository {
 
-    var currentLocationResult: ResultResponse<CurrentLocationDomain> =
-        CurrentLocationDomain(latitude = 41.38, longitude = 2.17).right()
+    var currentLocationResult: Result<CurrentLocationDomain, DomainError> =
+        Result.Success(CurrentLocationDomain(latitude = 41.38, longitude = 2.17))
     var loadCurrentLocationCallCount: Int = 0
         private set
     val savedLocations = mutableListOf<Pair<Double?, Double?>>()
 
-    override suspend fun loadCurrentLocation(): ResultResponse<CurrentLocationDomain> {
+    override suspend fun loadCurrentLocation(): Result<CurrentLocationDomain, DomainError> {
         loadCurrentLocationCallCount++
         return currentLocationResult
     }

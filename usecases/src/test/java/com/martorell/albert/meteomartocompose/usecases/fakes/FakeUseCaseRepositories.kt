@@ -1,12 +1,10 @@
 package com.martorell.albert.meteomartocompose.usecases.fakes
 
-import arrow.core.left
-import com.martorell.albert.meteomartocompose.data.CustomError
-import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
-import com.martorell.albert.meteomartocompose.data.ResultResponse
 import com.martorell.albert.meteomartocompose.data.city.repositories.CityWeatherRepository
 import com.martorell.albert.meteomartocompose.data.remoteconfig.RemoteConfigRepository
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -26,7 +24,7 @@ class FakeCityWeatherRepository(
     override suspend fun loadCityCurrentWeather(
         latitude: String,
         longitude: String,
-    ): CustomErrorFlow? = null
+    ): Result<Unit, DomainError> = Result.Success(Unit)
 
     override suspend fun switchFavorite(city: CityWeatherDomain) = Unit
 
@@ -34,8 +32,8 @@ class FakeCityWeatherRepository(
 
     override suspend fun removeCityAsFavorite(cityName: String) = Unit
 
-    override suspend fun loadCityByName(cityName: String): ResultResponse<CityWeatherDomain> =
-        CustomError.Unknown("Not configured").left()
+    override suspend fun loadCityByName(cityName: String): Result<CityWeatherDomain, DomainError> =
+        Result.Error(DomainError.Local.NotFound)
 
     override suspend fun updateAlertStatus(name: String, isNotified: Boolean) {
         citiesFlow.value = citiesFlow.value.map { existing ->

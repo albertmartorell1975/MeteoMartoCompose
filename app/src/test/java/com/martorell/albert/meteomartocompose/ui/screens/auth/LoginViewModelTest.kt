@@ -1,10 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui.screens.auth
 
 import app.cash.turbine.test
-import arrow.core.left
-import arrow.core.right
-import com.martorell.albert.meteomartocompose.data.CustomError
 import com.martorell.albert.meteomartocompose.domain.auth.UserDomain
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAuthRepository
 import com.martorell.albert.meteomartocompose.usecases.login.LogInUseCase
@@ -69,7 +68,7 @@ class LoginViewModelTest {
     fun `performLogin transitions to authenticated user on success`() = runTest {
         val email = "test@example.com"
         val password = "password123"
-        authRepository.logInResult = UserDomain("1", email, "Name").right()
+        authRepository.logInResult = Result.Success(UserDomain("1", email, "Name"))
 
         viewModel.setEmail(email)
         viewModel.setPassword(password)
@@ -88,8 +87,8 @@ class LoginViewModelTest {
     fun `performLogin emits LoginError event and updates error state on failure`() = runTest {
         val email = "test@example.com"
         val password = "password123"
-        val error = CustomError.Unknown("Error")
-        authRepository.logInResult = error.left()
+        val error = DomainError.Auth.InvalidCredentials
+        authRepository.logInResult = Result.Error(error)
 
         viewModel.setEmail(email)
         viewModel.setPassword(password)

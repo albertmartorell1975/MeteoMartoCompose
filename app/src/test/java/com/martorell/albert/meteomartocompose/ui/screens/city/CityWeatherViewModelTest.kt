@@ -1,9 +1,9 @@
 package com.martorell.albert.meteomartocompose.ui.screens.city
 
 import app.cash.turbine.test
-import arrow.core.right
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.testutil.MainDispatcherRule
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAppLogger
 import com.martorell.albert.meteomartocompose.testutil.fakes.FakeAuthRepository
@@ -82,7 +82,7 @@ class CityWeatherViewModelTest {
             temperatureMax = 30.0,
             pressure = 1013,
         )
-        locationRepository.currentLocationResult = CurrentLocationDomain(41.38, 2.17).right()
+        locationRepository.currentLocationResult = Result.Success(CurrentLocationDomain(41.38, 2.17))
         cityWeatherRepository.setCities(listOf(city))
 
         val viewModel = createViewModel()

@@ -18,9 +18,7 @@ dependencies {
     implementation((project (":data")))
     implementation((project (":domain")))
     implementation(libs.javax.inject)
-    
-    // Arrow
-    implementation(libs.bundles.arrow)
+    implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -2,14 +2,11 @@ package com.martorell.albert.meteomartocompose.ui.screens.city
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.martorell.albert.meteomartocompose.data.CustomError
-import com.martorell.albert.meteomartocompose.data.CustomErrorFlow
-import com.martorell.albert.meteomartocompose.data.ResultResponse
-import com.martorell.albert.meteomartocompose.data.toCustomErrorFlow
 import com.martorell.albert.meteomartocompose.domain.cityweather.CityWeatherDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.CurrentLocationDomain
 import com.martorell.albert.meteomartocompose.domain.cityweather.TemperatureAlertResult
+import com.martorell.albert.meteomartocompose.domain.model.DomainError
+import com.martorell.albert.meteomartocompose.domain.model.Result
 import com.martorell.albert.meteomartocompose.usecases.cityweather.CityWeatherInteractors
 import com.martorell.albert.meteomartocompose.utils.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +52,7 @@ class CityWeatherViewModel @Inject constructor(
         val locationChecked: Boolean = false,
         val showRationale: Boolean = false,
         val permissionsGranted: Boolean = false,
-        val coordinates: ResultResponse<CurrentLocationDomain> = Either.Right(CurrentLocationDomain()),
+        val coordinates: CurrentLocationDomain = CurrentLocationDomain(),
         val logOut: Boolean = false,
         val showFab: Boolean = false,
         val isHighTempAlertActive: Boolean = false,
@@ -65,7 +62,7 @@ class CityWeatherViewModel @Inject constructor(
         data object Initial : CityContent
         data object NeedsLocation : CityContent
         data class Success(val city: CityWeatherDomain) : CityContent
-        data class Error(val error: CustomError? = null, val errorFlow: CustomErrorFlow? = null) : CityContent
+        data class Error(val error: DomainError) : CityContent
     }
 
     // --- Public Functions ---
@@ -143,7 +140,7 @@ class CityWeatherViewModel @Inject constructor(
                 content = CityContent.NeedsLocation,
                 isLoading = false,
                 showGPSDialog = false,
-                coordinates = Either.Right(CurrentLocationDomain()),
+                coordinates = CurrentLocationDomain(),
             )
         }
     }
@@ -236,38 +233,39 @@ class CityWeatherViewModel @Inject constructor(
 
                 val currentLocation = cityWeatherInteractors.currentLocationUseCase.invoke()
 
-                currentLocation.fold(
-                    {
-
-                    // current location not loaded
-                    _state.update { updatedState ->
-                        updatedState.copy(
-                            content = CityContent.NeedsLocation,
-                            isLoading = false,
-                            showGPSDialog = true,
-                            locationChecked = true,
-                            permissionsGranted = true,
-                        )
+                when (currentLocation) {
+                    is Result.Error -> {
+                        val permissionsGranted =
+                            currentLocation.error !is DomainError.Location.PermissionDenied
+                        _state.update { updatedState ->
+                            updatedState.copy(
+                                content = CityContent.NeedsLocation,
+                                isLoading = false,
+                                showGPSDialog = permissionsGranted,
+                                locationChecked = true,
+                                permissionsGranted = permissionsGranted,
+                            )
+                        }
                     }
 
-                }) {
-
-                    // current location loaded
-                    cityWeatherInteractors.saveLocationUseCase.invoke(
-                        latitude = it.latitude, longitude = it.longitude
-                    )
-
-                    _state.update { updatedState ->
-                        updatedState.copy(
-                            coordinates = currentLocation,
-                            showGPSDialog = false,
-                            locationChecked = true,
-                            permissionsGranted = true,
+                    is Result.Success -> {
+                        val location = currentLocation.data
+                        cityWeatherInteractors.saveLocationUseCase.invoke(
+                            latitude = location.latitude,
+                            longitude = location.longitude,
                         )
+
+                        _state.update { updatedState ->
+                            updatedState.copy(
+                                coordinates = location,
+                                showGPSDialog = false,
+                                locationChecked = true,
+                                permissionsGranted = true,
+                            )
+                        }
+
+                        loadCityWeather()
                     }
-
-                    loadCityWeather()
-
                 }
 
             } else {
@@ -301,43 +299,45 @@ class CityWeatherViewModel @Inject constructor(
     }
 
     private suspend fun loadCityWeather() {
-
-        val errorLoadForecast = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
-            latitude = _state.value.coordinates.getOrNull()?.latitude.toString(),
-            longitude = _state.value.coordinates.getOrNull()?.longitude.toString()
+        val loadResult = cityWeatherInteractors.loadCityWeatherByCoordinatesUseCase.invoke(
+            latitude = _state.value.coordinates.latitude.toString(),
+            longitude = _state.value.coordinates.longitude.toString()
         )
 
-        errorLoadForecast?.also {
-            _state.update { stateUpdated ->
-                stateUpdated.copy(
-                    content = CityContent.Error(errorFlow = errorLoadForecast),
-                    isLoading = false,
-                    locationChecked = true,
-                    showFab = false
-                )
-            }
-        } ?: run {
-            cityWeatherInteractors.getAllCitiesUseCase.invoke().catch { cause ->
+        when (loadResult) {
+            is Result.Error -> {
                 _state.update { stateUpdated ->
                     stateUpdated.copy(
-                        content = CityContent.Error(errorFlow = cause.toCustomErrorFlow()),
+                        content = CityContent.Error(error = loadResult.error),
                         isLoading = false,
+                        locationChecked = true,
                         showFab = false
                     )
                 }
-            }.collect { listOfCities ->
-                val city = listOfCities.find { it.justAdded }
-                _state.update { stateUpdated ->
-                    stateUpdated.copy(
-                        content = if (city != null) CityContent.Success(city) else stateUpdated.content,
-                        isLoading = false,
-                        showFab = listOfCities.isNotEmpty()
-                    )
-                }
-
             }
 
+            is Result.Success -> {
+                cityWeatherInteractors.getAllCitiesUseCase.invoke()
+                    .catch {
+                        _state.update { stateUpdated ->
+                            stateUpdated.copy(
+                                content = CityContent.Error(error = DomainError.Local.DatabaseError),
+                                isLoading = false,
+                                showFab = false
+                            )
+                        }
+                    }
+                    .collect { listOfCities ->
+                        val city = listOfCities.find { it.justAdded }
+                        _state.update { stateUpdated ->
+                            stateUpdated.copy(
+                                content = if (city != null) CityContent.Success(city) else stateUpdated.content,
+                                isLoading = false,
+                                showFab = listOfCities.isNotEmpty()
+                            )
+                        }
+                    }
+            }
         }
-
     }
 }

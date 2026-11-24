@@ -3,6 +3,7 @@ package com.martorell.albert.meteomartocompose.data.remoteconfig
 import com.martorell.albert.meteomartocompose.data.remoteconfig.mappers.RemoteConfigMapper
 import com.martorell.albert.meteomartocompose.data.remoteconfig.sources.RemoteConfigDataSource
 import com.martorell.albert.meteomartocompose.di.ApplicationScope
+import com.martorell.albert.meteomartocompose.domain.model.getOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
