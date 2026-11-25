@@ -199,6 +199,66 @@ class WeatherThemePaletteTest {
         assertEquals(16.sp, materialTypography.labelSmall.lineHeight)
     }
 
+    @Test
+    fun `fndColors container and surface roles satisfy WCAG AA contrast across all five palettes`() {
+        val customLight = SimpleWeatherPalette(
+            background = Color(0xFFF5F7FA),
+            surface = Color(0xFFFFFFFF),
+            onSurface = Color(0xFF111827),
+            primary = Color(0xFF1D4ED8),
+        )
+        val customDark = SimpleWeatherPalette(
+            background = Color(0xFF101820),
+            surface = Color(0xFF1A242F),
+            onSurface = Color(0xFFF0F4F8),
+            primary = Color(0xFF8AB4F8),
+        )
+        val palettes = listOf(
+            "DayBaseline" to DayBaselinePalette,
+            "Sunny" to SunnyPalette,
+            "Rain" to RainPalette,
+            "Night" to NightPalette,
+            "ExtremeAlert" to ExtremeAlertPalette,
+            "CustomLight" to customLight,
+            "CustomDark" to customDark,
+        )
+
+        palettes.forEach { (name, palette) ->
+            val colors = FndColors.fromPalette(palette)
+            val scheme = colors.toMaterialColorScheme()
+            val expectedLowest = if (colors.isLight) colors.surface else colors.background
+
+            assertEquals("$name.primaryContainer", colors.primaryContainer, scheme.primaryContainer)
+            assertEquals("$name.onPrimaryContainer", colors.onPrimaryContainer, scheme.onPrimaryContainer)
+            assertEquals("$name.secondaryContainer", colors.secondaryContainer, scheme.secondaryContainer)
+            assertEquals("$name.onSecondaryContainer", colors.onSecondaryContainer, scheme.onSecondaryContainer)
+            assertEquals("$name.surfaceVariant", colors.surfaceContainer, scheme.surfaceVariant)
+            assertEquals("$name.onSurfaceVariant", colors.onSurfaceVariant, scheme.onSurfaceVariant)
+            assertEquals("$name.surfaceContainerLowest", expectedLowest, scheme.surfaceContainerLowest)
+            assertEquals("$name.surfaceContainerLow", colors.surfaceContainerLow, scheme.surfaceContainerLow)
+            assertEquals("$name.surfaceContainer", colors.surfaceContainer, scheme.surfaceContainer)
+            assertEquals("$name.surfaceContainerHigh", colors.surfaceContainerHigh, scheme.surfaceContainerHigh)
+            assertEquals("$name.surfaceContainerHighest", colors.surfaceContainerHigh, scheme.surfaceContainerHighest)
+            assertEquals("$name.outline", colors.outline, scheme.outline)
+            assertEquals("$name.outlineVariant", colors.outlineVariant, scheme.outlineVariant)
+
+            assertContrastAtLeast("$name onPrimaryContainer/primaryContainer", colors.onPrimaryContainer, colors.primaryContainer)
+            assertContrastAtLeast("$name onSecondaryContainer/secondaryContainer", colors.onSecondaryContainer, colors.secondaryContainer)
+            assertContrastAtLeast("$name onSurfaceVariant/background", colors.onSurfaceVariant, colors.background)
+            assertContrastAtLeast("$name onSurfaceVariant/surface", colors.onSurfaceVariant, colors.surface)
+            assertContrastAtLeast("$name onSurfaceVariant/surfaceContainer", colors.onSurfaceVariant, colors.surfaceContainer)
+            assertContrastAtLeast("$name onSurface/surfaceContainerLow", colors.onSurface, colors.surfaceContainerLow)
+            assertContrastAtLeast("$name onSurface/surfaceContainer", colors.onSurface, colors.surfaceContainer)
+            assertContrastAtLeast("$name onSurface/surfaceContainerHigh", colors.onSurface, colors.surfaceContainerHigh)
+            assertContrastAtLeast("$name onSecondary/secondary", colors.onSecondary, colors.secondary)
+            assertContrastAtLeast("$name onError/error", colors.onError, colors.error)
+            assertContrastAtLeast("$name onErrorContainer/errorContainer", colors.onErrorContainer, colors.errorContainer)
+            assertContrastAtLeast("$name onSuccess/success", colors.onSuccess, colors.success)
+            assertContrastAtLeast("$name snackbar content/container", colors.background, colors.onSurface)
+            assertContrastAtLeast("$name snackbar action/container", colors.primaryContainer, colors.onSurface)
+        }
+    }
+
     private fun assertContrastAtLeast(label: String, foreground: Color, background: Color) {
         val ratio = contrastRatio(foreground, background)
         assertTrue(
