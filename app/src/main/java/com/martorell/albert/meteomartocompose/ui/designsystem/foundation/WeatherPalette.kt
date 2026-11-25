@@ -25,50 +25,50 @@ data class SimpleWeatherPalette(
  * Neutral daytime baseline palette used for static screens and default conditions.
  */
 val DayBaselinePalette = SimpleWeatherPalette(
-    background = Color(0xFFF8F9FA),
-    surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF1A1C1E),
-    primary = Color(0xFF4A627A),
+    background = FndColorPrimitives.DayBaselineBackground,
+    surface = Color.White,
+    onSurface = FndColorPrimitives.DayBaselineOnSurface,
+    primary = FndColorPrimitives.DayBaselinePrimary,
 )
 
 /**
  * Warm high-luminance palette applied during sunny daytime conditions.
  */
 val SunnyPalette = SimpleWeatherPalette(
-    background = Color(0xFFFFF8F0),
-    surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF2D2314),
-    primary = Color(0xFFE68A00),
+    background = FndColorPrimitives.SunnyBackground,
+    surface = Color.White,
+    onSurface = FndColorPrimitives.SunnyOnSurface,
+    primary = FndColorPrimitives.SunnyPrimary,
 )
 
 /**
  * Cool atmospheric palette applied during rainy daytime conditions.
  */
 val RainPalette = SimpleWeatherPalette(
-    background = Color(0xFFEBF2F7),
-    surface = Color(0xFFF4F8FB),
-    onSurface = Color(0xFF13202C),
-    primary = Color(0xFF2C5282),
+    background = FndColorPrimitives.RainBackground,
+    surface = FndColorPrimitives.RainSurface,
+    onSurface = FndColorPrimitives.RainOnSurface,
+    primary = FndColorPrimitives.RainPrimary,
 )
 
 /**
  * Low-luminance dark palette applied during nighttime or dark mode.
  */
 val NightPalette = SimpleWeatherPalette(
-    background = Color(0xFF0E1419),
-    surface = Color(0xFF161C21),
-    onSurface = Color(0xFFE1E2E5),
-    primary = Color(0xFF9D8DF1),
+    background = FndColorPrimitives.NightBackground,
+    surface = FndColorPrimitives.NightSurface,
+    onSurface = FndColorPrimitives.NightOnSurface,
+    primary = FndColorPrimitives.NightPrimary,
 )
 
 /**
  * High-urgency alert palette applied when extreme weather warnings are active.
  */
 val ExtremeAlertPalette = SimpleWeatherPalette(
-    background = Color(0xFF701A1A),
-    surface = Color(0xFF8B2323),
-    onSurface = Color(0xFFFFFFFF),
-    primary = Color(0xFFB5C4FF),
+    background = FndColorPrimitives.ExtremeAlertBackground,
+    surface = FndColorPrimitives.ExtremeAlertSurface,
+    onSurface = Color.White,
+    primary = FndColorPrimitives.ExtremeAlertPrimary,
 )
 
 /**

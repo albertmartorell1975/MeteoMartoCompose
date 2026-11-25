@@ -47,18 +47,16 @@ data class FndColors(
     val isLight: Boolean,
 ) {
     /**
-     * Factory methods for deriving semantic [FndColors] tokens from weather palettes.
+     * Factory for creating [FndColors] from a weather palette.
      */
     companion object {
         private const val LIGHT_LUMINANCE_THRESHOLD = 0.5f
 
         /**
-         * Maps a [SimpleWeatherPalette] into a WCAG-compliant [FndColors] token set,
-         * returning pre-calibrated presets for canonical palettes or deriving accessible
-         * defaults for custom palettes.
+         * Returns the semantic colors for [palette], using a preset or deriving defaults for custom palettes.
          *
-         * @param palette Source weather palette to expand into full semantic color roles.
-         * @return Resolved [FndColors] matching the palette polarity and contrast constraints.
+         * @param palette Weather palette to convert.
+         * @return Matching [FndColors] token set.
          */
         fun fromPalette(palette: SimpleWeatherPalette): FndColors = when (palette) {
             DayBaselinePalette -> DayBaselineFndColors
@@ -90,112 +88,112 @@ data class FndColors(
 }
 
 /**
- * Pre-calibrated semantic color tokens derived from [DayBaselinePalette].
+ * Semantic colors for [DayBaselinePalette].
  */
 val DayBaselineFndColors = FndColors(
     background = DayBaselinePalette.background,
     primary = DayBaselinePalette.primary,
-    onPrimary = Color(0xFFFFFFFF),
-    secondary = Color(0xFF53606E),
-    onSecondary = Color(0xFFFFFFFF),
+    onPrimary = Color.White,
+    secondary = FndColorPrimitives.DayBaselineSecondary,
+    onSecondary = Color.White,
     surface = DayBaselinePalette.surface,
     onSurface = DayBaselinePalette.onSurface,
-    error = Color(0xFFBA1A1A),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    success = Color(0xFF2E7D32),
-    onSuccess = Color(0xFFFFFFFF),
-    hot = Color(0xFFD32F2F),
-    cold = Color(0xFF1976D2),
+    error = FndColorPrimitives.ErrorLight,
+    onError = Color.White,
+    errorContainer = FndColorPrimitives.ErrorContainerLight,
+    onErrorContainer = FndColorPrimitives.OnErrorContainerLight,
+    success = FndColorPrimitives.SuccessLight,
+    onSuccess = Color.White,
+    hot = FndColorPrimitives.ThermalHotLight,
+    cold = FndColorPrimitives.ThermalColdLight,
     isLight = true,
 )
 
 /**
- * Pre-calibrated semantic color tokens derived from [SunnyPalette].
+ * Semantic colors for [SunnyPalette].
  */
 val SunnyFndColors = FndColors(
     background = SunnyPalette.background,
     primary = SunnyPalette.primary,
-    onPrimary = Color(0xFF2D2314),
-    secondary = Color(0xFF6E5D40),
-    onSecondary = Color(0xFFFFFFFF),
+    onPrimary = FndColorPrimitives.SunnyOnSurface,
+    secondary = FndColorPrimitives.SunnySecondary,
+    onSecondary = Color.White,
     surface = SunnyPalette.surface,
     onSurface = SunnyPalette.onSurface,
-    error = Color(0xFFBA1A1A),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    success = Color(0xFF2E7D32),
-    onSuccess = Color(0xFFFFFFFF),
-    hot = Color(0xFFD32F2F),
-    cold = Color(0xFF1976D2),
+    error = FndColorPrimitives.ErrorLight,
+    onError = Color.White,
+    errorContainer = FndColorPrimitives.ErrorContainerLight,
+    onErrorContainer = FndColorPrimitives.OnErrorContainerLight,
+    success = FndColorPrimitives.SuccessLight,
+    onSuccess = Color.White,
+    hot = FndColorPrimitives.ThermalHotLight,
+    cold = FndColorPrimitives.ThermalColdLight,
     isLight = true,
 )
 
 /**
- * Pre-calibrated semantic color tokens derived from [RainPalette].
+ * Semantic colors for [RainPalette].
  */
 val RainFndColors = FndColors(
     background = RainPalette.background,
     primary = RainPalette.primary,
-    onPrimary = Color(0xFFFFFFFF),
-    secondary = Color(0xFF47607A),
-    onSecondary = Color(0xFFFFFFFF),
+    onPrimary = Color.White,
+    secondary = FndColorPrimitives.RainSecondary,
+    onSecondary = Color.White,
     surface = RainPalette.surface,
     onSurface = RainPalette.onSurface,
-    error = Color(0xFFBA1A1A),
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    success = Color(0xFF2E7D32),
-    onSuccess = Color(0xFFFFFFFF),
-    hot = Color(0xFFD32F2F),
-    cold = Color(0xFF1565C0),
+    error = FndColorPrimitives.ErrorLight,
+    onError = Color.White,
+    errorContainer = FndColorPrimitives.ErrorContainerLight,
+    onErrorContainer = FndColorPrimitives.OnErrorContainerLight,
+    success = FndColorPrimitives.SuccessLight,
+    onSuccess = Color.White,
+    hot = FndColorPrimitives.ThermalHotLight,
+    cold = FndColorPrimitives.ThermalColdRain,
     isLight = true,
 )
 
 /**
- * Pre-calibrated semantic color tokens derived from [NightPalette].
+ * Semantic colors for [NightPalette].
  */
 val NightFndColors = FndColors(
     background = NightPalette.background,
     primary = NightPalette.primary,
-    onPrimary = Color(0xFF0E1419),
-    secondary = Color(0xFFB8C4D0),
-    onSecondary = Color(0xFF0E1419),
+    onPrimary = FndColorPrimitives.NightBackground,
+    secondary = FndColorPrimitives.NightSecondary,
+    onSecondary = FndColorPrimitives.NightBackground,
     surface = NightPalette.surface,
     onSurface = NightPalette.onSurface,
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    success = Color(0xFF81C784),
-    onSuccess = Color(0xFF003300),
-    hot = Color(0xFFFF8A80),
-    cold = Color(0xFF82B1FF),
+    error = FndColorPrimitives.ErrorDark,
+    onError = FndColorPrimitives.OnErrorDark,
+    errorContainer = FndColorPrimitives.ErrorContainerDark,
+    onErrorContainer = FndColorPrimitives.ErrorContainerLight,
+    success = FndColorPrimitives.SuccessDark,
+    onSuccess = FndColorPrimitives.OnSuccessDark,
+    hot = FndColorPrimitives.ThermalHotNight,
+    cold = FndColorPrimitives.ThermalColdNight,
     isLight = false,
 )
 
 /**
- * Pre-calibrated semantic color tokens derived from [ExtremeAlertPalette].
+ * Semantic colors for [ExtremeAlertPalette].
  */
 val ExtremeAlertFndColors = FndColors(
     background = ExtremeAlertPalette.background,
     primary = ExtremeAlertPalette.primary,
-    onPrimary = Color(0xFF1A1C1E),
-    secondary = Color(0xFFFFDAD6),
-    onSecondary = Color(0xFF410002),
+    onPrimary = FndColorPrimitives.DayBaselineOnSurface,
+    secondary = FndColorPrimitives.ErrorContainerLight,
+    onSecondary = FndColorPrimitives.OnErrorContainerLight,
     surface = ExtremeAlertPalette.surface,
     onSurface = ExtremeAlertPalette.onSurface,
-    error = Color(0xFFFFDAD6),
-    onError = Color(0xFF410002),
-    errorContainer = Color(0xFF530F0F),
-    onErrorContainer = Color(0xFFFFFFFF),
-    success = Color(0xFFA5D6A7),
-    onSuccess = Color(0xFF003300),
-    hot = Color(0xFFFFB4AB),
-    cold = Color(0xFFB5C4FF),
+    error = FndColorPrimitives.ErrorContainerLight,
+    onError = FndColorPrimitives.OnErrorContainerLight,
+    errorContainer = FndColorPrimitives.ErrorContainerAlert,
+    onErrorContainer = Color.White,
+    success = FndColorPrimitives.SuccessAlert,
+    onSuccess = FndColorPrimitives.OnSuccessDark,
+    hot = FndColorPrimitives.ErrorDark,
+    cold = FndColorPrimitives.ExtremeAlertPrimary,
     isLight = false,
 )
 

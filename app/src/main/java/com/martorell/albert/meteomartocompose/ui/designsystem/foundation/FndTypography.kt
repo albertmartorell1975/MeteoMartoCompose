@@ -12,6 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.martorell.albert.meteomartocompose.R
 
+private const val FONT_WIDTH_DEFAULT = 100f
+private const val FONT_SLANT_DEFAULT = 0f
+private const val FONT_OPSZ_DEFAULT = 14f
+private const val FONT_OPSZ_TAG = "opsz"
+
 @OptIn(ExperimentalTextApi::class)
 private fun robotoFlexFont(
     weight: FontWeight,
@@ -21,9 +26,9 @@ private fun robotoFlexFont(
     weight = weight,
     variationSettings = FontVariation.Settings(
         FontVariation.weight(weightAxis),
-        FontVariation.width(FndFontAxes.WIDTH_DEFAULT),
-        FontVariation.slant(FndFontAxes.SLANT_DEFAULT),
-        FontVariation.Setting(FndFontAxes.OPSZ_TAG, FndFontAxes.OPSZ_DEFAULT),
+        FontVariation.width(FONT_WIDTH_DEFAULT),
+        FontVariation.slant(FONT_SLANT_DEFAULT),
+        FontVariation.Setting(FONT_OPSZ_TAG, FONT_OPSZ_DEFAULT),
     ),
 )
 
@@ -189,23 +194,6 @@ fun FndTypography.toMaterialTypography(): Typography = Typography(
     labelMedium = labelMedium,
     labelSmall = labelSmall,
 )
-
-/**
- * Default OpenType variable-font axis parameters for Roboto Flex.
- */
-object FndFontAxes {
-    /** Default horizontal glyph width axis percentage. */
-    const val WIDTH_DEFAULT = 100f
-
-    /** Default upright glyph slant angle in degrees. */
-    const val SLANT_DEFAULT = 0f
-
-    /** Default optical size axis value in points. */
-    const val OPSZ_DEFAULT = 14f
-
-    /** OpenType axis tag for optical size (`opsz`). */
-    const val OPSZ_TAG = "opsz"
-}
 
 /**
  * Supported Roboto Flex weight axis values aligned with Compose [FontWeight] tiers.
