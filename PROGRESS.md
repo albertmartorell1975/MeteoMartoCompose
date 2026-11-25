@@ -5,9 +5,9 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `design-system-components-alignment` (`in_progress` — `spec.md` authored, awaiting human planner checkpoint review)
-- Current blocker: None (`dynamic-weather-theme-tokens` PR #11 merged into `feature/MM-02-design-system` @ `1f902e4`).
-- Last verified at: `2026-11-25` (`dynamic-weather-theme-tokens` PR #11 Review Round #1 independent 4-level re-validation & post-KDoc Dokka passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `68/68` = `32` pure JVM unit tests + `36` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on all 9 touched `.kt` files, `assemblePreDebug`, `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` `0` warnings, and live `emulator-5554` cold launch with `0` crashes)
+- Current next ready feature: `navigation-shell-unification` (waiting for `design-system-components-alignment` PR review & merge into `feature/MM-02-design-system`)
+- Current blocker: None (`design-system-components-alignment` accepted and published for PR review targeting `feature/MM-02-design-system`).
+- Last verified at: `2026-11-25` (`design-system-components-alignment` Issue `#12` Iteration 2 independent 4-level validation & post-KDoc Dokka passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `93/93` = `33` pure JVM unit tests + `60` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on all 23 touched `.kt` files & 2 new strings, `assemblePreDebug`, post-KDoc `compilePreDebugKotlin :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` `0` warnings, and live `emulator-5554` Light & OS Dark Mode cold launches with `0` crashes)
 
 ## Session Log
 
@@ -363,3 +363,68 @@
 - Verification run: Read-only repository inspection, W3C WCAG AA (`>= 4.5:1`) contrast audit across all 5 palettes and container/surface/snackbar pairs, caller-compatibility sweep, and spec/budget/governance consistency check (zero executable, build, resource, or snapshot files modified).
 - Files or artifacts updated: `docs/features/design-system-components-alignment/spec.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review of `docs/features/design-system-components-alignment/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
+
+### Session 027
+
+- Date: `2026-11-25`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Implement `design-system-components-alignment` (Issue `#12`) in isolated worktree `.worktrees/impl-design-system-components-alignment` (`wt/impl-design-system-components-alignment`).
+- Completed:
+  - **Foundation M3 Container Roles & Dimensions (`:app` — `ui/designsystem/foundation/`):**
+    - Added 33 unique raw hex primitives to `FndColorPrimitives.kt` (`70` unique constants total, `0` duplicates, `0` unused, `0` inline `Color(0x...)` literals outside this file).
+    - Added 10 Material 3 container/surface/outline roles (`primaryContainer`, `onPrimaryContainer`, `secondaryContainer`, `onSecondaryContainer`, `onSurfaceVariant`, `outline`, `outlineVariant`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh`) to `FndColors` and all 5 presets (`DayBaselineFndColors`, `SunnyFndColors`, `RainFndColors`, `NightFndColors`, `ExtremeAlertFndColors`).
+    - Added `weatherIconSize = 90.dp`, `errorIconSize = 120.dp`, and `borderStrokeWidth = 1.dp` to `FndDimensions.kt`.
+    - Extracted `internal fun FndColors.toMaterialColorScheme(): ColorScheme` in `DesignSystem.kt` wiring all container, surface-container (`Lowest`/`Low`/`Default`/`High`/`Highest`), `surfaceVariant`/`onSurfaceVariant`, and `outline`/`outlineVariant` roles cleanly into `lightColorScheme`/`darkColorScheme`.
+  - **Localized Strings (`app/src/main/res/values/strings.xml`):** Added `retry_action` and `loading_content_description`.
+  - **Stateless `Mm*` Components (`:app` — `ui/designsystem/components/`):**
+    - Updated `MmPreview.kt` (`showBackground = true` on `RTL`/`Large Font`, `@MmDynamicPalettesPreview`, and `MmDynamicPalettesShowcase`).
+    - Aligned `MmButton.kt` (`FndShapes.pill`, `>= 48.dp` `heightIn` + `minimumInteractiveComponentSize()`, explicit theme colors, extracted expressive weight/content helpers, `MmText.LabelLarge` previews + `MmButtonPalettesPreview`).
+    - Created stateless `MmCard.kt` (static + clickable overloads with `FndShapes.card`, `surface`/`onSurface`, `outlineVariant` border, `minimumInteractiveComponentSize()` on clickable, plus `@MmPreview` and `@MmDynamicPalettesPreview`).
+    - Aligned `MmDialog.kt` (`FndShapes.dialog`, `icon`, `properties`, `iconContentColor`, 200%-font-scale-safe `FlowRow` in `MmDialogPreviewLayout`, dynamic palettes preview).
+    - Aligned `MmErrorState.kt` (removed root `.fillMaxSize()`, localized `R.string.retry_action`, default `R.drawable.ic_error_forecast` at `errorIconSize`, optional `description`/`icon`, `maxContentWidth` constraint, `MmText.LabelLarge` CTA, dynamic palettes preview).
+    - Aligned `MmLoadingOverlay.kt` (removed root `.fillMaxSize()`, `SCRIM_ALPHA`, localized TalkBack `contentDescription`, multiline modifier chain).
+    - Aligned `MmNavigation.kt` (`@Immutable MmNavigationItem`, `isItemSelected`, `background`/`onSurface` + explicit `NavigationSuiteDefaults.colors`/`itemColors`, `.consumeWindowInsets(innerPadding)`, `maxLines = 1`/`Ellipsis`, upgraded `@MmPreview` + `@MmDevicePreview`).
+    - Aligned `MmScaffold.kt` (default `background`/`onSurface`, removed root `.fillMaxSize()` and stale KDoc, added `MmScaffoldPreview`).
+    - Aligned `MmSnackbar.kt` (`rememberUpdatedState`, new stateless themed `MmSnackbarHost`, removed stale KDoc, added `@MmPreview` + `@MmDynamicPalettesPreview`).
+    - Aligned `MmText.kt` (all 15 `FndTypography` scale methods, explicit `Column` import, enriched previews).
+    - Aligned `MmTextField.kt` (removed redundant outer `Box` and inner `.fillMaxWidth()`, `FndShapes.input`, `singleLine`, explicit `OutlinedTextFieldDefaults.colors(...)`, `LocalInspectionMode` shake guard, Normal/Error/Disabled + dynamic palettes previews).
+    - Aligned `MmWeatherInfo.kt` (`weatherIconSize` token, `MmCard` wrapper guaranteeing WCAG AA `>= 4.60:1` for thermal `hot`/`cold` on `surface`, removed inner `.fillMaxWidth()` and stale KDoc, added `MmWeatherInfoPalettesPreview`).
+  - **Minimal Caller Compatibility Updates (10 surgical 1-line edits — zero screen redesigns):** `Navigation.kt` (`MmSnackbarHost`), `LoginScreen.kt` (`MmLoadingOverlay`), `SignUpScreen.kt` (`MmLoadingOverlay`), `CityWeatherScreen.kt` (`MmScaffold`, `MmLoadingOverlay`), `FavoritesScreen.kt` (`MmLoadingOverlay`, `MmErrorState`), `FavoritesDetailScreen.kt` (`MmScaffold`, `MmLoadingOverlay`, `MmErrorState`).
+  - **Closed Test Plan & Golden Snapshots:** Added `+1 @Test` in `WeatherThemePaletteTest.kt` (`3/3`, `<= 3`/class, `0` MockK, `0` Robolectric); regenerated and verified `60` deterministic Design System Roborazzi PNGs (`14` obsolete pre-background RTL/Large Font PNGs removed -> exact `60` PNGs, `60/60 unchanged`). Zero KDoc written on new/modified public symbols (deferred to `workflow-documenter`); zero durable docs created/edited (deferred to Stage 5 Consolidation).
+- Verification run (JDK `21.0.11`):
+  - `./gradlew :app:recordRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 19s`).
+  - `./gradlew :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 6s`; `results-summary.json`: `total=60, recorded=0, added=0, changed=0, unchanged=60`).
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 35s`; `0` compiler warnings on modified/new files).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 48s`, configuration cache entry stored; `:app:testPreDebugUnitTest` `93/93` = `33` pure JVM unit tests across 14 classes `<= 3`/class + `60` Roborazzi previews, `0` failed, `0` skipped; `:app:lintPreDebug` `0` warnings on all 23 touched `.kt` files and new `strings.xml` entries).
+  - `./gradlew :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 23s`; `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`; total `40` pure JVM unit tests).
+  - `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 40s`, `0` Dokka warnings).
+  - Hygiene invariants: `0` inline `Color(0x` outside `FndColorPrimitives.kt`; `70` unique primitives (`0` duplicates, `0` unused); `0` hardcoded root `.fillMaxSize()` in `MmScaffold`/`MmErrorState`/`MmLoadingOverlay`; `0` `11.sp` in `ui/designsystem/`; exact `60` PNGs in `app/src/test/snapshots/`; `0` `io.mockk`; `0` `RobolectricTestRunner` in `app/src/test/`; `0` KDoc authored on new/modified public symbols.
+- Files or artifacts updated: `FndColorPrimitives.kt`, `FndColors.kt`, `FndDimensions.kt`, `DesignSystem.kt`, `strings.xml`, `MmPreview.kt`, `MmButton.kt`, `MmCard.kt`, `MmDialog.kt`, `MmErrorState.kt`, `MmLoadingOverlay.kt`, `MmNavigation.kt`, `MmScaffold.kt`, `MmSnackbar.kt`, `MmText.kt`, `MmTextField.kt`, `MmWeatherInfo.kt`, `Navigation.kt`, `LoginScreen.kt`, `SignUpScreen.kt`, `CityWeatherScreen.kt`, `FavoritesScreen.kt`, `FavoritesDetailScreen.kt`, `WeatherThemePaletteTest.kt`, `app/src/test/snapshots/*.png` (`60` total), `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent 4-level validation by `workflow-validator` in an isolated git worktree, followed by English KDoc authoring via `workflow-documenter` and unified `docs/design-system.md` publication during Stage 5 Consolidation.
+
+### Session 028
+
+- Date: `2026-11-25`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Apply Repair Pass (Iteration 1 / `MAX_REPAIR_ATTEMPTS = 2`) for `design-system-components-alignment` (Issue `#12`) resolving `workflow-validator` Finding 1 (High) in `.worktrees/impl-design-system-components-alignment` (`wt/impl-design-system-components-alignment`).
+- Completed:
+  - **Finding 1 (Unclipped `MmWeatherInfoPalettesPreview` snapshot)**: Added `private const val DYNAMIC_PALETTES_PREVIEW_HEIGHT_DP = 1600` and imported `androidx.compose.ui.tooling.preview.Preview` in `MmWeatherInfo.kt`; replaced `@MmDynamicPalettesPreview` on `MmWeatherInfoPalettesPreview()` with `@Preview(name = "Dynamic Palettes", group = "Palettes", showBackground = true, heightDp = DYNAMIC_PALETTES_PREVIEW_HEIGHT_DP)` while keeping `MmPreview.kt` and `MmDynamicPalettesShowcase` untouched.
+  - **Snapshot Replacement & Visual Verification**: Deleted the superseded `MmWeatherInfoKt.MmWeatherInfoPalettesPreview.Dynamic_Palettes_Palettes_WITH_BACKGROUND.png`, recorded the unclipped `MmWeatherInfoKt.MmWeatherInfoPalettesPreview.Dynamic_Palettes_Palettes_H1600dp_WITH_BACKGROUND.png` (`59` other PNGs untouched -> exact `60` PNGs), and visually inspected the rendered PNG confirming `SunnyPalette`, `RainPalette` (all 5 telemetry rows), and `ExtremeAlertPalette` (all 5 telemetry rows + elevated `#8B2323` `MmCard`) render 100% unclipped. Zero new `@Test` methods, zero KDoc comments, and zero durable Markdown doc edits.
+- Verification run (JDK `21.0.11`):
+  - `./gradlew :app:recordRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 23s`).
+  - `./gradlew :app:verifyRoborazziPreDebug --rerun-tasks --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 57s`; `results-summary.json`: `total=60, recorded=0, added=0, changed=0, unchanged=60`).
+  - `./gradlew assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 20s`).
+  - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 34s`, configuration cache reused; `:app:testPreDebugUnitTest` `93/93`, `0` failed, `0` skipped; `0` lint warnings on `MmWeatherInfo.kt`).
+  - `./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon`: PASS (`BUILD SUCCESSFUL in 54s`, `0` Dokka warnings).
+- Files or artifacts updated: `MmWeatherInfo.kt`, `app/src/test/snapshots/com.martorell.albert.meteomartocompose.ui.designsystem.components.MmWeatherInfoKt.MmWeatherInfoPalettesPreview.Dynamic_Palettes_Palettes_H1600dp_WITH_BACKGROUND.png` (replaced clipped PNG; exact `60` PNGs), `feature_list.json`, `PROGRESS.md`.
+- Next best step: Independent re-validation by `workflow-validator` in an isolated git worktree (`Iteration 2`).
+
+### Session 029
+
+- Date: `2026-11-25`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete independent validation (Iteration 2), English KDoc documentation, unified Design System docs (`docs/design-system.md`), atomic consolidation, and PR publication for `design-system-components-alignment` (Issue `#12`).
+- Completed: Executed independent 4-level validation in `.worktrees/val-design-system-components-alignment-i2` (`workflow-validator` returned `accept` across all 4 levels: Finding 1 unclipped `MmWeatherInfoPalettesPreview` `_H1600dp` visually verified, `WeatherThemePaletteTest` `3/3 KEEP`, uncached `60/60` Roborazzi `unchanged`, live `emulator-5554` Light & OS Dark Mode cold launches `0` crashes); ran `workflow-documenter` (`flash`) in `.worktrees/doc-design-system-components-alignment` adding English KDoc (`+423/-0`) to all 16 Design System `.kt` files (`d5d2a92`); verified post-KDoc `compilePreDebugKotlin :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` (`0` warnings); authored unified `docs/design-system.md` (Option A from PR #11), updated `docs/testing_strategy_guide.md` (`36` -> `60` PNGs + `@MmDynamicPalettesPreview` + `RoborazziPreviewTester`), `README.md`, `spec.md` (`[x]`, `accepted`), `validation-report.md`, `feature_list.json` (`accepted`), and `PROGRESS.md`; consolidated with atomic layer commits and published PR targeting `feature/MM-02-design-system`.
+- Verification run: Independent validator Iteration 2 re-ran `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`60/60 unchanged`), `assemblePreDebug --no-daemon`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`93/93`, `0` lint warnings on all 23 touched `.kt` files & 2 new strings), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` (`0` warnings), and live `emulator-5554` Light & OS Dark Mode cold launches; orchestrator verified post-KDoc `compilePreDebugKotlin :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` (`BUILD SUCCESSFUL in 1m 38s`, `0` warnings).
+- Files or artifacts updated: 16 KDoc-enriched Design System `.kt` files, `strings.xml`, 6 caller compatibility `.kt` files, `WeatherThemePaletteTest.kt`, `app/src/test/snapshots/` (`60` PNGs), `docs/design-system.md`, `docs/testing_strategy_guide.md`, `README.md`, `docs/features/design-system-components-alignment/spec.md`, `docs/features/design-system-components-alignment/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review & merge of the `design-system-components-alignment` PR into `feature/MM-02-design-system` (verify `Quality Gate` and `Design System CI` are green), then start `navigation-shell-unification`.
