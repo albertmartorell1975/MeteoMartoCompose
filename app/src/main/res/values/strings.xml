@@ -86,4 +86,6 @@
 
     <string name="error_invalid_email">Invalid email format</string>
     <string name="error_invalid_password">Password is too short</string>
+    <string name="retry_action">Try again</string>
+    <string name="loading_content_description">Loading</string>
 </resources>
