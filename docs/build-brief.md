@@ -62,5 +62,5 @@ To be finalized into `feature_list.json` during `@harness-starter`, the moderniz
 
 ## Notes
 
-- Existing feature records under `docs/features/temperature_warning/` (`MM-01`) and `docs/features/design_system/` (`MM-02`) are preserved as historical context.
+- Existing feature records under `docs/features/temperature_warning/` (`MM-01`) are preserved as historical context; legacy `docs/features/design_system/` (`MM-02`) was retired once superseded by `DESIGN.md` and unified `docs/features/<feature-id>/` specs.
 - Repository flavors (`pre` and `pro` in `flavors.gradle`) require `PreDebug` Gradle task variants in both local verification and CI.
