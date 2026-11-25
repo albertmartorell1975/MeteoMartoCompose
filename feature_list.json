@@ -122,7 +122,7 @@
     "depends_on": [
       "weather-condition-room-migration"
     ],
-    "status": "not_started",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/dynamic-weather-theme-tokens/spec.md",
     "validation_path": "docs/features/dynamic-weather-theme-tokens/validator/validation-report.md",
@@ -130,7 +130,22 @@
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
       "Pure JVM unit tests verify palette precedence (ExtremeAlert > Night > Sunny > Rain > DayBaseline) and WebP drawables exist in app/src/main/res/drawable/."
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew :app:recordRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 54s (36 existing Design System golden PNGs refreshed for DayBaseline/Night palettes, 12.sp labelSmall, and MaterialTheme typography/shapes; 0 added/deleted PNGs, 0 edits to ui/designsystem/components/*.kt).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --rerun-tasks --no-daemon (JDK 21.0.11, independent validator) -> BUILD SUCCESSFUL in 1m 52s (app/build/test-results/roborazzi/preDebug/results-summary.json: total=36, recorded=0, added=0, changed=0, unchanged=36; 68/68 :app tests passed).",
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11, independent validator) -> BUILD SUCCESSFUL in 1m 25s (full Hilt DI graph, WebP drawables R.drawable.ic_logo/ic_warning/ic_error_forecast, Roboto Flex variable font, and APK verified; 0 compiler warnings on modified/new files).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11, independent validator) -> BUILD SUCCESSFUL in 1m 11s (Configuration cache entry stored; :app:testPreDebugUnitTest 68/68 passed = 32 pure JVM unit tests across 14 classes <= 3/class including WeatherThemePaletteTest 2/2 & DesignSystemResourcesTest 1/1 + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug 0 warnings on all 8 modified/new .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --rerun-tasks --no-daemon (JDK 21.0.11, independent validator) -> BUILD SUCCESSFUL (:domain:test 1/1, :usecases:test 3/3, :data:test 3/3; total 39 pure JVM unit tests across all modules, 0 failed, 0 skipped; 3/3 new tests audited as KEEP).",
+      "PASS: ./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon (JDK 21.0.11, validator + post-KDoc documenter) -> BUILD SUCCESSFUL with 0 Dokka/compiler warnings after English KDoc added to WeatherPalette.kt, FndColors.kt, FndShapes.kt, FndTypography.kt, and DesignSystem.kt.",
+      "PASS: Live runtime verification on emulator-5554 -> cold-launched preDebug APK in both Light Mode and OS Dark Mode (cmd uimode night yes), confirming deterministic DayBaselinePalette pinning on MeteoMartoComposeLayout with 0 uncaught exceptions/crashes in logcat.",
+      "PASS (PR #11 Review Round #1): ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 33s (FndColorPrimitives centralization and FndFontAxes removal verified; 0 compiler warnings on modified/new files).",
+      "PASS (PR #11 Review Round #1): ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 8s (Configuration cache entry stored; :app:testPreDebugUnitTest 68/68 = 32 pure JVM unit tests across 14 classes <= 3/class + 36 Roborazzi previews, 0 failed, 0 skipped; :app:lintPreDebug 0 warnings on all foundation files).",
+      "PASS (PR #11 Review Round #1): ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 20s (:domain:test 1/1, :usecases:test 3/3, :data:test 3/3; total 39 pure JVM unit tests, 0 failed, 0 skipped).",
+      "PASS (PR #11 Review Round #1): ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 56s (results-summary.json: total=36, recorded=0, added=0, changed=0, unchanged=36; 0 PNG diffs).",
+      "PASS (PR #11 Review Round #1): ./gradlew :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 25s (0 Dokka/compiler warnings on foundation files).",
+      "PASS (PR #11 Review Round #1): Hygiene invariants -> 0 Color(0x matches in WeatherPalette.kt and FndColors.kt (37 unique hex literals in internal object FndColorPrimitives + Color.White, 0 duplicates, 0 unused); 0 FndFontAxes matches in app/src/main/ (FndFontWeight retained); 0 edits to spec.md, ui/designsystem/components/*.kt, or app/src/test/snapshots/*.png; 0 new @Test methods.",
+      "PASS (PR #11 Review Round #1 — Validator & Documenter): Independent 4-level validation returned accept (Iteration 2, 100% programmatic ARGB parity, uncached :app:verifyRoborazziPreDebug --rerun-tasks 36/36 unchanged, 39/39 pure JVM unit tests, emulator-5554 cold launch 0 crashes); workflow-documenter simplified FndColors.Companion.fromPalette KDoc (Finding 1) and documented FndColorPrimitives.kt with ./gradlew compilePreDebugKotlin :app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon PASS (0 warnings)."
+    ],
     "notes": "DESIGN.md and docs/ui/meteomarto_design_contract.txt are authoritative. Raise labelSmall to 12.sp per design-system-governance and copy docs/ui/resources/*.webp drawables."
   },
   {
@@ -150,7 +165,7 @@
       "./gradlew :app:verifyRoborazziPreDebug --no-daemon"
     ],
     "evidence": [],
-    "notes": "Apply compose-modifier-and-layout-style, edge-to-edge, and design-system-governance (WCAG contrast on Night/ExtremeAlert thermal accents); regenerate Design System Roborazzi snapshots only."
+    "notes": "Apply compose-modifier-and-layout-style, edge-to-edge, and design-system-governance (WCAG contrast on Night/ExtremeAlert thermal accents); regenerate Design System Roborazzi snapshots only. Follow-up from PR #11 review (Option A): also create/update unified Design System documentation (e.g. docs/design-system.md superseding legacy docs/features/design_system/MM-02-Design-System.md) covering foundation tokens + aligned Mm* components, and align M3 container roles (primaryContainer/secondaryContainer/surfaceContainer*)."
   },
   {
     "id": "navigation-shell-unification",

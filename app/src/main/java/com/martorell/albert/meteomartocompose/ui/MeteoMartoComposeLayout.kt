@@ -3,10 +3,10 @@ package com.martorell.albert.meteomartocompose.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.martorell.albert.meteomartocompose.data.preferences.UserPreferences
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.DayBaselinePalette
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 /**
@@ -28,11 +28,14 @@ fun MeteoMartoComposeLayout(
     content: @Composable () -> Unit,
 ) {
 
-    MeteoMartoTheme(fontScale = fontScale) {
+    MeteoMartoTheme(
+        palette = DayBaselinePalette,
+        fontScale = fontScale,
+    ) {
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MeteoMartoTheme.colors.background),
         ) {
             content()
         }
