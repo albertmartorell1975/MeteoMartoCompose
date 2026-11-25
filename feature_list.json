@@ -122,7 +122,7 @@
     "depends_on": [
       "weather-condition-room-migration"
     ],
-    "status": "accepted",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/dynamic-weather-theme-tokens/spec.md",
     "validation_path": "docs/features/dynamic-weather-theme-tokens/validator/validation-report.md",
@@ -158,7 +158,7 @@
       "./gradlew :app:verifyRoborazziPreDebug --no-daemon"
     ],
     "evidence": [],
-    "notes": "Apply compose-modifier-and-layout-style, edge-to-edge, and design-system-governance (WCAG contrast on Night/ExtremeAlert thermal accents); regenerate Design System Roborazzi snapshots only."
+    "notes": "Apply compose-modifier-and-layout-style, edge-to-edge, and design-system-governance (WCAG contrast on Night/ExtremeAlert thermal accents); regenerate Design System Roborazzi snapshots only. Follow-up from PR #11 review (Option A): also create/update unified Design System documentation (e.g. docs/design-system.md superseding legacy docs/features/design_system/MM-02-Design-System.md) covering foundation tokens + aligned Mm* components, and align M3 container roles (primaryContainer/secondaryContainer/surfaceContainer*)."
   },
   {
     "id": "navigation-shell-unification",
