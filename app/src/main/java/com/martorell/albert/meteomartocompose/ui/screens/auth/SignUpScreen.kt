@@ -256,7 +256,7 @@ fun SignUpContent(
         }
 
         if (state.value.loading) {
-            MmLoadingOverlay()
+            MmLoadingOverlay(modifier = Modifier.fillMaxSize())
         }
     }
 }

@@ -68,13 +68,14 @@ fun FavoriteContent(
     Box(modifier = modifier.fillMaxSize()) {
         when (val content = state.value.content) {
             is FavoritesViewModel.FavoritesContent.Loading -> {
-                MmLoadingOverlay()
+                MmLoadingOverlay(modifier = Modifier.fillMaxSize())
             }
 
             is FavoritesViewModel.FavoritesContent.Error -> {
                 MmErrorState(
                     message = content.error.toUiText().asString(),
-                    onRetry = onRetry
+                    onRetry = onRetry,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 

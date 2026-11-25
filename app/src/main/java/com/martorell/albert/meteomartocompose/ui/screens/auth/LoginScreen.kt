@@ -268,7 +268,7 @@ fun LoginContent(
         }
 
         if (state.value.loading) {
-            MmLoadingOverlay()
+            MmLoadingOverlay(modifier = Modifier.fillMaxSize())
         }
     }
 }

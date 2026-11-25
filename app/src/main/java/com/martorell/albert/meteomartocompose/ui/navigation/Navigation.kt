@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -25,6 +24,7 @@ import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavigation
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavigationItem
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSnackbarHost
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.FndDesignSystemViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
@@ -115,7 +115,7 @@ fun Navigation(
                     }
                 },
                 snackbarHost = {
-                    SnackbarHost(appState.snackbarHostState)
+                    MmSnackbarHost(hostState = appState.snackbarHostState)
                 }
             ) {
                 val startDestination = if (rootState.isLoggedIn) SubGraphs.Dashboard else SubGraphs.Auth

@@ -63,16 +63,17 @@ fun FavoritesDetailContent(
     state: State<FavoritesDetailViewModel.UiState>,
     onRetry: () -> Unit
 ) {
-    MmScaffold(modifier = modifier) {
+    MmScaffold(modifier = modifier.fillMaxSize()) {
         when (val content = state.value.content) {
             is FavoritesDetailViewModel.DetailContent.Loading -> {
-                MmLoadingOverlay()
+                MmLoadingOverlay(modifier = Modifier.fillMaxSize())
             }
 
             is FavoritesDetailViewModel.DetailContent.Error -> {
                 MmErrorState(
                     message = content.error.toUiText().asString(),
-                    onRetry = onRetry
+                    onRetry = onRetry,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 

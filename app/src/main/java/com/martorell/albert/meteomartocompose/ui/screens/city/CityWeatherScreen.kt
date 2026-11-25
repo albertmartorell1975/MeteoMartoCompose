@@ -165,7 +165,7 @@ fun CityWeatherContent(
     onLogoutCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MmScaffold(modifier = modifier) {
+    MmScaffold(modifier = modifier.fillMaxSize()) {
         // 1. Main Content Management (Mutually Exclusive Phases)
         when (val content = state.content) {
             is CityWeatherViewModel.CityContent.Initial -> {
@@ -306,7 +306,7 @@ fun CityWeatherContent(
         }
 
         if (state.isLoading) {
-            MmLoadingOverlay()
+            MmLoadingOverlay(modifier = Modifier.fillMaxSize())
         }
     }
 }
