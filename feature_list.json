@@ -156,7 +156,7 @@
     "depends_on": [
       "dynamic-weather-theme-tokens"
     ],
-    "status": "accepted",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/design-system-components-alignment/spec.md",
     "validation_path": "docs/features/design-system-components-alignment/validator/validation-report.md",
