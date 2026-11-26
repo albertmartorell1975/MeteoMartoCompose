@@ -255,10 +255,10 @@
     },
     "workflow-validator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "e57094dfc9f8f9c8a3395fd9176ffcbec9ed4e70",
+      "commit": "974ccbac1f7f60b2f2443e0da82907236fe64d32",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-validator/SKILL.md",
-      "computedHash": "940c554003110e7898ba2c030b0f2afb46400f833b2f669f6355f3d7503af4cb"
+      "computedHash": "76966ebd4c51cf6fd05ed5a4bf5c8c8bfa2a572aa65c3c92228e930778953271"
     }
   }
 }
