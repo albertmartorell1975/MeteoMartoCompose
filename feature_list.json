@@ -183,8 +183,8 @@
   {
     "id": "navigation-shell-unification",
     "area": "navigation",
-    "title": "Unify AppState navigation and adaptive shell routing",
-    "user_visible_behavior": "Navigating to the current city forecast or tapping a favorite city routes seamlessly to a single unified CityForecastScreen contract inside the adaptive bottom-bar/rail shell.",
+    "title": "Harden AppState navigation shell and route contracts",
+    "user_visible_behavior": "The adaptive bottom-bar/rail shell routes cleanly with lifecycle-aware state collection, decoupled TopAppBar actions, zero duplicate favorite routes, and a unified CityForecast route contract ready for state unification.",
     "depends_on": [
       "design-system-components-alignment"
     ],
@@ -194,86 +194,143 @@
     "validation_path": "docs/features/navigation-shell-unification/validator/validation-report.md",
     "verification": [
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "Verify type-safe Navigation Compose routing compiles cleanly and adaptive shell switches between bottom bar and rail."
+      "Verify type-safe Navigation Compose shell compiles cleanly, switches between bottom bar and rail, and preserves existing CityWeather and FavoritesDetail behavior until state unification."
     ],
     "evidence": [],
-    "notes": "Follow compose-navigation-architecture (AppState, TopLevelRoute, type-safe Destinations, HomeNavGraph/authSubGraph/favoriteSubGraph, passive screens, edge-to-edge). No Navigation 3 migration."
+    "notes": "Shell and route hygiene slice only (no screen layout rewrites or ViewModel unification yet — owned by downstream slices). Follow compose-navigation-architecture (AppState, AppShellState, TopLevelRoute, type-safe Destinations, remove duplicate DashboardScreens.Favorites in favoriteSubGraph.kt, switch Navigation.kt to collectAsStateWithLifecycle, decouple TopAppBarCustom from hiltViewModel). No Navigation 3 migration."
   },
   {
-    "id": "auth-splash-login-overhaul",
+    "id": "auth-splash-overhaul",
     "area": "auth",
-    "title": "Rebuild Splash and Login flow against Stitch layouts",
-    "user_visible_behavior": "Splash and Login render with the Stitch layout structure under static DayBaselinePalette, passive ViewModel initialization, and clear DomainError feedback.",
+    "title": "Rebuild Splash welcome screen and passive session startup routing",
+    "user_visible_behavior": "App launch renders the Stitch Splash welcome layout under static DayBaselinePalette while passively resolving authentication session state into Auth or Dashboard.",
     "depends_on": [
       "navigation-shell-unification"
     ],
     "status": "not_started",
     "require_review_after": "planner",
-    "spec_path": "docs/features/auth-splash-login-overhaul/spec.md",
-    "validation_path": "docs/features/auth-splash-login-overhaul/validator/validation-report.md",
+    "spec_path": "docs/features/auth-splash-overhaul/spec.md",
+    "validation_path": "docs/features/auth-splash-overhaul/validator/validation-report.md",
     "verification": [
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "Pure JVM ViewModel tests using manual Fakes verify Login validation, DomainError states, and passive session routing."
+      "Pure JVM MainViewModel tests and stateless @Preview verify passive session startup routing and DayBaselinePalette Splash rendering."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_splash_welcome/ and meteomarto_login_atmospheric/. Enforce Screen/Content hoisting, safe Compose side-effects, DomainError->UiText mappers, and passive ViewModel init."
+    "notes": "Reference docs/ui/screens/meteomarto_splash_welcome/ and ic_logo.webp. Wrap Splash inside MeteoMartoComposeLayout (DayBaselinePalette), enforce Screen/Content hoisting, and passive MainViewModel stateIn initialization."
   },
   {
-    "id": "auth-signup-terms-overhaul",
+    "id": "auth-login-overhaul",
     "area": "auth",
-    "title": "Rebuild Register and Terms flow against Stitch layouts",
-    "user_visible_behavior": "Sign-up and Terms screens match Stitch layouts under static DayBaselinePalette with reactive field validation, DomainError feedback, and passive ViewModel state management.",
+    "title": "Rebuild Login screen and validation flow against Stitch layout",
+    "user_visible_behavior": "Login renders with the Stitch atmospheric layout under static DayBaselinePalette, preserving form drafts across recreation/process death and surfacing localized DomainError feedback.",
+    "depends_on": [
+      "auth-splash-overhaul"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/auth-login-overhaul/spec.md",
+    "validation_path": "docs/features/auth-login-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM LoginViewModel tests using manual Fakes verify credential validation, SavedStateHandle restoration, and DomainError states."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_login_atmospheric/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, safe Compose side-effects, DomainError->UiText mappers, and passive ViewModel init."
+  },
+  {
+    "id": "auth-terms-overhaul",
+    "area": "auth",
+    "title": "Rebuild Terms and Conditions screen against Stitch layout",
+    "user_visible_behavior": "Navigating to Terms from Login presents the Stitch Terms and Conditions layout under static DayBaselinePalette with accessible scrolling, edge-to-edge insets, and clean back/accept navigation.",
+    "depends_on": [
+      "auth-login-overhaul"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/auth-terms-overhaul/spec.md",
+    "validation_path": "docs/features/auth-terms-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Verify stateless TermsScreen @Preview coverage, edge-to-edge inset handling, and back/accept navigation to Login."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_termes_i_condicions/. Linked from LoginScreen (authSubGraph.kt). Enforce stateless Content hoisting, edge-to-edge scrolling, 200% font scaling safety, and static DayBaselinePalette."
+  },
+  {
+    "id": "auth-signup-overhaul",
+    "area": "auth",
+    "title": "Rebuild SignUp screen and registration validation against Stitch layout",
+    "user_visible_behavior": "Sign-up renders with the Stitch create-user layout under static DayBaselinePalette with reactive field validation, process-death form survival, and clear DomainError feedback.",
     "depends_on": [
       "navigation-shell-unification"
     ],
     "status": "not_started",
     "require_review_after": "planner",
-    "spec_path": "docs/features/auth-signup-terms-overhaul/spec.md",
-    "validation_path": "docs/features/auth-signup-terms-overhaul/validator/validation-report.md",
+    "spec_path": "docs/features/auth-signup-overhaul/spec.md",
+    "validation_path": "docs/features/auth-signup-overhaul/validator/validation-report.md",
     "verification": [
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "Pure JVM ViewModel tests using manual Fakes verify SignUp validation, Terms navigation, and DomainError handling."
+      "Pure JVM SignUpViewModel tests using manual Fakes verify registration validation, SavedStateHandle restoration, and DomainError handling."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_registre_create_user/ and meteomarto_termes_i_condicions/. Enforce Screen/Content hoisting, Compose state/side-effects, DomainError->UiText mappers, and passive ViewModel state."
+    "notes": "Reference docs/ui/screens/meteomarto_registre_create_user/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, Compose side-effects, DomainError->UiText mappers, and passive ViewModel state."
   },
   {
-    "id": "city-forecast-dynamic-screen",
+    "id": "city-forecast-state-and-palette",
     "area": "weather",
-    "title": "Rebuild dynamic CityForecastScreen and error state",
-    "user_visible_behavior": "CityForecastScreen displays current city or favorite detail using the Stitch layout and dynamically switches among ExtremeAlert, Night, Sunny, Rain, and DayBaseline palettes, with ErrorForecastScreen rendered neutrally on failures.",
+    "title": "Unify CityForecast state, UI mappers, and dynamic palette resolution",
+    "user_visible_behavior": "Current-location and favorite-city forecast flows share a unified SavedStateHandle-backed ViewModel and UI-model contract that deterministically resolves SimpleWeatherPalette precedence and survives process death.",
     "depends_on": [
       "navigation-shell-unification"
     ],
     "status": "not_started",
     "require_review_after": "planner",
-    "spec_path": "docs/features/city-forecast-dynamic-screen/spec.md",
-    "validation_path": "docs/features/city-forecast-dynamic-screen/validator/validation-report.md",
+    "spec_path": "docs/features/city-forecast-state-and-palette/spec.md",
+    "validation_path": "docs/features/city-forecast-state-and-palette/validator/validation-report.md",
     "verification": [
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "Pure JVM ViewModel tests using manual Fakes verify dynamic palette state resolution, Mutex idempotency, permission/GPS error handling, and favorite toggling."
+      "Pure JVM ViewModel and UiMapper tests using manual Fakes verify ExtremeAlert > Night > Sunny > Rain > DayBaseline resolution, current-location-only ExtremeAlert (> Remote Config threshold), SavedStateHandle restoration, Mutex idempotency, and favorite toggling."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/ and meteomarto_error_previsi_ciutat/. Enforce Hybrid UI State, Mutex guarding, Domain->UI mappers, edge-to-edge, and current-location-only ExtremeAlert (> Remote Config threshold)."
+    "notes": "State/contract slice separated from visual Stitch layout rewrite. Unifies CityWeatherViewModel and FavoritesDetailViewModel (ID-only SavedStateHandle cityName route arg), default-free *UiModel/*UiMapper without hardcoded units, Mutex guarding, and current-location-only ExtremeAlert (> Remote Config threshold)."
   },
   {
-    "id": "favorites-list-logout-overhaul",
-    "area": "favorites",
-    "title": "Rebuild neutral FavoritesScreen and LogoutDialog",
-    "user_visible_behavior": "FavoritesScreen renders saved cities and empty state under immutable DayBaselinePalette matching Stitch layouts, and LogoutDialog inherits the active screen palette while cleanly revoking the session.",
+    "id": "city-forecast-screen-and-error-ui",
+    "area": "weather",
+    "title": "Rebuild dynamic CityForecastScreen, ErrorForecastScreen, and LogoutDialog",
+    "user_visible_behavior": "CityForecastScreen serves both current location and favorite detail with the Stitch atmospheric layout switching dynamically across all five KISS palettes, ErrorForecastScreen renders neutrally under DayBaselinePalette, and LogoutDialog inherits the active screen palette while revoking the session cleanly.",
     "depends_on": [
-      "city-forecast-dynamic-screen"
+      "city-forecast-state-and-palette"
     ],
     "status": "not_started",
     "require_review_after": "planner",
-    "spec_path": "docs/features/favorites-list-logout-overhaul/spec.md",
-    "validation_path": "docs/features/favorites-list-logout-overhaul/validator/validation-report.md",
+    "spec_path": "docs/features/city-forecast-screen-and-error-ui/spec.md",
+    "validation_path": "docs/features/city-forecast-screen-and-error-ui/validator/validation-report.md",
     "verification": [
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
-      "Pure JVM ViewModel tests using manual Fakes verify favorites list loading, empty state, item deletion, and logout flow."
+      "Verify unified CityForecastScreen routing (retiring legacy FavoritesDetailScreen), dynamic MeteoMartoTheme palette switching, neutral DayBaselinePalette on ErrorForecastScreen, inherited-palette LogoutDialog, edge-to-edge layout, and stateless @Preview coverage."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_llista_de_preferits_atmospheric/ and meteomarto_di_leg_log_out/. Enforce passive ViewModel state, Compose state hoisting, and neutral DayBaselinePalette on the list."
+    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/, meteomarto_error_previsi_ciutat/, and meteomarto_di_leg_log_out/. Consume unified state from city-forecast-state-and-palette, retire FavoritesDetailScreen, align LogoutDialog via MmDialog inheriting the active palette, and enforce Screen/Content hoisting, edge-to-edge, RTL, and 200% font scaling."
+  },
+  {
+    "id": "favorites-list-overhaul",
+    "area": "favorites",
+    "title": "Rebuild neutral FavoritesScreen, FavoriteItem, and empty state",
+    "user_visible_behavior": "FavoritesScreen renders saved cities, delete confirmation, and the empty state under immutable DayBaselinePalette matching the Stitch favorites layout.",
+    "depends_on": [
+      "city-forecast-screen-and-error-ui"
+    ],
+    "status": "not_started",
+    "require_review_after": "planner",
+    "spec_path": "docs/features/favorites-list-overhaul/spec.md",
+    "validation_path": "docs/features/favorites-list-overhaul/validator/validation-report.md",
+    "verification": [
+      "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
+      "Pure JVM FavoritesViewModel tests using manual Fakes verify favorites list loading, empty state, and item deletion."
+    ],
+    "evidence": [],
+    "notes": "Reference docs/ui/screens/meteomarto_llista_de_preferits_atmospheric/. Enforce passive ViewModel state, SavedStateHandle/rememberSaveable delete-target survival, Compose state hoisting, and immutable DayBaselinePalette."
   },
   {
     "id": "high-temp-alert-screen-overhaul",
@@ -281,7 +338,7 @@
     "title": "Align HighTemperatureAlertScreen with ExtremeAlert palette",
     "user_visible_behavior": "When the current location exceeds the Remote Config temperature threshold, HighTemperatureAlertScreen presents the Stitch alert layout with ExtremeAlertPalette and ic_warning.webp.",
     "depends_on": [
-      "city-forecast-dynamic-screen"
+      "city-forecast-screen-and-error-ui"
     ],
     "status": "not_started",
     "require_review_after": "planner",

@@ -1,0 +1,4 @@
+# Collapse generated snapshots, exported schemas, and verbose validator reports in GitHub PR diffs
+**/snapshots/**/*.png linguist-generated=true
+**/schemas/**/*.json linguist-generated=true
+docs/features/**/validator/*.md linguist-generated=true

@@ -457,3 +457,13 @@
 - Verification run: Independent validator Iteration 3 re-ran `assemblePreDebug --no-daemon` (`1m 28s`), `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`60/60 unchanged`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`93/93`, `0` lint warnings on `MmNavigation.kt`, `Navigation.kt`, and all `23` cumulative touched `.kt` files), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), and `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs --no-daemon` (`0` warnings); Level 4 `SKIPPED` (`emulator-5554` `package` service unresponsive; zero visual diff and Iteration 2 previously verified cold launches).
 - Files or artifacts updated: `MmNavigation.kt`, `Navigation.kt`, `docs/design-system.md`, `docs/features/design-system-components-alignment/validator/pr-review.md`, `docs/features/design-system-components-alignment/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Verify CI checks (`Quality Gate` and `Design System CI`) remain green on PR #13, resolve the 6 review threads, and merge PR #13 into `feature/MM-02-design-system` before starting `navigation-shell-unification`.
+
+### Session 032
+
+- Date: `2026-11-26`
+- Agent: 🟣 `[ORCHESTRATOR · harness-starter]`
+- Goal: Re-slice the pending (`not_started`) modernization backlog in `feature_list.json` into atomic, human-reviewable PR units chained via `depends_on` (preserving all 6 `accepted` features and discovery docs untouched).
+- Completed: Split the multi-concern `not_started` entries into `9` atomic, single-concern slices (`navigation-shell-unification`, `auth-splash-overhaul` -> `auth-login-overhaul` -> `auth-terms-overhaul`, `auth-signup-overhaul`, `city-forecast-state-and-palette` -> `city-forecast-screen-and-error-ui` [including `LogoutDialog` via `MmDialog`], `favorites-list-overhaul`, and `high-temp-alert-screen-overhaul`; `15` total entries: `6` `accepted` + `9` `not_started`); created the corresponding `docs/features/<feature-id>/{ui/screens,ui/resources,validator}/` directories, retired empty superseded folders, and added `.gitattributes` (`linguist-generated=true` for Roborazzi snapshots, Room schemas, and validator reports).
+- Verification run: Validated `feature_list.json` JSON syntax, DAG acyclicity, `depends_on` reference integrity, and `docs/features/<feature-id>/` directory parity.
+- Files or artifacts updated: `feature_list.json`, `PROGRESS.md`, `.gitattributes`, `docs/features/<new-feature-id>/{ui/screens,ui/resources,validator}/`.
+- Next best step: Start `navigation-shell-unification` once PR #13 is merged into `feature/MM-02-design-system`.
