@@ -22,9 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
 /**
@@ -51,10 +48,9 @@ data class MmNavigationItem(
  * Inner content automatically receives and consumes scaffold `WindowInsets`.
  *
  * @param items Top-level navigation destinations; pass an empty list to hide the navigation chrome.
- * @param currentRoute Active `NavDestination` used by the default [isItemSelected] predicate.
+ * @param isItemSelected Predicate determining whether a given [MmNavigationItem] is active.
  * @param onItemClick Callback invoked with the tapped [MmNavigationItem.route].
  * @param modifier Modifier applied to the outer navigation scaffold.
- * @param isItemSelected Predicate determining whether a given [MmNavigationItem] is active.
  * @param topBar Optional top app bar composable rendered above [content].
  * @param floatingActionButton Optional floating action button slot.
  * @param snackbarHost Optional snackbar host slot, such as [MmSnackbarHost].
@@ -63,12 +59,9 @@ data class MmNavigationItem(
 @Composable
 fun MmNavigation(
     items: List<MmNavigationItem>,
-    currentRoute: NavDestination?,
+    isItemSelected: (MmNavigationItem) -> Boolean,
     onItemClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
-    isItemSelected: (MmNavigationItem) -> Boolean = { item ->
-        currentRoute?.hierarchy?.any { it.hasRoute(item.route::class) } == true
-    },
     topBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -193,10 +186,9 @@ private fun MmNavigationPreview() {
     MeteoMartoTheme {
         MmNavigation(
             items = sampleItems,
-            currentRoute = null,
+            isItemSelected = { it.route == "city" },
             onItemClick = {},
             modifier = Modifier.fillMaxSize(),
-            isItemSelected = { it.route == "city" },
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

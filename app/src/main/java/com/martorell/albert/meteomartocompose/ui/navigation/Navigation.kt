@@ -11,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -79,7 +78,9 @@ fun Navigation(
 
             MmNavigation(
                 items = navItems,
-                currentRoute = currentDestination,
+                isItemSelected = { item ->
+                    currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
+                },
                 onItemClick = { route ->
                     (route as? DashboardScreens)?.let {
                         appState.onNavItemClick(it)
