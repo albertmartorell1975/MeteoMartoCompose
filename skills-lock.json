@@ -59,10 +59,10 @@
     },
     "compose-navigation-architecture": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "92d19dfda543b5cc2ab12390f4446645d1a3308f",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/compose-navigation-architecture/SKILL.md",
-      "computedHash": "fdbb3862d4f4c6bc97fea2351375a005a58669b0406c9072fbfe040ec2dcd3d8"
+      "computedHash": "71a4300aace598048df7400a50d25cd2912f96d5c520e880f21b83823078dddd"
     },
     "compose-side-effects": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -129,10 +129,10 @@
     },
     "foundation-evolve": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "92d19dfda543b5cc2ab12390f4446645d1a3308f",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/foundation-evolve/SKILL.md",
-      "computedHash": "944b28bd43d43fe005cc6667306a99e4b440d2e2194c21776262042b951de005"
+      "computedHash": "0e19ea1531d4e4b046efdca254fb63641753d7e77ac319e55520b9d728229048"
     },
     "git-governance": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -213,10 +213,10 @@
     },
     "viewmodel-architecture-governance": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "92d19dfda543b5cc2ab12390f4446645d1a3308f",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
-      "computedHash": "ea6ec3a2321bb9d46427ff2ca035751e8c93d2076a43549d16df6e8bb4ba0a9b"
+      "computedHash": "616d753ccdaef58a5dde09bc41e922c908468f1730d43dacac5de24c52d579f6"
     },
     "workflow-documenter": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -227,17 +227,17 @@
     },
     "workflow-implementer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "53c053153e5942732811f52fc9631b393ceb5402",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-implementer/SKILL.md",
-      "computedHash": "1fe3474bf79d0e2a2aedf88af885bb533a1f59964403d3d5321f2133f435d3ee"
+      "computedHash": "907b5da66ce76ffc896e53705d1e6ad425a3f5fe50c318fdb9d30b84bce53be1"
     },
     "workflow-initializer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "d91497f7e6692ed36783c496c2acfaa702cc43c4",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-initializer/SKILL.md",
-      "computedHash": "9079379050b5bb9ce4c639dddfa0c2b65b07152f67220222f75ba935ea15e027"
+      "computedHash": "2cdc2a1949eb51b32f182054194991197f198339a2a1aaca3629465ba953effb"
     },
     "workflow-orchestrator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -248,17 +248,17 @@
     },
     "workflow-planner": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "53c053153e5942732811f52fc9631b393ceb5402",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-planner/SKILL.md",
-      "computedHash": "38e0cf95dc839e5eccc9636356a125f3947040ec24d9c89d95633db472a0bf37"
+      "computedHash": "65d6fc3fbcf73147b99539a65ae461fa5a0fe75c2bbd31b4650dee74aa031064"
     },
     "workflow-validator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "53c053153e5942732811f52fc9631b393ceb5402",
+      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-validator/SKILL.md",
-      "computedHash": "44294469b4014cffa63f41bf9614395d81f8b9af006a5c64ce3a9012b1adf3a4"
+      "computedHash": "098b3bded365deedf4d0a85fc774725e44f37850cab4105c9ff83a1311b4e9bd"
     }
   }
 }
