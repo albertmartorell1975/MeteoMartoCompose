@@ -9,7 +9,7 @@ MeteoMartoCompose uses a lean, fast, three-tier verification strategy optimized 
 | Tier | Scope | Tools | Runner | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
 | **Pure JVM Unit Tests** | ViewModels, UseCases with orchestration/branching, Repositories, Mappers, Coordinators | JUnit 4, `kotlinx-coroutines-test`, Turbine, Manual Fakes, `MainDispatcherRule` | Pure JVM (JUnit) | Verify state transitions, error mapping, business rules, and orchestration without Android or bytecode-mocking overhead. |
-| **Design System Visual Regression** | `ui.designsystem.components` `@Preview` composables only | Roborazzi (`generateComposePreviewRobolectricTests`), Robolectric (internal renderer only) | JVM (Roborazzi) | Guard Design System tokens, themes (Light/Dark), RTL (`ar`), 200% font scaling, and Phone/Tablet adaptive layouts (`36` golden PNGs). |
+| **Design System Visual Regression** | `ui.designsystem.components` `@Preview` composables only | Roborazzi (`generateComposePreviewRobolectricTests` + `RoborazziPreviewTester` `0.01f`), Robolectric (internal renderer only) | JVM (Roborazzi) | Guard Design System tokens, all 5 KISS palettes (`DayBaseline`, `Night`, `Sunny`, `Rain`, `ExtremeAlert`), RTL (`ar`), 200% font scaling, and Phone/Tablet adaptive layouts (`60` golden PNGs). |
 | **Black-Box E2E Flows** | Complete user journeys, real `NavHost`, Hilt graph, Room | `@android-cli` (`android run`, `android layout --diff`, `android screen capture`) | Live Emulator / Device | Validate real end-to-end Acceptance Scenarios from `docs/features/<feature-id>/spec.md` without in-repo instrumented tests. |
 
 ### Explicitly Forbidden Patterns
@@ -36,9 +36,11 @@ MeteoMartoCompose uses a lean, fast, three-tier verification strategy optimized 
 - **`MainDispatcherRule`**: Every presentation test using `viewModelScope` or `stateIn` MUST apply `@get:Rule val mainDispatcherRule = MainDispatcherRule()` (`app/src/test/java/com/martorell/albert/meteomartocompose/testutil/MainDispatcherRule.kt`), calling `Dispatchers.setMain(UnconfinedTestDispatcher())` in `starting()` and `Dispatchers.resetMain()` in `finished()`.
 - **Roborazzi Test Isolation**: `app/src/test/resources/robolectric.properties` wires `application = com.martorell.albert.meteomartocompose.TestMeteoMartoApp` globally so Design System preview rendering never triggers Hilt or Firebase initialization.
 - **Deterministic Coil Previews**: In Design System composables using `AsyncImage` (e.g., `MmWeatherInfo.kt`), disable crossfade animation in inspection mode (`.crossfade(enable = !LocalInspectionMode.current)`) and provide `LocalAsyncImagePreviewHandler provides previewAsyncImageCoil` inside `@Preview` functions so snapshots render identically on Windows and `ubuntu-latest` CI.
-- **Pragmatic Multipreview Baseline (`MmPreview.kt`)**:
-  - `@MmPreview` covers `Light Mode`, `Dark Mode`, `RTL` (`ar`), and `Large Font` (`2.0f`).
+- **Pragmatic Multipreview Baseline (`MmPreview.kt` & `RoborazziPreviewTester.kt`)**:
+  - `@MmPreview` covers `Light Mode` (`DayBaseline`), `Dark Mode` (`Night`), `RTL` (`ar`), and `Large Font` (`2.0f`) — all with `showBackground = true`.
   - `@MmDevicePreview` covers `Phone` (`411x891dp`) and `Tablet` (`1280x800dp@240dpi`).
+  - `@MmDynamicPalettesPreview` (`MmDynamicPalettesShowcase`) captures `SunnyPalette`, `RainPalette`, and `ExtremeAlertPalette` in a single vertical PNG per themed component (`60` golden PNGs total).
+  - `RoborazziPreviewTester` applies `CompareOptions(changeThreshold = 0.01f)` to prevent false cross-OS font anti-aliasing failures between Windows and `ubuntu-latest` CI.
 
 ### 3.2 Gradle Configuration (`app/build.gradle.kts`)
 ```kotlin
@@ -90,7 +92,7 @@ Because `flavors.gradle` defines `pre` and `pro` product flavors, always target 
 # Full APK & Hilt DI graph verification
 ./gradlew assemblePreDebug --no-daemon
 
-# Design System visual regression verification (36 golden PNGs)
+# Design System visual regression verification (60 golden PNGs)
 ./gradlew :app:verifyRoborazziPreDebug --no-daemon
 
 # Regenerate Design System golden PNGs after intentional Design Token or Mm* changes

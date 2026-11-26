@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -12,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -25,6 +23,7 @@ import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavigation
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavigationItem
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSnackbarHost
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.FndDesignSystemViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
 import com.martorell.albert.meteomartocompose.ui.rememberAppState
@@ -79,7 +78,9 @@ fun Navigation(
 
             MmNavigation(
                 items = navItems,
-                currentRoute = currentDestination,
+                isItemSelected = { item ->
+                    currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
+                },
                 onItemClick = { route ->
                     (route as? DashboardScreens)?.let {
                         appState.onNavItemClick(it)
@@ -115,7 +116,7 @@ fun Navigation(
                     }
                 },
                 snackbarHost = {
-                    SnackbarHost(appState.snackbarHostState)
+                    MmSnackbarHost(hostState = appState.snackbarHostState)
                 }
             ) {
                 val startDestination = if (rootState.isLoggedIn) SubGraphs.Dashboard else SubGraphs.Auth

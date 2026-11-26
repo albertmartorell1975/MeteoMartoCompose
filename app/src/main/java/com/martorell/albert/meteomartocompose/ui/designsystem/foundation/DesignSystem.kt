@@ -1,6 +1,7 @@
 package com.martorell.albert.meteomartocompose.ui.designsystem.foundation
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -96,38 +97,7 @@ fun MeteoMartoTheme(
     content: @Composable () -> Unit,
 ) {
     val colors = FndColors.fromPalette(palette)
-
-    val colorScheme = if (colors.isLight) {
-        lightColorScheme(
-            primary = colors.primary,
-            onPrimary = colors.onPrimary,
-            secondary = colors.secondary,
-            onSecondary = colors.onSecondary,
-            background = colors.background,
-            onBackground = colors.onSurface,
-            surface = colors.surface,
-            onSurface = colors.onSurface,
-            error = colors.error,
-            onError = colors.onError,
-            errorContainer = colors.errorContainer,
-            onErrorContainer = colors.onErrorContainer,
-        )
-    } else {
-        darkColorScheme(
-            primary = colors.primary,
-            onPrimary = colors.onPrimary,
-            secondary = colors.secondary,
-            onSecondary = colors.onSecondary,
-            background = colors.background,
-            onBackground = colors.onSurface,
-            surface = colors.surface,
-            onSurface = colors.onSurface,
-            error = colors.error,
-            onError = colors.onError,
-            errorContainer = colors.errorContainer,
-            onErrorContainer = colors.onErrorContainer,
-        )
-    }
+    val colorScheme = colors.toMaterialColorScheme()
 
     FndDensityProvider(userScale = fontScale) {
         CompositionLocalProvider(
@@ -145,5 +115,73 @@ fun MeteoMartoTheme(
                 content = content,
             )
         }
+    }
+}
+
+/**
+ * Maps [FndColors] foundation tokens into a Material 3 light or dark `ColorScheme`
+ * based on [FndColors.isLight], ensuring container, surface-container, and outline
+ * roles match the active weather palette without Material default fallbacks.
+ *
+ * @return Configured Material 3 `ColorScheme` instance.
+ */
+internal fun FndColors.toMaterialColorScheme(): ColorScheme {
+    val surfaceContainerLowest = if (isLight) surface else background
+    return if (isLight) {
+        lightColorScheme(
+            primary = primary,
+            onPrimary = onPrimary,
+            primaryContainer = primaryContainer,
+            onPrimaryContainer = onPrimaryContainer,
+            secondary = secondary,
+            onSecondary = onSecondary,
+            secondaryContainer = secondaryContainer,
+            onSecondaryContainer = onSecondaryContainer,
+            background = background,
+            onBackground = onSurface,
+            surface = surface,
+            onSurface = onSurface,
+            surfaceVariant = surfaceContainer,
+            onSurfaceVariant = onSurfaceVariant,
+            surfaceContainerLowest = surfaceContainerLowest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHigh,
+            outline = outline,
+            outlineVariant = outlineVariant,
+            error = error,
+            onError = onError,
+            errorContainer = errorContainer,
+            onErrorContainer = onErrorContainer,
+        )
+    } else {
+        darkColorScheme(
+            primary = primary,
+            onPrimary = onPrimary,
+            primaryContainer = primaryContainer,
+            onPrimaryContainer = onPrimaryContainer,
+            secondary = secondary,
+            onSecondary = onSecondary,
+            secondaryContainer = secondaryContainer,
+            onSecondaryContainer = onSecondaryContainer,
+            background = background,
+            onBackground = onSurface,
+            surface = surface,
+            onSurface = onSurface,
+            surfaceVariant = surfaceContainer,
+            onSurfaceVariant = onSurfaceVariant,
+            surfaceContainerLowest = surfaceContainerLowest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHigh,
+            outline = outline,
+            outlineVariant = outlineVariant,
+            error = error,
+            onError = onError,
+            errorContainer = errorContainer,
+            onErrorContainer = onErrorContainer,
+        )
     }
 }

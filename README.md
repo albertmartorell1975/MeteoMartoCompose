@@ -68,21 +68,21 @@ Each experiment is developed in an isolated Git branch so that the application r
 
 **Branch**: `feature/MM-02-design-system`
 
-The goal of MM-02 is not simply to create a reusable UI component library. It is to evaluate how an AI-assisted engineering workflow can help define and enforce Design System architecture, governance, consistency and automated visual validation in a modern Android project. **To maintain these high architectural standards, all AI contributions are strictly guided and evaluated by a custom `design-system-governance` skill.**
+The goal of MM-02 is not simply to create a reusable UI component library. It is to evaluate how an AI-assisted engineering workflow can help define and enforce Design System architecture, governance, consistency and automated visual validation in a modern Android project. **To maintain these high architectural standards, all AI contributions are strictly guided and evaluated by a custom `design-system-governance` skill.** See the unified Design System reference at [docs/design-system.md](docs/design-system.md).
 
 > ⚠️ **This feature is currently under development and has not been merged into `develop`.**
 
 #### Stateless Design System components
-Material 3 components are wrapped behind explicit application-level `MM*` APIs, such as `MmPrimaryButton` and `MmTextField`, establishing controlled component boundaries and avoiding UI-specific business state inside the Design System.
+Material 3 components are wrapped behind explicit application-level `Mm*` APIs (`MmButton`, `MmCard`, `MmDialog`, `MmErrorState`, `MmLoadingOverlay`, `MmNavigation`, `MmScaffold`, `MmSnackbar`/`MmSnackbarHost`, `MmText`, `MmTextField`, `MmWeatherInfo`), establishing controlled component boundaries and avoiding UI-specific business state inside the Design System.
 
 #### Controlled typography
-Typography is centralized through primitives such as `MMText`, with Roboto Flex variable fonts used to provide consistent and scalable typographic behavior.
+Typography is centralized through `MmText` (all 15 Material 3 scales, `>= 12.sp`), with Roboto Flex variable fonts used to provide consistent and scalable typographic behavior.
 
 #### Design tokens and foundations
-Spacing, colors and typography are defined through dedicated Design System tokens, reducing direct styling decisions across individual application screens.
+Five deterministic KISS weather palettes (`DayBaseline`, `Sunny`, `Rain`, `Night`, `ExtremeAlert`), full Material 3 container/surface roles, spacing, shapes, dimensions, motion, and typography are defined through dedicated `Fnd*` tokens, reducing direct styling decisions across individual application screens.
 
 #### Automated visual regression testing
-Roborazzi is used for JVM-based screenshot testing and visual regression detection. The experiment applies pragmatic 16-permutation test matrices to validate component variations without requiring every combination to be executed on a physical device.
+Roborazzi is used for JVM-based screenshot testing and visual regression detection across a pragmatic `60`-PNG multipreview baseline (`@MmPreview`, `@MmDevicePreview`, and `@MmDynamicPalettesPreview`) covering all 5 KISS palettes, RTL, 200% font scaling, and Phone/Tablet form factors without requiring every permutation to be executed on a physical device.
 
 #### Responsive UI and adaptive navigation
 Material 3 Adaptive and NavigationSuiteScaffold are integrated to evaluate responsive layouts and navigation patterns across different screen sizes and form factors.
