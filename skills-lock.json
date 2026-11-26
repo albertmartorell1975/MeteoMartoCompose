@@ -227,17 +227,17 @@
     },
     "workflow-implementer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
+      "commit": "e57094dfc9f8f9c8a3395fd9176ffcbec9ed4e70",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-implementer/SKILL.md",
-      "computedHash": "907b5da66ce76ffc896e53705d1e6ad425a3f5fe50c318fdb9d30b84bce53be1"
+      "computedHash": "738d5aaa8f25742e5bc974c558cd17836c08fddd0317a5978c82f130ae402548"
     },
     "workflow-initializer": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
+      "commit": "e57094dfc9f8f9c8a3395fd9176ffcbec9ed4e70",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-initializer/SKILL.md",
-      "computedHash": "2cdc2a1949eb51b32f182054194991197f198339a2a1aaca3629465ba953effb"
+      "computedHash": "ca73da57819b48a898e585bd4744a2022a8ae08468ab97d975e941704e1ab332"
     },
     "workflow-orchestrator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
@@ -248,17 +248,17 @@
     },
     "workflow-planner": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
+      "commit": "e57094dfc9f8f9c8a3395fd9176ffcbec9ed4e70",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-planner/SKILL.md",
-      "computedHash": "65d6fc3fbcf73147b99539a65ae461fa5a0fe75c2bbd31b4650dee74aa031064"
+      "computedHash": "cc870145e994d391566d990385f054d7aa2dd796facd7ddd925eaa627beeb2b1"
     },
     "workflow-validator": {
       "source": "albertmartorell1975/android-ai-workflow-foundation",
-      "commit": "c380d3f7e276a898596888098e48e55ef2e26410",
+      "commit": "e57094dfc9f8f9c8a3395fd9176ffcbec9ed4e70",
       "sourceType": "github",
       "skillPath": ".agents/skills/workflow-validator/SKILL.md",
-      "computedHash": "098b3bded365deedf4d0a85fc774725e44f37850cab4105c9ff83a1311b4e9bd"
+      "computedHash": "940c554003110e7898ba2c030b0f2afb46400f833b2f669f6355f3d7503af4cb"
     }
   }
 }
