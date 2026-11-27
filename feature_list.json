@@ -188,7 +188,7 @@
     "depends_on": [
       "design-system-components-alignment"
     ],
-    "status": "accepted",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/navigation-shell-unification/spec.md",
     "validation_path": "docs/features/navigation-shell-unification/validator/validation-report.md",
