@@ -7,18 +7,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.AppState
 import com.martorell.albert.meteomartocompose.ui.MainViewModel
 import com.martorell.albert.meteomartocompose.ui.MeteoMartoComposeLayout
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavigation
@@ -26,7 +23,6 @@ import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmNavig
 import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmSnackbarHost
 import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.FndDesignSystemViewModel
 import com.martorell.albert.meteomartocompose.ui.navigation.shared.TopAppBarCustom
-import com.martorell.albert.meteomartocompose.ui.rememberAppState
 import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
 import com.martorell.albert.meteomartocompose.ui.screens.splash.SplashUI
 
@@ -36,40 +32,39 @@ fun Navigation(
     mainViewModel: MainViewModel = hiltViewModel(),
     designSystemViewModel: FndDesignSystemViewModel = hiltViewModel(),
 ) {
-    val rootState by mainViewModel.state.collectAsState()
-    val fontScale by designSystemViewModel.fontScale.collectAsState()
+    val rootState by mainViewModel.state.collectAsStateWithLifecycle()
+    val fontScale by designSystemViewModel.fontScale.collectAsStateWithLifecycle()
 
     if (rootState.isLoading) {
         SplashUI()
     } else {
-        val navController = rememberNavController()
-        val appState: AppState = rememberAppState(navController = navController)
-        val currentDestination = appState.currentDestination
-
-        // Scoping ViewModel to the Dashboard subgraph to avoid leaks between sessions.
-        // We check the hierarchy to safely obtain the entry only when the subgraph is active.
-        val dashboardEntry = remember(currentDestination) {
-            val isDashboardInHierarchy = currentDestination?.hierarchy?.any {
-                it.hasRoute<SubGraphs.Dashboard>()
-            } == true
-
-            if (isDashboardInHierarchy) {
-                appState.getBackStackEntry(SubGraphs.Dashboard)
-            } else {
-                null
-            }
+        val appState: AppState = rememberAppState()
+        val currentBackStackEntry = appState.currentBackStackEntry
+        val shellChrome = appState.shellChrome
+        val dashboardEntry = remember(currentBackStackEntry) {
+            appState.dashboardBackStackEntryOrNull(currentBackStackEntry)
+        }
+        val dashboardViewModel: CityWeatherViewModel? = if (dashboardEntry != null) {
+            hiltViewModel(dashboardEntry)
+        } else {
+            null
         }
 
         val scrollState = rememberTopAppBarState()
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState)
 
+        LaunchedEffect(currentBackStackEntry?.id) {
+            scrollState.heightOffset = 0f
+            scrollState.contentOffset = 0f
+        }
+
         MeteoMartoComposeLayout(fontScale = fontScale) {
-            val navItems = if (appState.showBottomNavigation) {
-                AppState.BOTTOM_NAV_OPTIONS.map { topLevelRoute ->
+            val navItems = if (shellChrome.showBottomNavigation) {
+                AppState.NAV_OPTIONS.map { topLevelRoute ->
                     MmNavigationItem(
                         route = topLevelRoute.route,
                         icon = topLevelRoute.icon,
-                        label = stringResource(topLevelRoute.title),
+                        label = stringResource(topLevelRoute.titleRes),
                     )
                 }
             } else {
@@ -79,37 +74,41 @@ fun Navigation(
             MmNavigation(
                 items = navItems,
                 isItemSelected = { item ->
-                    currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
+                    appState.isTopLevelRouteSelected(currentBackStackEntry, item.route)
                 },
                 onItemClick = { route ->
-                    (route as? DashboardScreens)?.let {
-                        appState.onNavItemClick(it)
-                    }
+                    (route as? DashboardScreens)?.let(appState::onNavItemClick)
                 },
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
-                    if (appState.showBottomNavigation || appState.shouldShowBackButton) {
+                    if (shellChrome.showTopAppBar) {
+                        val title = shellChrome.topAppBarTitleRes
+                            ?.let { stringResource(it) }
+                            .orEmpty()
                         TopAppBarCustom(
-                            appState = appState,
+                            title = title,
+                            showBackButton = shellChrome.showBackButton,
+                            onBackClick = appState::navigateUp,
+                            showLogoutAction = shellChrome.showLogoutAction,
+                            onLogoutClick = { dashboardViewModel?.showLogOutDialog() },
                             scrollBehavior = scrollBehavior,
                         )
                     }
                 },
                 floatingActionButton = {
-                    if (appState.showFavoriteButton && appState.isFabVisible && (dashboardEntry != null)) {
-                        val cityWeatherViewModel: CityWeatherViewModel = hiltViewModel(dashboardEntry)
+                    if (shellChrome.showFavoriteFab && appState.isFabVisible && dashboardViewModel != null) {
                         FloatingActionButton(
                             onClick = {
-                                appState.onFabClick { cityWeatherViewModel.onFavoriteClicked() }
-                            }
+                                appState.onFabClick { dashboardViewModel.onFavoriteClicked() }
+                            },
                         ) {
                             val icon = appState.fabIcon {
-                                cityWeatherViewModel.isCityFavorite()
+                                dashboardViewModel.isCityFavorite()
                             }
                             icon?.let {
                                 Icon(
                                     imageVector = it,
-                                    contentDescription = stringResource(R.string.favorite)
+                                    contentDescription = stringResource(R.string.favorite),
                                 )
                             }
                         }
@@ -117,30 +116,25 @@ fun Navigation(
                 },
                 snackbarHost = {
                     MmSnackbarHost(hostState = appState.snackbarHostState)
-                }
+                },
             ) {
                 val startDestination = if (rootState.isLoggedIn) SubGraphs.Dashboard else SubGraphs.Auth
 
                 NavHost(
-                    navController = navController,
+                    navController = appState.navController,
                     startDestination = startDestination,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     authSubGraph(
-                        appState = appState
+                        appState = appState,
                     )
 
                     dashboardGraph(
                         appState = appState,
-                        nestedScrollConnection = scrollBehavior.nestedScrollConnection
+                        nestedScrollConnection = scrollBehavior.nestedScrollConnection,
                     ) { newVisibility ->
                         appState.updateIsFabVisible(newVisibility)
                     }
-
-                    favoriteSubGraph(
-                        appState = appState,
-                        nestedScrollConnection = scrollBehavior.nestedScrollConnection
-                    )
                 }
             }
         }
