@@ -85,7 +85,7 @@ Five deterministic KISS weather palettes (`DayBaseline`, `Sunny`, `Rain`, `Night
 Roborazzi is used for JVM-based screenshot testing and visual regression detection across a pragmatic `60`-PNG multipreview baseline (`@MmPreview`, `@MmDevicePreview`, and `@MmDynamicPalettesPreview`) covering all 5 KISS palettes, RTL, 200% font scaling, and Phone/Tablet form factors without requiring every permutation to be executed on a physical device.
 
 #### Responsive UI and adaptive navigation
-Material 3 Adaptive and NavigationSuiteScaffold are integrated to evaluate responsive layouts and navigation patterns across different screen sizes and form factors.
+Material 3 Adaptive and NavigationSuiteScaffold are integrated to evaluate responsive layouts and navigation patterns across different screen sizes and form factors. See the navigation shell architecture guide at [docs/navigation-shell.md](docs/navigation-shell.md).
 
 ### Past Experiments
 
