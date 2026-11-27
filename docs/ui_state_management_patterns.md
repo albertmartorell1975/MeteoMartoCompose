@@ -29,8 +29,10 @@ The state is defined as a set of mutually exclusive situations.
 
 This model combines the best of both worlds: it uses a **`data class`** for global coordination and a **`sealed interface`** for the mutually exclusive content phases.
 
-### Mandate: Data Continuity
-Following the `viewmodel-architecture-governance` skill, **`isLoading` must be an additive boolean flag**, not a branch of the sealed interface. This ensures that when data is refreshed, the existing content remains visible while a loader overlay is shown on top.
+### Mandate: Data Continuity & Process Death Resilience
+Following `viewmodel-architecture-governance`:
+- **`isLoading` must be an additive boolean flag**, not a branch of the sealed interface, so existing content stays visible behind a loader overlay during refresh.
+- **Process Death survival**: persist route arguments (ID-only), active form drafts, filters, and critical dialog targets via `SavedStateHandle` or `rememberSaveable` (and Room SSOT), never in volatile RAM singletons or `onCleared()`. Verify `SavedStateHandle` ViewModels with pure JVM `SavedStateHandle(mapOf(...))` restoration tests.
 
 ### Modeling Example
 ```kotlin

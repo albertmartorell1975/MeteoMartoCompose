@@ -8,9 +8,9 @@ MeteoMartoCompose uses a lean, fast, three-tier verification strategy optimized 
 
 | Tier | Scope | Tools | Runner | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **Pure JVM Unit Tests** | ViewModels, UseCases with orchestration/branching, Repositories, Mappers, Coordinators | JUnit 4, `kotlinx-coroutines-test`, Turbine, Manual Fakes, `MainDispatcherRule` | Pure JVM (JUnit) | Verify state transitions, error mapping, business rules, and orchestration without Android or bytecode-mocking overhead. |
+| **Pure JVM Unit Tests** | ViewModels, UseCases with orchestration/branching, Repositories, Mappers, Coordinators | JUnit 4, `kotlinx-coroutines-test`, Turbine, Manual Fakes, `MainDispatcherRule`, `SavedStateHandle(mapOf(...))` | Pure JVM (JUnit) | Verify state transitions, cold-restoration (`SavedStateHandle`), error mapping, business rules, and orchestration without Android or bytecode-mocking overhead. |
 | **Design System Visual Regression** | `ui.designsystem.components` `@Preview` composables only | Roborazzi (`generateComposePreviewRobolectricTests` + `RoborazziPreviewTester` `0.01f`), Robolectric (internal renderer only) | JVM (Roborazzi) | Guard Design System tokens, all 5 KISS palettes (`DayBaseline`, `Night`, `Sunny`, `Rain`, `ExtremeAlert`), RTL (`ar`), 200% font scaling, and Phone/Tablet adaptive layouts (`60` golden PNGs). |
-| **Black-Box E2E Flows** | Complete user journeys, real `NavHost`, Hilt graph, Room | `@android-cli` (`android run`, `android layout --diff`, `android screen capture`) | Live Emulator / Device | Validate real end-to-end Acceptance Scenarios from `docs/features/<feature-id>/spec.md` without in-repo instrumented tests. |
+| **Black-Box E2E & Process Death Probes** | Complete user journeys, real `NavHost`, Hilt graph, Room, Activity recreation & LMK process death | `@android-cli` (`android run`, `android layout --diff`, `android screen capture`) + `adb` Probes 4A/4B | Live Emulator / Device | Validate Acceptance Scenarios plus Activity recreation (`always_finish_activities 1 -> 0`) and LMK process death (`am kill` + Recents restore with `PID_AFTER != PID_BEFORE`) without in-repo instrumented tests. |
 
 ### Explicitly Forbidden Patterns
 - **Zero `MockK` / `Mockito`**: Use hand-written, deterministic in-memory `Fake*` implementations for all domain/data interfaces (`app/src/test/java/.../testutil/fakes/` and `usecases/src/test/java/.../usecases/fakes/`).
@@ -27,7 +27,7 @@ MeteoMartoCompose uses a lean, fast, three-tier verification strategy optimized 
   - `:domain` — Pure mathematical calculations, domain rules, and boundary conditions.
   - `:data` — Serialization/deserialization, caching policies, and `Throwable`-to-`DomainError` mapping.
   - `:usecases` — Multi-repository orchestration and fallback logic.
-  - `:app` — ViewModel passive initialization and state transitions (`Loading`, `Error`, `Success`), complex UI mappers, and pure Kotlin worker coordinators.
+  - `:app` — ViewModel passive initialization, state transitions (`Loading`, `Error`, `Success`), `SavedStateHandle(mapOf(...))` cold-restoration, complex UI mappers, and pure Kotlin worker coordinators.
 
 ## 3. Infrastructure & Environment
 
