@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -78,10 +79,12 @@ fun TopAppBarCustom(
 @Composable
 private fun TopAppBarCustomTopLevelPreview() {
     MeteoMartoTheme {
-        TopAppBarCustom(
-            title = "Meteo Marto",
-            showLogoutAction = true,
-        )
+        Surface(color = MeteoMartoTheme.colors.background) {
+            TopAppBarCustom(
+                title = "Meteo Marto",
+                showLogoutAction = true,
+            )
+        }
     }
 }
 
@@ -91,9 +94,11 @@ private fun TopAppBarCustomTopLevelPreview() {
 @Composable
 private fun TopAppBarCustomDetailPreview() {
     MeteoMartoTheme {
-        TopAppBarCustom(
-            title = "City weather",
-            showBackButton = true,
-        )
+        Surface(color = MeteoMartoTheme.colors.background) {
+            TopAppBarCustom(
+                title = "City weather",
+                showBackButton = true,
+            )
+        }
     }
 }
