@@ -6,63 +6,94 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.compose.ui.text.style.TextOverflow
 import com.martorell.albert.meteomartocompose.R
-import com.martorell.albert.meteomartocompose.ui.AppState
-import com.martorell.albert.meteomartocompose.ui.navigation.DashboardScreens
-import com.martorell.albert.meteomartocompose.ui.navigation.SubGraphs
-import com.martorell.albert.meteomartocompose.ui.screens.city.CityWeatherViewModel
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmDevicePreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmPreview
+import com.martorell.albert.meteomartocompose.ui.designsystem.components.MmText
+import com.martorell.albert.meteomartocompose.ui.designsystem.foundation.MeteoMartoTheme
 
+/** Stateless top app bar displaying a single-line title with optional back navigation and logout actions. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarCustom(
-    appState: AppState,
+    title: String,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null
+    showBackButton: Boolean = false,
+    onBackClick: () -> Unit = {},
+    showLogoutAction: Boolean = false,
+    onLogoutClick: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val destination = appState.currentDestination
-    val titleRes = appState.topAppBarTitle
-    val shouldShowBackButton = appState.shouldShowBackButton
-
     TopAppBar(
+        title = {
+            MmText.TitleLarge(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
         modifier = modifier,
-        scrollBehavior = scrollBehavior,
         navigationIcon = {
-            if (shouldShowBackButton) {
-                IconButton(onClick = { appState.navigateUp() }) {
+            if (showBackButton) {
+                IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back)
+                        contentDescription = stringResource(R.string.back),
                     )
                 }
-            }
-        },
-        title = {
-            titleRes?.let {
-                Text(text = stringResource(it))
             }
         },
         actions = {
-            if (destination?.hasRoute(DashboardScreens.CityWeather::class) == true) {
-                val dashboardEntry = remember(destination) {
-                    appState.getBackStackEntry(SubGraphs.Dashboard)
-                }
-                val viewModel: CityWeatherViewModel = hiltViewModel(dashboardEntry)
-                IconButton(onClick = { viewModel.showLogOutDialog() }) {
+            if (showLogoutAction) {
+                IconButton(onClick = onLogoutClick) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Default.Logout,
-                        contentDescription = stringResource(R.string.logout_title)
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = stringResource(R.string.logout_title),
                     )
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = MeteoMartoTheme.colors.surfaceContainer,
+            navigationIconContentColor = MeteoMartoTheme.colors.onSurface,
+            titleContentColor = MeteoMartoTheme.colors.onSurface,
+            actionIconContentColor = MeteoMartoTheme.colors.onSurface,
+        ),
+        scrollBehavior = scrollBehavior,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@MmPreview
+@MmDevicePreview
+@Composable
+private fun TopAppBarCustomTopLevelPreview() {
+    MeteoMartoTheme {
+        TopAppBarCustom(
+            title = "Meteo Marto",
+            showLogoutAction = true,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@MmPreview
+@MmDevicePreview
+@Composable
+private fun TopAppBarCustomDetailPreview() {
+    MeteoMartoTheme {
+        TopAppBarCustom(
+            title = "City weather",
+            showBackButton = true,
+        )
+    }
 }
