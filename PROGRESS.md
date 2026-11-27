@@ -7,7 +7,7 @@
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
 - Current next ready feature: `auth-splash-overhaul` / `auth-signup-overhaul` / `city-forecast-state-and-palette` (waiting for `navigation-shell-unification` PR review & merge into `feature/MM-02-design-system`)
 - Current blocker: None (`navigation-shell-unification` accepted and published for PR review targeting `feature/MM-02-design-system`).
-- Last verified at: `2026-11-27` (`navigation-shell-unification` Iteration 2 independent 4-level validation passed on JDK `21.0.11` & live `emulator-5554`: `assemblePreDebug` `1m 46s`, `:app:testPreDebugUnitTest` `95/95` = `35` pure JVM unit tests + `60/60` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on all 9 touched `.kt` files, Probes 4A/4B PASS across all 6 destinations, and post-KDoc `compilePreDebugKotlin` PASS)
+- Last verified at: `2026-11-27` (`navigation-shell-unification` PR #15 Review Round #1 independent re-validation Iteration 3 passed on JDK `21.0.11`: `assemblePreDebug` `1m 23s`, `:app:testPreDebugUnitTest` `95/95` = `35` pure JVM unit tests + `60/60` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on all 9 touched `.kt` files, `0` production runtime delta carrying forward Iteration 2 live `emulator-5554` Probes 4A/4B across all 6 destinations, plus `docs/navigation-shell.md` authored and linked from `README.md`)
 
 ## Session Log
 
@@ -522,3 +522,29 @@
 - Verification run: Independent validator Iteration 2 re-ran `assemblePreDebug --no-daemon` (`1m 46s`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`95/95`, `0` lint warnings on all 9 touched `.kt` files), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`60/60 unchanged`), and live `emulator-5554` Probes 4A/4B across all 6 destinations; orchestrator verified post-KDoc `compilePreDebugKotlin --no-daemon` on JDK `21.0.11`.
 - Files or artifacts updated: 5 KDoc-enriched navigation `.kt` files, `Navigation.kt`, `HomeNavGraph.kt`, `authSubGraph.kt`, `AppShellStateTest.kt`, `docs/features/navigation-shell-unification/spec.md`, `docs/features/navigation-shell-unification/validator/validation-report.md`, `CONSTRAINTS.md`, `feature_list.json`, `PROGRESS.md`.
 - Next best step: Human review & merge of the `navigation-shell-unification` PR into `feature/MM-02-design-system` (verify `Quality Gate` is green), then start `auth-splash-overhaul` (or parallel wave with independent `auth-signup-overhaul` / `city-forecast-state-and-palette`).
+
+### Session 037
+
+- Date: `2026-11-27`
+- Agent: 🟡 `[IMPLEMENTER · workflow-implementer]`
+- Goal: Apply PR #15 Review Round #1 (`review-fix` Mode) Finding 1 for `navigation-shell-unification` (Issue `#14`) in isolated worktree `.worktrees/impl-navigation-shell-unification-r1` (`wt/impl-navigation-shell-unification`).
+- Completed:
+  - **`TopAppBarCustom.kt`**: Imported `androidx.compose.material3.Surface` and wrapped `TopAppBarCustom(...)` in `Surface(color = MeteoMartoTheme.colors.background)` inside both `TopAppBarCustomTopLevelPreview()` and `TopAppBarCustomDetailPreview()` so Light Mode (`DayBaselinePalette` `#F8FAFC`) and Dark Mode (`NightPalette` `#0B1120`) render with unmistakable contrast behind the transparent `TopAppBar`. Preserved production `TopAppBarCustom(...)`, its existing KDoc comment, and `containerColor = Color.Transparent` untouched.
+  - **Strict Boundaries**: Zero edits to `spec.md`, durable Markdown docs (Finding 2 reserved for `workflow-orchestrator` Stage 5), or Roborazzi snapshots (`60/60` untouched); zero new `@Test` methods.
+- Verification run (JDK `21.0.11`):
+  - `.\gradlew.bat assemblePreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m 31s`; `0` compiler warnings).
+  - `.\gradlew.bat testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`: PASS (`BUILD SUCCESSFUL in 1m 12s`, configuration cache entry stored; `:app:testPreDebugUnitTest` `95/95` = `35` pure JVM unit tests + `60` Roborazzi previews, `0` failed, `0` skipped; `lint-results-preDebug.xml` `0` warnings on `TopAppBarCustom.kt`).
+  - `.\gradlew.bat :domain:test :usecases:test :data:test --no-daemon`: PASS (`BUILD SUCCESSFUL in 19s`; `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`; `42` total pure JVM unit tests).
+  - `.\gradlew.bat :app:verifyRoborazziPreDebug --no-daemon`: PASS (`BUILD SUCCESSFUL in 1m`; `results-summary.json`: `total=60, recorded=0, added=0, changed=0, unchanged=60`).
+- Files or artifacts updated: `app/src/main/java/com/martorell/albert/meteomartocompose/ui/navigation/shared/TopAppBarCustom.kt`, `feature_list.json` (`status: "passing"`), `PROGRESS.md`.
+- Next best step: Independent re-validation (Iteration 3 — PR #15 Review Round #1) by `workflow-validator` in an isolated git worktree, followed by Stage 5 durable documentation (`docs/navigation-shell.md` & `README.md`) by `workflow-orchestrator`.
+
+### Session 038
+
+- Date: `2026-11-27`
+- Agent: 🟣 `[ORCHESTRATOR · workflow-orchestrator]`
+- Goal: Complete PR #15 Review Round #1 (`review-fix` Mode) independent re-validation (Iteration 3), durable navigation shell documentation (`docs/navigation-shell.md` + `README.md`), incremental atomic consolidation, and push for `navigation-shell-unification` (Issue `#14`).
+- Completed: Executed independent validation Iteration 3 in `.worktrees/val-navigation-shell-unification-r1` (`workflow-validator` returned `accept` across all 4 levels: Finding 1 `TopAppBarCustom` preview `Surface(color = MeteoMartoTheme.colors.background)` verified, `spec.md` & `60/60` Roborazzi snapshots untouched, `0` production runtime delta preserving Iteration 2 live `emulator-5554` Probes 4A/4B across all 6 destinations); confirmed existing `TopAppBarCustom` KDoc requires zero edits (only private `@Preview` functions changed); authored `docs/navigation-shell.md` (component map, Mermaid architecture diagram, `AppState` vs `AppShellState`, unified `CityForecast` route contract, chrome matrix, stateless `TopAppBarCustom`, `TopAppBarState` scroll reset, and `collectAsStateWithLifecycle()`) and linked it from `README.md`; persisted `validation-report.md`, restored `feature_list.json` (`status: "accepted"`), updated `PROGRESS.md`, consolidated Round #1 delta via atomic commits, pushed to `origin/feature/navigation-shell-unification`, cleaned temporary worktrees/`wt/*` branches, and returned root workspace to `feature/MM-02-design-system`.
+- Verification run: Independent validator Iteration 3 re-ran `assemblePreDebug --no-daemon` (`1m 23s`), `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`95/95`, `0` lint warnings on `TopAppBarCustom.kt` and all 9 cumulative touched `.kt` files), `:domain:test :usecases:test :data:test --rerun-tasks --no-daemon` (`1/1`, `3/3`, `3/3`), and `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` (`60/60 unchanged`).
+- Files or artifacts updated: `TopAppBarCustom.kt`, `docs/navigation-shell.md`, `README.md`, `docs/features/navigation-shell-unification/validator/pr-review.md`, `docs/features/navigation-shell-unification/validator/validation-report.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Verify `Quality Gate` stays green on PR #15, resolve the 5 review threads, and merge PR #15 into `feature/MM-02-design-system` before starting `auth-splash-overhaul` (or parallel wave with independent `auth-signup-overhaul` / `city-forecast-state-and-palette`).
