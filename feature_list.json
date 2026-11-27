@@ -235,7 +235,7 @@
       "Pure JVM LoginViewModel tests using manual Fakes verify credential validation, SavedStateHandle restoration, and DomainError states."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_login_atmospheric/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, safe Compose side-effects, DomainError->UiText mappers, and passive ViewModel init."
+    "notes": "Reference docs/ui/screens/meteomarto_login_atmospheric/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, safe Compose side-effects, DomainError->UiText mappers, and passive ViewModel init. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy LoginScreen while LoginViewModelTest is green to capture Before/After Process Death evidence."
   },
   {
     "id": "auth-terms-overhaul",
@@ -273,7 +273,7 @@
       "Pure JVM SignUpViewModel tests using manual Fakes verify registration validation, SavedStateHandle restoration, and DomainError handling."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_registre_create_user/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, Compose side-effects, DomainError->UiText mappers, and passive ViewModel state."
+    "notes": "Reference docs/ui/screens/meteomarto_registre_create_user/. Enforce Screen/Content hoisting, SavedStateHandle/rememberSaveable form survival, Compose side-effects, DomainError->UiText mappers, and passive ViewModel state. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy SignUpScreen while SignUpViewModelTest is green to capture Before/After Process Death evidence."
   },
   {
     "id": "city-forecast-state-and-palette",
@@ -311,7 +311,7 @@
       "Verify unified CityForecastScreen routing (retiring legacy FavoritesDetailScreen), dynamic MeteoMartoTheme palette switching, neutral DayBaselinePalette on ErrorForecastScreen, inherited-palette LogoutDialog, edge-to-edge layout, and stateless @Preview coverage."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/, meteomarto_error_previsi_ciutat/, and meteomarto_di_leg_log_out/. Consume unified state from city-forecast-state-and-palette, retire FavoritesDetailScreen, align LogoutDialog via MmDialog inheriting the active palette, and enforce Screen/Content hoisting, edge-to-edge, RTL, and 200% font scaling."
+    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/, meteomarto_error_previsi_ciutat/, and meteomarto_di_leg_log_out/. Consume unified state from city-forecast-state-and-palette, retire FavoritesDetailScreen, align LogoutDialog via MmDialog inheriting the active palette, and enforce Screen/Content hoisting, edge-to-edge, RTL, and 200% font scaling. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy CityWeatherScreen (e.g. open LogoutDialog / detail route) while unit tests are green to capture Before/After Process Death evidence."
   },
   {
     "id": "favorites-list-overhaul",
@@ -330,7 +330,7 @@
       "Pure JVM FavoritesViewModel tests using manual Fakes verify favorites list loading, empty state, and item deletion."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_llista_de_preferits_atmospheric/. Enforce passive ViewModel state, SavedStateHandle/rememberSaveable delete-target survival, Compose state hoisting, and immutable DayBaselinePalette."
+    "notes": "Reference docs/ui/screens/meteomarto_llista_de_preferits_atmospheric/. Enforce passive ViewModel state, SavedStateHandle/rememberSaveable delete-target survival, Compose state hoisting, and immutable DayBaselinePalette. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy FavoritesScreen with the delete-favorite confirmation dialog open while unit tests are green to capture Before/After Process Death evidence."
   },
   {
     "id": "high-temp-alert-screen-overhaul",
