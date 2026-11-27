@@ -188,7 +188,7 @@
     "depends_on": [
       "design-system-components-alignment"
     ],
-    "status": "in_progress",
+    "status": "accepted",
     "require_review_after": "planner",
     "spec_path": "docs/features/navigation-shell-unification/spec.md",
     "validation_path": "docs/features/navigation-shell-unification/validator/validation-report.md",
@@ -196,7 +196,15 @@
       "./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache",
       "Verify type-safe Navigation Compose shell compiles cleanly, switches between bottom bar and rail, and preserves existing CityWeather and FavoritesDetail behavior until state unification."
     ],
-    "evidence": [],
+    "evidence": [
+      "PASS: ./gradlew assemblePreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 19s (full Hilt DI graph, resources, Manifest, and app-pre-debug.apk verified; 0 compiler warnings on modified/new files).",
+      "PASS: ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (JDK 21.0.11) -> BUILD SUCCESSFUL in 1m 18s (Configuration cache entry stored; :app:testPreDebugUnitTest 95/95 passed = 35 pure JVM unit tests across 15 classes <= 3/class including AppShellStateTest 2/2 + 60 Roborazzi previews, 0 failed, 0 skipped; lint-results-preDebug.xml 0 warnings on all 9 touched .kt files).",
+      "PASS: ./gradlew :domain:test :usecases:test :data:test --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 19s (:domain:test 1/1, :usecases:test 3/3, :data:test 3/3; total 42 pure JVM unit tests across all modules, 0 failed, 0 skipped).",
+      "PASS: ./gradlew :app:verifyRoborazziPreDebug --no-daemon (JDK 21.0.11) -> BUILD SUCCESSFUL in 59s (results-summary.json: total=60, recorded=0, added=0, changed=0, unchanged=60; 0 snapshot PNG diffs).",
+      "PASS: Hygiene invariants -> 0 edits to AndroidManifest.xml, MainActivity.kt, ui/FabState.kt, ui/navigation/shared/FabCustom.kt, ui/screens/**, ViewModels, ui/designsystem/**, or app/src/test/snapshots/**; 0 code references to favoriteSubGraph, FavoritesGraph, FavoritesScreens, BottomBarUtils, NavigationUtils, or AuthScreens.Splash across app/src/ (only 1 untouched legacy KDoc reference in FavoritesDetailViewModel.kt:26); 0 collectAsState( in Navigation.kt; 0 hiltViewModel/AppState/NavDestination in TopAppBarCustom.kt; exactly 1 composable<DashboardScreens.Favorites> registration (HomeNavGraph.kt); 0 io.mockk and 0 RobolectricTestRunner in app/src/test/; 0 KDoc comments on the 5 KDoc-deferred navigation files.",
+      "PASS (Repair Pass 1 — Trigger #15 Dead Code, JDK 21.0.11): Removed unused 1-arg @Composable AppState.isTopLevelRouteSelected(route: Any) overload (AppState.kt -4 lines; git grep confirms only the actively used 2-arg isTopLevelRouteSelected(entry, route) overload exists on AppState). Verified: ./gradlew assemblePreDebug --no-daemon (41s, 0 warnings), ./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache (1m 8s, config cache reused; :app:testPreDebugUnitTest 95/95 = 35 pure JVM + 60 Roborazzi, 0 failed/skipped; AppState.kt 0 lint warnings), ./gradlew :domain:test :usecases:test :data:test --no-daemon (18s; 1/1, 3/3, 3/3), ./gradlew :app:verifyRoborazziPreDebug --no-daemon (1m 50s; results-summary.json: total=60, recorded=0, added=0, changed=0, unchanged=60).",
+      "PASS (Independent Validator Iteration 2 & Stage 4 KDoc — JDK 21.0.11): workflow-validator returned accept across all 4 levels (uncached :app:verifyRoborazziPreDebug --rerun-tasks 60/60 unchanged, :app:testPreDebugUnitTest 95/95, :domain/:usecases/:data --rerun-tasks 1/1, 3/3, 3/3, 0 lint/compiler warnings on all 9 touched .kt files, AppShellStateTest 2/2 KEEP, and live emulator-5554 Probes 4A Activity recreation + 4B LMK am kill with PID_AFTER != PID_BEFORE across all 6 destinations CityForecast(null), Favorites, CityForecast(\"Mountain View\"), HighTemperatureAlert(38.5), AuthScreens.Terms, AuthScreens.SignUp plus Logout teardown with 0 crashes; physical device untouched); workflow-documenter added concise English KDoc (+21/-0) to Destinations.kt, TopLevelRoute.kt, AppShellState.kt, AppState.kt, and TopAppBarCustom.kt with post-KDoc compilePreDebugKotlin PASS."
+    ],
     "notes": "Shell and route hygiene slice only (no screen layout rewrites or ViewModel unification yet — owned by downstream slices). Follow compose-navigation-architecture (AppState, AppShellState, TopLevelRoute, type-safe Destinations, remove duplicate DashboardScreens.Favorites in favoriteSubGraph.kt, switch Navigation.kt to collectAsStateWithLifecycle, decouple TopAppBarCustom from hiltViewModel). No Navigation 3 migration."
   },
   {

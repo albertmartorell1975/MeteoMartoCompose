@@ -6,7 +6,7 @@
 * **`id`:** `navigation-shell-unification`
 * **`area`:** `navigation`
 * **`depends_on`:** `["design-system-components-alignment"]`
-* **`status`:** `in_progress`
+* **`status`:** `accepted`
 * **`module_topology`:** `Layer-Based (:domain, :usecases, :data, :app)`
 * **GitHub Issue:** `#14` (`https://github.com/albertmartorell1975/MeteoMartoCompose/issues/14`)
 * **Base Branch:** `feature/MM-02-design-system` (`base_sha`: `3537f4cc7d532a4635b3c364665376d0fa049fad`)
@@ -167,9 +167,9 @@ No persistence changes required.
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-- [ ] **MANDATORY Pre-Check:** Read `AGENTS.md`, `CONSTRAINTS.md`, `compose-navigation-architecture`, `compose-state-hoisting`, `compose-side-effects`, `compose-modifier-and-layout-style`, `design-system-governance`, `testing-setup`, and `kotlin-style`. Confirm `git status` is clean in the isolated implementation worktree and do NOT write any `/** ... */` KDoc (deferred to `workflow-documenter`). Do NOT modify `AndroidManifest.xml`, `MainActivity.kt`, `ui/FabState.kt`, `ui/navigation/shared/FabCustom.kt`, any screen (`ui/screens/**`), any ViewModel, any `ui/designsystem/**` file, `:domain`, `:data`, `:usecases`, or any snapshot PNG file.
-- [ ] **Database / Models / Domain / Data / UseCase:** `N/A` — zero changes to `:domain`, `:data`, `:usecases`, or Room persistence.
-- [ ] **Type-Safe Destinations & TopLevelRoute (`:app` — `ui/navigation/`):**
+- [x] **MANDATORY Pre-Check:** Read `AGENTS.md`, `CONSTRAINTS.md`, `compose-navigation-architecture`, `compose-state-hoisting`, `compose-side-effects`, `compose-modifier-and-layout-style`, `design-system-governance`, `testing-setup`, and `kotlin-style`. Confirm `git status` is clean in the isolated implementation worktree and do NOT write any `/** ... */` KDoc (deferred to `workflow-documenter`). Do NOT modify `AndroidManifest.xml`, `MainActivity.kt`, `ui/FabState.kt`, `ui/navigation/shared/FabCustom.kt`, any screen (`ui/screens/**`), any ViewModel, any `ui/designsystem/**` file, `:domain`, `:data`, `:usecases`, or any snapshot PNG file.
+- [x] **Database / Models / Domain / Data / UseCase:** `N/A` — zero changes to `:domain`, `:data`, `:usecases`, or Room persistence.
+- [x] **Type-Safe Destinations & TopLevelRoute (`:app` — `ui/navigation/`):**
   - Create `Destinations.kt` (and delete `NavigationUtils.kt`) with:
     - `sealed class SubGraphs`: `@Serializable data object Auth : SubGraphs()`, `@Serializable data object Dashboard : SubGraphs()`. (Remove `SubGraphs.FavoritesGraph`.)
     - `sealed class AuthScreens`: `@Serializable data object Login`, `@Serializable data object Terms`, `@Serializable data object SignUp`. (Remove unused `AuthScreens.Splash`.)
@@ -180,7 +180,7 @@ No persistence changes required.
     - Remove `FavoritesScreens` entirely.
     - Declare `inline fun <reified T : Any> NavHostController.navigatePoppingUpToStartDestination(route: Any)` calling `navigate(route) { popUpTo<T> { saveState = true }; launchSingleTop = true; restoreState = true }`.
   - Create `TopLevelRoute.kt` (and delete `ui/navigation/shared/BottomBarUtils.kt`) with `@Immutable data class TopLevelRoute<T : Any>(@param:StringRes val titleRes: Int, val route: T, val icon: ImageVector)` (no `@Serializable`, no `@Contextual`).
-- [ ] **Deterministic `AppShellState` & Hardened `@Stable AppState` (`:app` — `ui/navigation/`):**
+- [x] **Deterministic `AppShellState` & Hardened `@Stable AppState` (`:app` — `ui/navigation/`):**
   - Move/refactor `ui/AppShellState.kt` -> `ui/navigation/AppShellState.kt` (delete old file, remove stale KDoc):
     - Define `@Immutable data class AppShellChrome(val showBottomNavigation: Boolean = false, val showTopAppBar: Boolean = false, @param:StringRes val topAppBarTitleRes: Int? = null, val showBackButton: Boolean = false, val showLogoutAction: Boolean = false, val showFavoriteFab: Boolean = false)`.
     - Define `internal sealed interface ShellDestination { data object CurrentLocationForecast : ShellDestination; data object FavoriteCityDetail : ShellDestination; data object FavoritesList : ShellDestination; data object Other : ShellDestination }`.
@@ -189,21 +189,21 @@ No persistence changes required.
     - Annotate `@Stable class AppState(val navController: NavHostController, val snackbarHostState: SnackbarHostState, val coroutineScope: CoroutineScope, val windowSizeClass: WindowSizeClass, private val shellState: AppShellState, private val fabState: FabState)` (importing `com.martorell.albert.meteomartocompose.ui.FabState`).
     - Provide `@Composable fun rememberAppState(navController: NavHostController = rememberNavController(), snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, coroutineScope: CoroutineScope = rememberCoroutineScope(), windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass): AppState` remembering `shellState = remember { AppShellState() }` and `fabState = remember(coroutineScope) { FabState(coroutineScope) }`.
     - Retain existing `FabState` delegation verbatim: `isFabVisible`, `updateIsFabVisible(newValue: Boolean)`, `@Composable fun fabIcon(isCityFavoriteAction: suspend () -> Boolean): ImageVector?`, and `fun onFabClick(onFabAction: () -> Unit)`.
-    - Expose `currentBackStackEntry: NavBackStackEntry?` (`@Composable get`), `shellChrome: AppShellChrome` (`@Composable get`), `@Composable fun isTopLevelRouteSelected(route: Any): Boolean`, `fun dashboardBackStackEntryOrNull(currentEntry: NavBackStackEntry?): NavBackStackEntry?` (proactive `hierarchy.any { it.hasRoute<SubGraphs.Dashboard>() }` check, zero `try-catch`).
+    - Expose `currentBackStackEntry: NavBackStackEntry?` (`@Composable get`), `shellChrome: AppShellChrome` (`@Composable get`), `fun isTopLevelRouteSelected(entry: NavBackStackEntry?, route: Any): Boolean`, `fun dashboardBackStackEntryOrNull(currentEntry: NavBackStackEntry?): NavBackStackEntry?` (proactive `hierarchy.any { it.hasRoute<SubGraphs.Dashboard>() }` check, zero `try-catch`).
     - Replace raw `navigate(route: Any, builder)` with intent-driven functions: `onNavItemClick(screen: DashboardScreens)` (using `navigatePoppingUpToStartDestination<DashboardScreens.CityForecast>(screen)`), `navigateToDashboard()`, `navigateToAuth()`, `navigateToSignUp()`, `navigateToTerms()`, `navigateToCityForecast(cityName: String?)`, `navigateToHighTemperatureAlert(temperature: Double)`, and `navigateUp()`.
     - Place `companion object { val NAV_OPTIONS get() = AppShellState.NAV_OPTIONS }` at the bottom of `AppState`.
-- [ ] **Decoupled Stateless `TopAppBarCustom` (`:app` — `ui/navigation/shared/TopAppBarCustom.kt`):**
+- [x] **Decoupled Stateless `TopAppBarCustom` (`:app` — `ui/navigation/shared/TopAppBarCustom.kt`):**
   - Remove all `AppState`, `NavDestination`, `SubGraphs`, `DashboardScreens`, `hiltViewModel`, and `CityWeatherViewModel` imports/dependencies.
   - Implement `TopAppBarCustom(title: String, modifier: Modifier = Modifier, showBackButton: Boolean = false, onBackClick: () -> Unit = {}, showLogoutAction: Boolean = false, onLogoutClick: () -> Unit = {}, scrollBehavior: TopAppBarScrollBehavior? = null)`.
   - Use `MmText.TitleLarge(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)`, `Icons.AutoMirrored.Filled.ArrowBack`, `Icons.AutoMirrored.Filled.Logout`, and explicit `TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent, scrolledContainerColor = MeteoMartoTheme.colors.surfaceContainer, navigationIconContentColor = MeteoMartoTheme.colors.onSurface, titleContentColor = MeteoMartoTheme.colors.onSurface, actionIconContentColor = MeteoMartoTheme.colors.onSurface)`.
   - Add stateless private `@MmPreview` + `@MmDevicePreview` composables for Top-Level (Title + Logout) and Detail (Back + Title) configurations.
-- [ ] **Hardened `Navigation.kt` & Sub-Graphs (`:app` — `ui/navigation/`):**
+- [x] **Hardened `Navigation.kt` & Sub-Graphs (`:app` — `ui/navigation/`):**
   - Update `Navigation.kt`:
     - Keep `Navigation(mainViewModel = viewModel)` call-site compatibility (`MainActivity.kt` untouched) and instantiate `val appState: AppState = rememberAppState()` inside the `!rootState.isLoading` branch so `NavController` lifecycle relative to `SplashUI` is unchanged.
     - Switch `mainViewModel.state` and `designSystemViewModel.fontScale` from `collectAsState()` to `collectAsStateWithLifecycle()`.
     - Resolve `currentBackStackEntry = appState.currentBackStackEntry`, `shellChrome = appState.shellChrome`, `dashboardEntry = remember(currentBackStackEntry) { appState.dashboardBackStackEntryOrNull(currentBackStackEntry) }`, and obtain `dashboardViewModel: CityWeatherViewModel? = if (dashboardEntry != null) hiltViewModel(dashboardEntry) else null` ONCE.
     - Add `LaunchedEffect(currentBackStackEntry?.id)` resetting `scrollState.heightOffset = 0f` and `scrollState.contentOffset = 0f`.
-    - Wire `MmNavigation(items = navItems, isItemSelected = { item -> appState.isTopLevelRouteSelected(item.route) }, onItemClick = { route -> (route as? DashboardScreens)?.let(appState::onNavItemClick) }, modifier = Modifier.fillMaxSize(), ...)`.
+    - Wire `MmNavigation(items = navItems, isItemSelected = { item -> appState.isTopLevelRouteSelected(currentBackStackEntry, item.route) }, onItemClick = { route -> (route as? DashboardScreens)?.let(appState::onNavItemClick) }, modifier = Modifier.fillMaxSize(), ...)`.
     - Wire stateless `TopAppBarCustom(...)` using `shellChrome` and `onLogoutClick = { dashboardViewModel?.showLogOutDialog() }`.
     - Keep the existing `FloatingActionButton` block untouched except gating it on `shellChrome.showFavoriteFab && appState.isFabVisible && dashboardViewModel != null` and reusing `dashboardViewModel` (calling `appState.onFabClick { dashboardViewModel.onFavoriteClicked() }` and `appState.fabIcon { dashboardViewModel.isCityFavorite() }`).
     - Remove `favoriteSubGraph(...)` registration from `NavHost`.
@@ -215,15 +215,15 @@ No persistence changes required.
     - Remove unused `NavHostController` import.
   - Update `authSubGraph.kt` to call `appState::navigateToTerms`, `appState::navigateToDashboard`, `appState::navigateToSignUp`, and `appState::navigateUp`.
   - Delete `favoriteSubGraph.kt`.
-- [ ] **UI Design Assets & Folders:** `N/A` — zero assets to convert.
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+- [x] **UI Design Assets & Folders:** `N/A` — zero assets to convert.
+- [x] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: `2` new pure-JVM `@Test` methods across `1` new test class (`<= 3`/class, `<= 6`/feature; zero MockK, zero Robolectric in unit tests, zero cross-layer duplication, zero trivial getter tests).
   - *Planned `*Test.kt` file*:
     - `app/src/test/java/com/martorell/albert/meteomartocompose/ui/navigation/AppShellStateTest.kt` (`2` `@Test` methods):
       1. `resolveChrome and tab selection map current forecast favorite detail favorites list and other routes` — verifies exact `AppShellChrome` visibility/title/action flags and `isTopLevelRouteSelected` behavior across `CurrentLocationForecast`, `FavoriteCityDetail`, `FavoritesList`, and `Other` (specifically guaranteeing `FavoriteCityDetail` hides bottom navigation, shows Back arrow, hides Logout/FAB, and never highlights the `City` tab).
       2. `cityForecast route contract normalizes cityName and preserves SavedStateHandle key` — verifies `DashboardScreens.CityForecast.fromCityName(...)` blank/whitespace normalization to `null` vs. trimmed city name, `isFavoriteDetail` transitions, `AppShellState.NAV_OPTIONS` uniqueness/order (`CityForecast(null)` + `Favorites`), and `DashboardScreens.CityForecast.serializer().descriptor.getElementName(0) == "cityName"` (guarding the `SavedStateHandle` key contract shared with `FavoritesDetailViewModel` and downstream `CityForecastViewModel`).
   - *Existing test preservation*: All existing pure JVM unit tests (`33` in `:app`, `1` in `:domain`, `3` in `:usecases`, `3` in `:data` = `40` existing + `2` new = `42` total pure JVM unit tests) and all `60/60` Design System Roborazzi previews MUST remain passing with `0` edits to existing test files or snapshots.
-- [ ] **Compiler Self-Verification & Hygiene Invariants (MANDATORY — JDK 21):**
+- [x] **Compiler Self-Verification & Hygiene Invariants (MANDATORY — JDK 21):**
   - `./gradlew assemblePreDebug --no-daemon` (full Hilt DI graph, resources, Manifest, and APK check; `0` compiler warnings on modified/new files).
   - `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` (`:app:testPreDebugUnitTest` `95/95` = `35` pure JVM unit tests + `60` Roborazzi previews; `0` lint warnings on all touched `.kt` files).
   - `./gradlew :domain:test :usecases:test :data:test --no-daemon` (`1/1`, `3/3`, `3/3`).
@@ -242,9 +242,9 @@ No persistence changes required.
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
-- [ ] Implementation stays strictly within `navigation-shell-unification` scope (`WIP=1`) and `CONSTRAINTS.md` (zero edits to `MainActivity.kt`, `AndroidManifest.xml`, `ui/FabState.kt`, `ui/navigation/shared/FabCustom.kt`, screen layouts, ViewModels, `Mm*`/`Fnd*`, or Roborazzi snapshots).
-- [ ] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
-- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`, all 18 Triggers incl. Trigger #18 Process Death), `compose-navigation-architecture`, `compose-state-hoisting`, `compose-side-effects`, `design-system-governance`, and `kotlin-style` are respected across all touched files.
-- [ ] `@compiler` verification evidence is independently confirmed on JDK 21 (`assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`, `:domain:test :usecases:test :data:test`, `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` `60/60 unchanged`); `AppShellStateTest` (`2 @Test`, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric) is audited as `KEEP`.
-- [ ] On an active emulator, Level 4 Runtime Verification & Probes 4A (Activity recreation) & 4B (OS LMK kill, `PID_AFTER != PID_BEFORE`) pass across top-level tab switching (`CityForecast(null)` <-> `Favorites`), unified non-root Favorite Detail (`CityForecast(cityName)` -> kill -> restore -> Back to `Favorites`), compact vs. tablet rail layout, decoupled TopAppBar Logout dialog, and cold `meteomarto://alert/high-temperature/38.5` deep link (recorded in Validation Report §3.3), or Level 4 is recorded as `SKIPPED (headless)`.
-- [ ] Structured validation report written to `docs/features/navigation-shell-unification/validator/validation-report.md`.
+- [x] Implementation stays strictly within `navigation-shell-unification` scope (`WIP=1`) and `CONSTRAINTS.md` (zero edits to `MainActivity.kt`, `AndroidManifest.xml`, `ui/FabState.kt`, `ui/navigation/shared/FabCustom.kt`, screen layouts, ViewModels, `Mm*`/`Fnd*`, or Roborazzi snapshots).
+- [x] All 4 Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
+- [x] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`, all 18 Triggers incl. Trigger #18 Process Death), `compose-navigation-architecture`, `compose-state-hoisting`, `compose-side-effects`, `design-system-governance`, and `kotlin-style` are respected across all touched files.
+- [x] `@compiler` verification evidence is independently confirmed on JDK 21 (`assemblePreDebug`, `testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`, `:domain:test :usecases:test :data:test`, `:app:verifyRoborazziPreDebug --rerun-tasks --no-daemon` `60/60 unchanged`); `AppShellStateTest` (`2 @Test`, `<= 3`/class, `<= 6`/feature, `0` MockK, `0` Robolectric) is audited as `KEEP`.
+- [x] On an active emulator, Level 4 Runtime Verification & Probes 4A (Activity recreation) & 4B (OS LMK kill, `PID_AFTER != PID_BEFORE`) pass across top-level tab switching (`CityForecast(null)` <-> `Favorites`), unified non-root Favorite Detail (`CityForecast(cityName)` -> kill -> restore -> Back to `Favorites`), compact vs. tablet rail layout, decoupled TopAppBar Logout dialog, and cold `meteomarto://alert/high-temperature/38.5` deep link (recorded in Validation Report §3.3), or Level 4 is recorded as `SKIPPED (headless)`.
+- [x] Structured validation report written to `docs/features/navigation-shell-unification/validator/validation-report.md`.
