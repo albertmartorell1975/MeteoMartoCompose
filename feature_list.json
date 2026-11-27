@@ -188,7 +188,7 @@
     "depends_on": [
       "design-system-components-alignment"
     ],
-    "status": "not_started",
+    "status": "in_progress",
     "require_review_after": "planner",
     "spec_path": "docs/features/navigation-shell-unification/spec.md",
     "validation_path": "docs/features/navigation-shell-unification/validator/validation-report.md",
@@ -216,7 +216,7 @@
       "Pure JVM MainViewModel tests and stateless @Preview verify passive session startup routing and DayBaselinePalette Splash rendering."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_splash_welcome/ and ic_logo.webp. Wrap Splash inside MeteoMartoComposeLayout (DayBaselinePalette), enforce Screen/Content hoisting, and passive MainViewModel stateIn initialization."
+    "notes": "Reference docs/ui/screens/meteomarto_splash_welcome/ and ic_logo.webp. Wrap Splash inside MeteoMartoComposeLayout (DayBaselinePalette), enforce Screen/Content hoisting, and passive MainViewModel stateIn initialization. Also apply edge-to-edge Activity/Manifest hardening deferred from navigation-shell-unification: android:windowSoftInputMode=\"adjustResize\" in AndroidManifest.xml, window.isNavigationBarContrastEnforced = false in MainActivity.kt, and evaluate rememberAppState() hoisting once Splash startup is unified."
   },
   {
     "id": "auth-login-overhaul",
@@ -311,7 +311,7 @@
       "Verify unified CityForecastScreen routing (retiring legacy FavoritesDetailScreen), dynamic MeteoMartoTheme palette switching, neutral DayBaselinePalette on ErrorForecastScreen, inherited-palette LogoutDialog, edge-to-edge layout, and stateless @Preview coverage."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/, meteomarto_error_previsi_ciutat/, and meteomarto_di_leg_log_out/. Consume unified state from city-forecast-state-and-palette, retire FavoritesDetailScreen, align LogoutDialog via MmDialog inheriting the active palette, and enforce Screen/Content hoisting, edge-to-edge, RTL, and 200% font scaling. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy CityWeatherScreen (e.g. open LogoutDialog / detail route) while unit tests are green to capture Before/After Process Death evidence."
+    "notes": "Reference docs/ui/screens/meteomarto_previsi_ciutat_atmospheric/, meteomarto_error_previsi_ciutat/, and meteomarto_di_leg_log_out/. Consume unified state from city-forecast-state-and-palette, retire FavoritesDetailScreen, align LogoutDialog via MmDialog inheriting the active palette, and enforce Screen/Content hoisting, edge-to-edge, RTL, and 200% font scaling. Benchmark note: before Stage 2 implementation, run a one-time baseline Probe 4B (am kill) on legacy CityWeatherScreen (e.g. open LogoutDialog / detail route) while unit tests are green to capture Before/After Process Death evidence. Also retire legacy ui/FabState.kt (replacing stale userClickedCount produceState with reactive StateFlow observation) and unused ui/navigation/shared/FabCustom.kt deferred from navigation-shell-unification."
   },
   {
     "id": "favorites-list-overhaul",
@@ -349,6 +349,6 @@
       "Pure JVM unit tests verify threshold comparison (temperature > threshold) and alert acknowledgement lifecycle."
     ],
     "evidence": [],
-    "notes": "Reference docs/ui/screens/meteomarto_alerta_meteorol_gica_atmospheric/ and docs/ui/resources/ic_warning.webp. Enforce stateless Content hoisting, edge-to-edge, and Remote Config threshold (> threshold)."
+    "notes": "Reference docs/ui/screens/meteomarto_alerta_meteorol_gica_atmospheric/ and docs/ui/resources/ic_warning.webp. Enforce stateless Content hoisting, edge-to-edge, and Remote Config threshold (> threshold). Also harden MainActivity.onNewIntent (setIntent(intent) + navController.handleDeepLink(intent)) for warm singleTop meteomarto://alert deep-link delivery deferred from navigation-shell-unification."
   }
 ]

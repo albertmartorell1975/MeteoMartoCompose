@@ -5,8 +5,8 @@
 - Repository root: `c:\Projectes\AI\MeteoMartoCompose` (temporary integration `base_branch`: `feature/MM-02-design-system`)
 - Standard startup/verification gate: `@compiler` canonical check (`./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache` with JDK 21)
 - Design System visual gate: `./gradlew :app:verifyRoborazziPreDebug --no-daemon`
-- Current next ready feature: `navigation-shell-unification` (waiting for `design-system-components-alignment` PR review & merge into `feature/MM-02-design-system`)
-- Current blocker: None (`design-system-components-alignment` accepted and published for PR review targeting `feature/MM-02-design-system`).
+- Current next ready feature: `navigation-shell-unification` (`in_progress` — `spec.md` authored, awaiting human checkpoint review before Stage 2 implementation)
+- Current blocker: None (human review checkpoint after `planner` for `docs/features/navigation-shell-unification/spec.md`).
 - Last verified at: `2026-11-26` (`design-system-components-alignment` PR #13 Review Round #1 independent re-validation passed on JDK `21.0.11`: `:app:testPreDebugUnitTest` `93/93` = `33` pure JVM unit tests + `60/60` Roborazzi previews `unchanged`, `:domain:test` `1/1`, `:usecases:test` `3/3`, `:data:test` `3/3`, `lintPreDebug` `0` warnings on all 23 touched `.kt` files & 2 new strings, `assemblePreDebug`, `:app:dokkaGenerateHtml -PgenerateDocs -PdesignSystemDocs` `0` warnings, and `0` `androidx.navigation` imports in `MmNavigation.kt`)
 
 ## Session Log
@@ -467,3 +467,13 @@
 - Verification run: Validated `feature_list.json` JSON syntax, DAG acyclicity, `depends_on` reference integrity, and `docs/features/<feature-id>/` directory parity.
 - Files or artifacts updated: `feature_list.json`, `PROGRESS.md`, `.gitattributes`, `docs/features/<new-feature-id>/{ui/screens,ui/resources,validator}/`.
 - Next best step: Start `navigation-shell-unification` once PR #13 is merged into `feature/MM-02-design-system`.
+
+### Session 033
+
+- Date: `2026-11-27`
+- Agent: 🔵 `[PLANNER · workflow-planner]`
+- Goal: Produce the unified implementation specification for `navigation-shell-unification` (Issue `#14`).
+- Completed: Audited `MainActivity.kt`, `ui/AppState.kt`, `ui/AppShellState.kt`, `ui/FabState.kt`, `ui/navigation/{Navigation,NavigationUtils,HomeNavGraph,authSubGraph,favoriteSubGraph}.kt`, `ui/navigation/shared/{BottomBarUtils,FabCustom,TopAppBarCustom}.kt`, `MmNavigation.kt`, `MainViewModel.kt`, `FndDesignSystemViewModel.kt`, all feature screens/ViewModels, `NotificationServiceImpl.kt`, `AppConstants.kt`, `strings.xml`, and existing tests. Authored and trimmed (Option 1 human checkpoint) `docs/features/navigation-shell-unification/spec.md` strictly to the atomic navigation shell and route contract slice: canonical `ui.navigation` consolidation (`Destinations.kt`, `@Immutable TopLevelRoute.kt`, deterministic `AppShellState` + `@Immutable AppShellChrome`, `@Stable AppState` with `windowSizeClass`, intent-driven navigation methods, and preserved `FabState` delegation), removal of duplicate `DashboardScreens.Favorites` in `favoriteSubGraph.kt` and unused `AuthScreens.Splash`, unified ID-only `DashboardScreens.CityForecast(cityName: String? = null)` contract compatible with both `FavoritesDetailViewModel.CITY_NAME_ARG` (`"cityName"`) and downstream forecast state unification, `collectAsStateWithLifecycle()` in `Navigation.kt`, stateless `TopAppBarCustom` decoupled from `AppState`/`hiltViewModel` with `@MmPreview`/`@MmDevicePreview`, a pure-JVM Closed Test Plan (`AppShellStateTest.kt` with `2` cohesive `@Test` methods, zero MockK, zero Robolectric), KDoc deferral for `workflow-documenter`, and Stage 5 `CONSTRAINTS.md` consolidation. Preserved `MainActivity.kt`, `AndroidManifest.xml`, `ui/FabState.kt`, and `ui/navigation/shared/FabCustom.kt` untouched and recorded deferred follow-ups in `feature_list.json` (`auth-splash-overhaul`, `city-forecast-screen-and-error-ui`, `high-temp-alert-screen-overhaul`), with `navigation-shell-unification.status` -> `"in_progress"`.
+- Verification run: Read-only codebase audit, JSON validity verification, and scope/hygiene boundary review (zero `.kt`, `.kts`, `.xml`, `.java`, or snapshot files modified).
+- Files or artifacts updated: `docs/features/navigation-shell-unification/spec.md`, `feature_list.json`, `PROGRESS.md`.
+- Next best step: Human review of `docs/features/navigation-shell-unification/spec.md` (`require_review_after: "planner"`), then hand off to `workflow-implementer` in an isolated git worktree.
